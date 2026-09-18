@@ -157,6 +157,10 @@ Have an Amazon workflow worth sharing, or a way to improve an existing skill? St
 
 Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
 
+## Releases
+
+Kuudo uses versioned GitHub releases such as `v0.2.0`. Maintainers prepare a release pull request with synchronized package and plugin versions, update [RELEASE-NOTES.md](RELEASE-NOTES.md), and merge it after the normal validation checks pass. Once it reaches `main`, GitHub creates the tag and release automatically. See the [release process](CONTRIBUTING.md#releases) for the maintainer commands.
+
 ## License and acknowledgments
 
 All KuudoAI-authored content in this repository is licensed under the [PolyForm Shield License 1.0.0](licenses/PolyForm-Shield-1.0.0.md): use it freely, including in paid Amazon work for yourself or your clients, but not to build a competing product. [LICENSE.md](LICENSE.md) records the required notice and KuudoAI's additional permission for customers. Imported third-party skills retain their upstream terms, recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

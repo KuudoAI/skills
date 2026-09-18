@@ -24,3 +24,9 @@ Certification requires owner review, successful repository validation, and at le
 ## Registry registration
 
 Run `npm run catalog:build` to generate supported registry metadata and `npm run catalog:check` to detect drift. Submit a skill only through a registry's documented submission format, documented contract, or supported CLI. Do not call undocumented registry APIs or scrape registry websites. For skills.sh metadata, use its [published schema](https://skills.sh/schemas/skills.sh.schema.json); do not hand-edit generated manifests.
+
+## Releases
+
+Releases are versioned as `vX.Y.Z` and use one synchronized version across `package.json`, the lockfile, and the Claude and Codex plugin manifests. To prepare a release, run `npm run version:bump -- 0.2.0`, add the user-facing changes to [RELEASE-NOTES.md](RELEASE-NOTES.md), and run `npm run version:check`, `npm run version:audit`, and `npm test` before opening the release pull request.
+
+When that versioned change reaches `main`, [the release workflow](.github/workflows/release.yml) validates it again. If the tag does not already exist, GitHub creates `v0.2.0` and publishes a release with generated notes. Ordinary merges that do not change the version do not create another release.

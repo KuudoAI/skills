@@ -37,6 +37,22 @@ test("package exposes the deterministic smoke command", async () => {
   assert.equal(scripts.smoke, "node --import tsx --test tooling/test/smoke.test.ts");
 });
 
+test("release metadata keeps declared package versions synchronized", async () => {
+  const packageJson = await readJson("package.json");
+  const manifest = await readJson(".version-bump.json");
+  const files = manifest.files as JsonObject[];
+
+  assert.ok(files.length >= 5);
+  for (const entry of files) {
+    const document = await readJson(entry.path as string);
+    const version = (entry.field as string).split(".").reduce(
+      (value, key) => (value as JsonObject)[key],
+      document as unknown,
+    );
+    assert.equal(version, packageJson.version, `${entry.path}.${entry.field} drifted`);
+  }
+});
+
 test("repository and generated catalog are release-valid", async () => {
   assert.deepEqual(await validateRepository(root), []);
   assert.deepEqual(await checkCatalogArtifacts(root), []);

@@ -31,3 +31,24 @@ test("validation workflow checks the repository on pull requests and pushes to m
   assert(steps.some((step) => step.run === "npm test"));
   assert(steps.some((step) => step.run === "npm audit --audit-level=high"));
 });
+
+test("release workflow validates main and publishes a new version tag", async () => {
+  const workflow = parse(await readFile(".github/workflows/release.yml", "utf8")) as {
+    on: { push?: { branches?: string[] } };
+    permissions?: Record<string, string>;
+    jobs?: Record<string, { steps?: WorkflowStep[] }>;
+  };
+
+  assert.deepEqual(workflow.on.push?.branches, ["main"]);
+  assert.deepEqual(workflow.permissions, { contents: "write" });
+
+  const steps = Object.values(workflow.jobs ?? {}).flatMap((job) => job.steps ?? []);
+  assert(steps.some((step) => step.uses === "actions/checkout@v4"));
+  assert(steps.some((step) => step.uses === "actions/setup-node@v4"));
+  assert(steps.some((step) => step.run === "npm ci"));
+  assert(steps.some((step) => step.run === "npm test"));
+  const release = steps.find((step) => step.run?.includes("gh release create"));
+  assert(release);
+  assert.match(release.run ?? "", /--target/);
+  assert.match(release.run ?? "", /--generate-notes/);
+});
