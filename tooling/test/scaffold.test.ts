@@ -6,7 +6,7 @@ import { scaffoldSkill } from "../src/scaffold.js";
 import { validateRepository } from "../src/validate.js";
 import { createEmptyRepository, read, writeJson } from "./helpers.js";
 
-test("scaffolds a first-party community skill without optional directories", async () => {
+test("scaffolds a first-party reference skill without optional directories", async () => {
   const root = await createEmptyRepository();
   const created = await scaffoldSkill(root, "release-notes");
 
@@ -23,7 +23,7 @@ test("scaffolds a first-party community skill without optional directories", asy
   assert.match(await read(root, "skills/release-notes/SKILL.md"), /Author the skill instructions before requesting certification\./);
   assert.deepEqual(JSON.parse(await read(root, "catalog/entries/release-notes.json")), {
     name: "release-notes",
-    classification: "community",
+    classification: "reference",
     origin: "first-party",
     maintainers: ["KuudoAI"],
     license: "PolyForm-Shield-1.0.0",

@@ -6,7 +6,7 @@ This repository follows the [Agent Skills specification](https://agentskills.io/
 
 1. Create the initial package, catalog entry, and evaluation file with `npm run skill:new -- <skill-name>`.
 2. Replace all scaffold placeholders and author `skills/<skill-name>/SKILL.md` according to the specification. Add only resources the skill needs.
-3. Complete `catalog/entries/<skill-name>.json` with maintainer, license, classification, origin, and registry information. Start new work as `community` unless it has completed certification review.
+3. Complete `catalog/entries/<skill-name>.json` with maintainer, license, classification, origin, and registry information. Start new work as `reference` unless it has completed certification review; `origin` separately identifies first-party and third-party work.
 4. Run `npm run catalog:build`, then use the aggregate `npm test` gate before opening a pull request. It includes TypeScript typechecking, unit tests, repository validation, and generated-artifact checks. You can run `npm run typecheck`, `npm run validate`, `npm run catalog:check`, or `npm run test:unit` individually while iterating.
 
 ## Licensing

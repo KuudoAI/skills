@@ -1,4 +1,4 @@
-export type Classification = "certified" | "community";
+export type Classification = "certified" | "reference";
 export type Origin = "first-party" | "third-party";
 
 export interface ValidationIssue {
@@ -38,7 +38,7 @@ export interface TriggerCase {
 }
 
 export function isClassification(value: unknown): value is Classification {
-  return value === "certified" || value === "community";
+  return value === "certified" || value === "reference";
 }
 
 export const maximumSkillNameLength = 64;

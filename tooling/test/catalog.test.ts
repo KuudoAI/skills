@@ -7,8 +7,9 @@ import { createCatalogRepository, createEmptyRepository, validEntry, validThirdP
 
 test("groups skills for skills.sh and sorts each group", async () => {
   const root = await createCatalogRepository([
-    { ...validEntry("zulu"), classification: "community" },
+    { ...validEntry("zulu"), classification: "reference" },
     { ...validEntry("alpha"), classification: "certified" },
+    validThirdPartyEntry("external"),
   ]);
   await writeJson(root, "evals/alpha/trigger-cases.json", [
     { query: "Use alpha", should_trigger: true },
@@ -26,9 +27,14 @@ test("groups skills for skills.sh and sorts each group", async () => {
     skills: ["alpha"],
   });
   assert.deepEqual(manifest.groupings[1], {
+    title: "KuudoAI Reference Skills",
+    description: "First-party reference implementations maintained by KuudoAI.",
+    skills: ["zulu"],
+  });
+  assert.deepEqual(manifest.groupings[2], {
     title: "Community",
     description: "Community-contributed skills.",
-    skills: ["zulu"],
+    skills: ["external"],
   });
 });
 
@@ -43,8 +49,8 @@ test("sorts multiple skills alphabetically within the same group", async () => {
   const manifest = JSON.parse(artifacts["skills.sh.json"]!);
 
   assert.deepEqual(manifest.groupings, [{
-    title: "Community",
-    description: "Community-contributed skills.",
+    title: "KuudoAI Reference Skills",
+    description: "First-party reference implementations maintained by KuudoAI.",
     skills: ["alpha", "middle", "zulu"],
   }]);
 });

@@ -1,6 +1,6 @@
 {
   "name": "amazon-sp-refund-return-monitor",
-  "classification": "community",
+  "classification": "reference",
   "origin": "first-party",
   "maintainers": [
     "KuudoAI"

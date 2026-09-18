@@ -11,8 +11,8 @@
       ]
     },
     {
-      "title": "Community",
-      "description": "Community-contributed skills.",
+      "title": "KuudoAI Reference Skills",
+      "description": "First-party reference implementations maintained by KuudoAI.",
       "skills": [
         "amazon-ads-accounts",
         "amazon-ads-create-dsp-campaign",

@@ -30,7 +30,7 @@ export function validSkillContent(name: string): string {
 export function validEntry(name: string): CatalogEntry {
   return {
     name,
-    classification: "community",
+    classification: "reference",
     origin: "first-party",
     maintainers: ["KuudoAI"],
     license: "UNLICENSED",

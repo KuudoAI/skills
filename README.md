@@ -119,7 +119,8 @@ Follow the [MCP configuration guide](docs/mcp-configuration.md) for client setup
 ## Skill quality
 
 - **Certified** skills have been reviewed and certified by KuudoAI, pass repository validation, and include cases checking when they should and should not activate.
-- **Community** skills are installable contributions that have not been KuudoAI-certified.
+- **KuudoAI Reference Skills** are first-party reference implementations maintained by KuudoAI that have not yet completed certification.
+- **Community** skills are third-party contributions that have not been KuudoAI-certified.
 
 Find each skill's status, source, and license in the [catalog](catalog/entries/). Review instructions and bundled scripts before use, especially for third-party skills.
 

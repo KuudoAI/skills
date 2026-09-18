@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "skills": {
+    "amazon-ads-accounts": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-accounts/SKILL.md",
+      "computedHash": "757c62ce456b7a7ef0452abdb21d53a91453034cac49b8511cc635339dbe7a54"
+    },
+    "amazon-ads-budget-pacing": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-budget-pacing/SKILL.md",
+      "computedHash": "c3ce9702c3e093bb8df9d9589443b95c7fbb7bd4a67ac09d00937fe378923839"
+    },
+    "amazon-ads-create-dsp-campaign": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-create-dsp-campaign/SKILL.md",
+      "computedHash": "e1c7f4ac8fc53d618c14f6bf15ce70928da2ae5eada1ed9fc04591fbbbda7cff"
+    },
+    "amazon-ads-creative-assets": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-creative-assets/SKILL.md",
+      "computedHash": "9db4a2bc83af1674e34b715699b138328342642352fd817c7bbdf6cdfa032e33"
+    },
+    "amazon-ads-marketing-cloud": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-marketing-cloud/SKILL.md",
+      "computedHash": "168af35f10931a62546a64fb31269a56f8080c1a3725f7a9852be435293a7159"
+    },
+    "amazon-ads-reporting": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-reporting/SKILL.md",
+      "computedHash": "18fa8759c1091c3af01bc51560b91d7aadf0c66bcc987abfe981d1b98fdd912c"
+    },
+    "amazon-ads-sb-performance-review": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-sb-performance-review/SKILL.md",
+      "computedHash": "5b28b47b2a990b91fa70f3c13e8ca24b4c57965c9927aa3f294d9119f8d57770"
+    },
+    "amazon-ads-sp-campaign-auditor": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-sp-campaign-auditor/SKILL.md",
+      "computedHash": "b322c1deedb1e149e7b01ec12662ebb255dd10964dcd6c0ac1cdd4ba88c2b574"
+    },
+    "amazon-ads-sp-search-term-explorer": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-ads-sp-search-term-explorer/SKILL.md",
+      "computedHash": "f55d58305db48ff25fe506d8eafc861e92b42fe36a62e5174a9830fbf45f9f80"
+    },
+    "amazon-product-image": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-product-image/SKILL.md",
+      "computedHash": "abf0e9156140c80b15f497e6110a076b82dd943966e0fff78fda01e9bda3c2ad"
+    },
+    "amazon-profitability-calculator": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-profitability-calculator/SKILL.md",
+      "computedHash": "2a1afc697fcb812daacb5e2a6e5d43a09cc6ad464dd3b38fa38516ef14fd4e9c"
+    },
+    "amazon-sp-listing-optimizer": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-sp-listing-optimizer/SKILL.md",
+      "computedHash": "bc283ccfcb5a75acdc7eaf8a4cc0e670f29e4a0af75f150d50cc28355dba7f8f"
+    },
+    "amazon-sp-refund-return-monitor": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-sp-refund-return-monitor/SKILL.md",
+      "computedHash": "59540f0e75ed9a98a45efdc25ab15ef6bc18fd45b0cade72f7813cb33320d529"
+    },
+    "amazon-sp-repricing": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-sp-repricing/SKILL.md",
+      "computedHash": "806a4403d5686eb2dee1c5eb1e350d2d9c4b8bf551dabd538b0f9640a0ac15dc"
+    },
+    "amazon-sp-sales-traffic-analyzer": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-sp-sales-traffic-analyzer/SKILL.md",
+      "computedHash": "95c1c5134690a4eba3e93506f4f52bc092547e2b89d3084d20caccee885531ab"
+    },
+    "amazon-sp-sqp-asin-ngram": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/amazon-sp-sqp-asin-ngram/SKILL.md",
+      "computedHash": "de50c98d4e5e99a16ac01c104c1767dac44908fcfbb127da16e85dec0fcbfc01"
+    },
+    "using-kuudo": {
+      "source": "KuudoAI/skills",
+      "sourceType": "github",
+      "skillPath": "skills/using-kuudo/SKILL.md",
+      "computedHash": "608f08df242ad1bab8fd68ce23a1001b62ddea2ed1af3b3cc4d4171e91a1aa2e"
+    }
+  }
+}

@@ -10,7 +10,7 @@
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
     "classification": {
-      "enum": ["certified", "community"]
+      "enum": ["certified", "reference"]
     },
     "origin": {
       "enum": ["first-party", "third-party"]

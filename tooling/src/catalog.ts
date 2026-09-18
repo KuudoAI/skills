@@ -71,7 +71,14 @@ export async function checkCatalogArtifacts(root: string): Promise<ValidationIss
 
 function renderCatalogArtifacts(entries: CatalogEntry[]): GeneratedCatalogArtifacts {
   const certified = entries.filter((entry) => entry.classification === "certified").map((entry) => entry.name).sort(compareStrings);
-  const community = entries.filter((entry) => entry.classification === "community").map((entry) => entry.name).sort(compareStrings);
+  const firstPartyReferences = entries
+    .filter((entry) => entry.classification === "reference" && entry.origin === "first-party")
+    .map((entry) => entry.name)
+    .sort(compareStrings);
+  const community = entries
+    .filter((entry) => entry.classification === "reference" && entry.origin === "third-party")
+    .map((entry) => entry.name)
+    .sort(compareStrings);
   const thirdParty = entries
     .filter((entry): entry is ThirdPartyCatalogEntry => entry.origin === "third-party")
     .sort((left, right) => compareStrings(left.name, right.name));
@@ -81,6 +88,11 @@ function renderCatalogArtifacts(entries: CatalogEntry[]): GeneratedCatalogArtifa
       title: "KuudoAI Certified",
       description: "Skills reviewed and certified by KuudoAI.",
       skills: certified,
+    }]),
+    ...(firstPartyReferences.length === 0 ? [] : [{
+      title: "KuudoAI Reference Skills",
+      description: "First-party reference implementations maintained by KuudoAI.",
+      skills: firstPartyReferences,
     }]),
     ...(community.length === 0 ? [] : [{
       title: "Community",

@@ -2,7 +2,7 @@ import { lstat, mkdir, readFile, realpath, unlink, writeFile } from "node:fs/pro
 import { dirname, join, relative, sep } from "node:path";
 import { isSkillName, maximumSkillNameLength } from "./types.js";
 
-/** Create the minimum first-party community-skill records without optional resource directories. */
+/** Create the minimum first-party reference-skill records without optional resource directories. */
 export async function scaffoldSkill(root: string, name: string): Promise<string[]> {
   validateName(name);
 
@@ -27,7 +27,7 @@ export async function scaffoldSkill(root: string, name: string): Promise<string[
     .replaceAll("__SKILL_TITLE__", toTitle(name));
   const entry = `${JSON.stringify({
     name,
-    classification: "community",
+    classification: "reference",
     origin: "first-party",
     maintainers: ["KuudoAI"],
     license: "PolyForm-Shield-1.0.0",
