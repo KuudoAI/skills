@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -23,6 +27,27 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Check whether this push changes the release version
+        id: version
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          current_version="$(node -p "require('./package.json').version")"
+          should_release=false
+
+          if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+            should_release=true
+          elif git cat-file -e "${BEFORE_SHA}:package.json" 2>/dev/null; then
+            previous_version="$(git show "${BEFORE_SHA}:package.json" | node -e 'let input=""; process.stdin.on("data", chunk => input += chunk).on("end", () => process.stdout.write(JSON.parse(input).version))')"
+            if [[ "$previous_version" != "$current_version" ]]; then
+              should_release=true
+            fi
+          fi
+
+          echo "current_version=${current_version}" >> "$GITHUB_OUTPUT"
+          echo "should_release=${should_release}" >> "$GITHUB_OUTPUT"
+          echo "Version changed: ${should_release} (${current_version})"
+
       - name: Install dependencies
         run: npm ci
 
@@ -30,6 +55,7 @@ jobs:
         run: npm test
 
       - name: Create GitHub release when version is new
+        if: steps.version.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

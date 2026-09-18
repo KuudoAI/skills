@@ -64,18 +64,25 @@ function set(object, field, value) {
   parent[final] = value;
 }
 
-const documents = manifest.files.map(({ path: relativePath, field }) => {
+const documents = new Map();
+for (const { path: relativePath, field } of manifest.files) {
   const filePath = path.join(root, relativePath);
-  const document = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  const current = get(document, field);
+  let entry = documents.get(filePath);
+  if (!entry) {
+    entry = { filePath, relativePath, document: JSON.parse(fs.readFileSync(filePath, 'utf8')), fields: [] };
+    documents.set(filePath, entry);
+  }
+  const current = get(entry.document, field);
   if (typeof current !== 'string') throw new Error(`${relativePath} ${field} is not a string`);
-  return { filePath, relativePath, field, document, current };
-});
+  entry.fields.push({ field, current });
+}
 
-for (const { filePath, relativePath, field, document, current } of documents) {
-  set(document, field, next);
+for (const { filePath, relativePath, document, fields } of documents.values()) {
+  for (const { field, current } of fields) {
+    set(document, field, next);
+    console.log(`${relativePath} (${field}): ${current} -> ${next}`);
+  }
   fs.writeFileSync(filePath, `${JSON.stringify(document, null, 2)}\n`);
-  console.log(`${relativePath} (${field}): ${current} -> ${next}`);
 }
 NODE
 

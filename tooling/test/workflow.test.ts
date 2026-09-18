@@ -4,8 +4,11 @@ import test from "node:test";
 import { parse } from "yaml";
 
 type WorkflowStep = {
+  id?: string;
+  if?: string;
   uses?: string;
   run?: string;
+  env?: Record<string, string>;
   with?: Record<string, unknown>;
 };
 
@@ -43,6 +46,8 @@ test("release workflow validates main and publishes a new version tag", async ()
   assert.deepEqual(workflow.permissions, { contents: "write" });
 
   const steps = Object.values(workflow.jobs ?? {}).flatMap((job) => job.steps ?? []);
+  assert(steps.some((step) => step.id === "version" && step.env?.BEFORE_SHA === "${{ github.event.before }}"));
+  assert(steps.some((step) => step.if === "steps.version.outputs.should_release == 'true'"));
   assert(steps.some((step) => step.uses === "actions/checkout@v4"));
   assert(steps.some((step) => step.uses === "actions/setup-node@v4"));
   assert(steps.some((step) => step.run === "npm ci"));
