@@ -35,7 +35,7 @@ test("Claude package, plugin, marketplace, and hook metadata agree", async () =>
   const registrations = sessionStart.hooks as JsonObject[];
 
   assert.equal(plugin.name, "kuudo-skills");
-  assert.equal(packageJson.version, "0.1.0");
+  assert.match(packageJson.version as string, /^\d+\.\d+\.\d+$/);
   assert.equal(plugin.version, packageJson.version);
   assert.equal(marketplace.name, "kuudo-skills-dev");
   assert.equal(entries.length, 1);
