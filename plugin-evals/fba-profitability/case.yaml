@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: fba-profitability-routing
+tags: [routing, amazon-commerce]
+execution:
+  prompt: Calculate whether this FBA product is profitable after Amazon fees.
+  max_turns: 6
+  timeout_seconds: 120
+  allowed_tools: [Skill]
+graders:
+  - name: profitability-skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?amazon-profitability-calculator"'
+  - name: selection-announced
+    type: regex
+    target: trace
+    pattern: 'Using (?:kuudo-skills:)?amazon-profitability-calculator to'

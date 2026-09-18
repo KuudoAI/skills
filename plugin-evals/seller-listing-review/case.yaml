@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: seller-listing-review-routing
+tags: [routing, seller-central]
+execution:
+  prompt: Review this Seller Central listing.
+  max_turns: 6
+  timeout_seconds: 120
+  allowed_tools: [Skill]
+graders:
+  - name: optimizer-skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?amazon-sp-listing-optimizer"'
+  - name: selection-announced
+    type: regex
+    target: trace
+    pattern: 'Using (?:kuudo-skills:)?amazon-sp-listing-optimizer to'

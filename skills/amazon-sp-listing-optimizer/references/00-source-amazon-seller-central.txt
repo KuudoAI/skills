@@ -1,0 +1,441 @@
+Product title requirements and guidelines
+On this page
+Product title requirements
+Best practices
+Frequently asked questions
+Troubleshooting
+The product title or product name (the Item name field on the List your products page) is the first piece of information that customers see when they search for a product on Amazon. Titles must clearly and concisely describe key product information. Clear titles help customers to identify, differentiate, and compare products, which simplifies their decision-making process and increases the likelihood of sale.
+
+Product title requirements
+Title requirements apply to all product types, except media product types, listed in all stores, except for Saudi Arabia, Egypt, Türkiye, and the United Arab Emirates. To list a product for the first time, your title must meet the requirements described below:
+
+Requirement type	Details
+Character limit	Titles must not exceed 75 characters, including spaces.
+Promotional content	Titles must not contain promotional phrases, such as "free shipping" or "100% quality guaranteed."
+Special characters	Titles must not use the following special characters: !, $, ?, _, {, }, ^, ¬, ¦. Other special characters, such as ~, #, <, >, and *, are allowed only in specific contexts. For example, you may use these symbols as product identifiers ("Style #4301") or measurements ("<10 lb"). Decorative usage of special characters is not allowed. For example, the title “Paradise Towel Wear Co. Beach Coverup << Size Kids XXS >>” is non-compliant because of the excessive use of symbols around the size.
+Content requirements
+Titles must contain the minimum amount of information that can be used to clearly describe the product, such as "Amazon Essentials Dress," "Columbia Hiking Boots," or "Sony Headphones."
+
+Do not include restricted phrases, such as “FSA/HSA eligible.”
+
+Word repetition	Titles must not contain the same word more than twice. For example, "Baby Boy Outfits Baby Boy fall Winter Clothes Baby Boy Long Sleeve Suspender Outfit Sets" is a non-compliant title. Prepositions, articles, and conjunctions may be used more than twice in a title. However, brand names are also subject to the two-instance limit. If part of a brand name appears in a different context (for example, "Old Navy and Navy Blue"), it is not considered a duplicate.
+Note: If your product is already listed and the title doesn't comply with these requirements, the title might be automatically corrected or it might not appear in our search results. Policy-violating titles can be viewed directly in Manage All Inventory. Brand owners can also see these titles in Review listing changes.
+Best practices
+Creating high-quality product titles is important to help customers discover your products and can increase conversions. Customers quickly scan search results, so ensuring that your title captures the most important product information is key to making your listing discoverable. Additionally, long or cluttered titles can be hard to read. The ideal title should concisely provide key information about the physical product, without excessive detail or non-essential information.
+
+If the title length is insufficient to include all details of your product, a new field called Item highlights has been introduced that you can use to add additional descriptive information (refer to the FAQ below for more details).
+
+To provide the best possible customer experience, follow these guidelines:
+
+Guideline	Compliant example	Non-compliant example	Explanation
+Length: Keep titles concise (maximum 75 characters)	"Amazon Essentials Women's Fleece Jacket, Black, Medium"	"Amazon Essentials Super Comfortable Women's Winter Fleece Jacket with Pockets and Zipper Closure Perfect for Cold Weather and Outdoor Activities, Available in Black Color, Size Medium for Women"	75 or fewer characters is required because mobile screens truncate long titles.
+Redundancy: Avoid repeating words or information	"Levi's Men's 501 Original Fit Jeans"	"Levi's Men's Jeans Men's 501 Original Fit Men's Denim Jeans"	Non-compliant example repeats "Men's" and "Jeans" unnecessarily
+Special characters: Avoid excessive or decorative use of symbols. Punctuation should be used where needed	"Brother Printer, HL-L2350DW Wireless Monochrome"	"Brother Printer★HL-L2350DW★Wireless Monochrome★BEST SELLER★"	Use only standard letters and numbers. Don't use non-language ASCII characters such as Æ, Š, Œ, Ÿ, or Ž. Titles can include necessary punctuation, like hyphens (-), forward slashes (/), commas (,), ampersands (&), and periods (.).
+Information order: Brand name, flavor or style, product type,key attribute, color, size or pack count, model number	"Amazon Fresh Decaf Colombia Whole Bean Coffee, Medium Roast, 12 Ounce"	"Medium Roast Decaf Coffee 12oz Pack of 3 Colombia Whole Bean Amazon Fresh"	Order the words to reflect the most important product information upfront.
+Parent/child variations: Include size and color in child ASINs only and not in the title of the parent ASIN	Parent: "Amazon Essentials T-Shirt" Child: "Amazon Essentials T-Shirt, White, Medium"	Parent: "Amazon Essentials T-Shirt, Available in Multiple Colors and Sizes" Child: Same as parent	The detail page displays the title of the parent ASIN, and the title of the child ASIN will only appear once the ASIN is added to the customer’s cart. The child ASIN title will not appear on the product detail page.
+Numbers: Use numerals instead of spelling out numbers	"2-Pack Cotton Towels, 24 x 48 inches"	"Two-Pack Cotton Towels, Twenty-Four x Forty-Eight inches"	Use numerals: "2" instead of "two".
+Subjective commentary: Don't use subjective phrases	"Sony WH-1000XM4 Wireless Noise Canceling Headphones"	"Sony WH-1000XM4 HOT ITEM Wireless Noise Canceling Headphones - BEST SELLER!!!"	Subjective commentary examples are "Hot Item" or "Best seller".
+Capitalization: Don't use all caps	"Nike Air Running Shoes with Cushioned Sole"	"NIKE AIR RUNNING SHOES" or "nike air running shoes"	Capitalize the first letter of each word, except for prepositions (in, on, over, with), conjunctions (and, or, for), or articles (the, a, an).
+Abbreviations: Measurements can be abbreviated	"Samsung 55-inch 4K Smart TV, 55 in, 2023 Model"	"Samsung Fifty-Five inch 4K Smart Television, Fifty-Five inches, 2023 Model"	Measurements abbreviations examples: "cm", "oz", "in", and "kg".
+Model numbers: Include model numbers for certain categories	"Samsung Galaxy S23 Ultra, 256GB, Phantom Black, SM-S918U"	"Samsung Galaxy Phone, 256GB, Phantom Black"	Model numbers are recommended for inclusion in titles for certain categories.
+Refer to category-specific style guides for guidance on whether model numbers should be included for your particular product type.
+
+Frequently asked questions
+What is the difference between product titles and product names on Amazon stores?
+
+Product titles and product names are the same thing on Amazon stores.
+
+How can I add more descriptive information about my product if the required title length is only 75 characters?
+
+When you update your title to the 75-character limit, you will be able to add item highlights. Item highlights provide an additional 125 characters for product details like materials or recommended use cases. These should be written as comma-separated phrases, instead of full sentences.
+
+For example: Instead of a long title such as “Fast Charger Adapter, PPS Supported, Compact Charger for models like MacBook Air/Macbook Pro/iPhone 14/iPhone 13/Galaxy S22/iPad Pro/Pixel and More, Cable Not Included”, add the key product details such “USB-C, PPS Support, Cable not included” to the item highlights for a better customer viewing experience.
+
+How will item highlights be visible to customers along with titles?
+
+Item highlights will be visible below titles in search results and on product detail pages.
+
+How do I handle brand names that contain special characters?
+
+Brand names containing prohibited characters (such as !, {, or }) should be entered in the "Brand name" field. Special characters in the brand field are exempt from title requirements and may appear in the brand byline on detail pages and search results.
+
+What should I do if my product doesn't have a brand name?
+
+For products without a brand name, enter "generic" in the "Brand name" field. Do not enter a brand name in the title.
+
+How do I edit the product title if I disagree with the title suggested by Amazon?
+
+You can make changes to your titles and Item highlights at any time in Manage All Inventory.
+
+Troubleshooting
+Issue	Cause	Resolution Steps
+Title suppression	Title violates Amazon's policy requirements
+1. Go to Manage all inventory and click "Search suppressed and inactive listings" to check if your title has been suppressed.
+
+2. Review the specific policy violations identified.
+
+3. Edit the title to comply with Amazon's policy requirements.
+
+4. We will automatically check for compliance and lift suppressions if the title meets requirements.
+
+Resolving title issues	Title blocked due to policy violations
+1. Go to the Manage All Inventory dashboard.
+
+2. Locate the blocked title.
+
+3. Edit the title to remove any policy violations (such as prohibited characters, promotional content, or excessive repetition).
+
+4. Ensure the title meets all requirements listed in the "Product title requirements" section.
+
+5. Submit changes. We will review and unblock compliant titles
+
+
+Product bullet point requirements
+Bullet points are concise statements that highlight key product features and benefits in order to help customers make informed purchasing decisions. Well-crafted bullet points can increase product discoverability in search results and can improve conversion rates by clearly communicating essential product information. Bullet points help customers quickly understand if the product is right for them.
+
+Bullet point guidelines
+Writing guidelines for high-quality bullet points:
+
+Component	Best practices
+Capitalization	Begin with a capital letter.
+Bullet point count	Include at least three bullet points.
+Character length	10-255 characters per bullet point.
+Formatting	Format as a sentence fragment, and don't use end punctuation.
+Use semicolons to separate phrases within a single bullet point.
+Numbers	Write numbers one to nine in full, excluding names, model numbers, and measurements.
+Measurements	Include a space between digit and unit (example: "60 ml").
+Structure	Add a header with a colon followed by a description (example: "Cotton fabric: Made from 100% cotton").
+Content focus	Highlight product features, benefits, and how the product meets customer needs. Avoid brand marketing stories.
+Content consistency	Maintain data consistency across product variants. Minimize duplication with other product attributes such as title, product description, or product overview.
+Claims	Avoid subjective, performance, or comparative claims unless they’re verifiable on packaging. Avoid unsubstantiated award claims or consumer survey results.
+References	Do not divert or refer to other products not included under the ASIN. Do not compare your product to competitor brands.
+Examples of high-quality bullet points:
+
+Cotton fabric: Made from 100% cotton for softness and breathability
+Long sleeve: Long sleeves add coverage and style
+Loose fit: Relaxed fit allows for easy movement and comfort
+Machine washable: Durable construction allows for easy care
+Versatile style: Perfect for dance practice, playtime, or outdoor activity
+Prohibited content
+
+Note: Bullet points that contain the following information may be removed or updated.
+
+Prohibited element	Examples
+Special characters	™, ®, €, …, †, ‡, o, ¢, £, ¥, ©, ±, ~, â
+Emojis	☺, ☹, ✅, ❌
+Placeholder text	"not applicable," "NA," "n/a," "N/A," "not eligible," "yet to decide," "to be decided," "TBD," "copy pending"
+ASINs	B00UXG4WR5
+Prohibited claims	"eco-friendly," "environmentally friendly," "ecologically friendly," "anti-microbial," "anti-bacterial," "made from bamboo," "contains bamboo," "made from soy," "contains soy." For more information, go to General listing restrictions.
+Guarantee information	"Full refund," "If not satisfied, send it back," "Unconditional guarantee with no limit"
+External information	Company information, website links, external hyperlinks, contact information
+Repetitive content	Same information across multiple bullet points. Each bullet point must mention unique product information.
+
+
+Attributes guide
+Product attributes are specific facts unique to your product. This page explains why they're important for your listings, and how to prioritize them effectively. Understanding and implementing comprehensive product attributes can help increase your product visibility in search results and provides customers with the essential information they need to make confident purchasing decisions.
+
+Product attributes vary based on the product type you select, such as the following examples:
+
+Shoes have attributes like color and size.
+Lamps have attributes like wattage and bulb type.
+Some attributes combine multiple values to provide complete information. For example, unit count consists of both a number value and a unit count type (such as "12 count" or "6 pack").
+
+Benefits of complete attributes
+Improved search visibility
+
+Product attributes help index your products, which ensures they appear in relevant customer searches. They also power the refinement options (the filter check boxes in the left panel) that helps customers narrow their search results.
+
+To learn more, go to Keyword attributes explained.
+
+Enhanced product evaluation
+
+When customers visit your product detail page, comprehensive attributes help them understand your product specifications and determine if it meets their needs. The more complete your product attributes, the higher the chance customers have all the information needed to make a buying decision.
+
+AI assistant support
+
+Complete product attributes enable Rufus (Amazon's AI shopping assistant) to provide more accurate context to customers while they search for products or evaluate specific items.
+
+Attribute categories and priorities
+
+Attributes in listings are categorized into three views:
+
+Required: Must be completed for your listing to be created
+Recommended: Important attributes that customers typically look for
+All: Complete set of available attributes
+We continuously curate these attribute lists based on the latest customer trends. We recommend that you provide all attributes in the Recommended view to ensure your products include the information customers typically look for during search and evaluation.
+
+To stay updated with the latest attribute requirements, review the planned changes document.
+
+Troubleshooting
+
+Important: When you list your products, use only Excel templates that are less than 90 days, as older templates may not be in parity with the latest requirements. You can find the version of your template in cell B1 of every template that you upload.
+
+Error code	Description	Cause	Resolution steps
+Error 90057	Invalid value error	An attribute contains a value that’s not present in the valid value list.	Replace the invalid value with valid value from the attribute's drop-down list and resubmit the listing. For more information, go to Error 90057.
+Error 90220	Missing required attribute	An attribute on the listing is missing.	Provide the missing value and resubmit the listing. If you’re using an older template, ensure you download the latest one.
+Error 90225	Character limit exceeded	An attribute value exceeds the maximum allowed character count.	Shorten the attribute value to stay below the allowed threshold.
+Error 90248	Conditional field error	A field is provided for an attribute when specific preconditions prohibit it.	Review the attribute's preconditions and remove fields that must not be provided under the current circumstances.
+Error 97779	Generic keywords length exceeded	The generic keywords exceed our length limit of 200 bytes.	Reduce the length of keywords to less than 200 bytes.
+Error 99001	Missing required value	A required attribute or column value is missing.	Check all cells highlighted in red in your template, fill in all required fields, and resubmit the listing. For more information, go to Error 99001.
+Error 99010	Missing conditional group value	One or more required values from a conditionally required group are missing or conflicting.
+Ensure all attributes in the conditionally required group contain valid values.
+Check the Data definition and Valid values tabs in category-specific flat files before you upload.
+Resubmit with complete information.
+For more information, go to Error 99010.
+
+
+Note: For attributes that have drop-down values, do not copy and paste invalid values that are not a part of the drop-down list. This will result in an error. Select applicable values from the drop-down list only.
+
+
+A+ Content guide
+On this page
+AI-generated people disclosure
+Types of A+ Content
+Technical requirements
+Content creation process
+Guidelines and best practices
+Troubleshooting steps
+A+ Content enables brand owners and authorized resellers to enhance their product detail pages with rich marketing content, which includes enhanced product descriptions and brand storytelling.
+
+This comprehensive tool helps you showcase product features, communicate brand value, and provide detailed information that helps customers make informed purchases. The A+ Content Manager provides a structured way to create, manage, and publish enhanced content across product listings.
+
+A+ Content provides the following benefits:
+
+Increases product discoverability and conversion rates through enhanced detail pages
+Reduces customer questions and negative reviews by proactively providing detailed product information
+Strengthens brand presence with consistent messaging and visual storytelling
+Improves the customer experience with product content that’s optimized for both desktop and mobile viewing
+Note: A+ Content is available at no additional cost for basic and Premium features. There is no additional eligibility criteria for sellers to access Premium A+. To avoid rejection and delays in publishing, review all content against our A+ Content guidelines before submission.
+AI-generated people disclosure
+Some jurisdictions may require disclosure when videos contain photorealistic AI-generated people. If your video includes photorealistic AI-generated people, you must tag that video with the appropriate metadata before uploading it to Amazon.
+
+How to add the required metadata
+
+Use an IPTC-compatible metadata editor to add the keyword contains-synthetic-performer to the dc:subject (XMP) field of your video file.
+
+If you include this metadata, Amazon will add a disclosure to inform audiences that the video includes AI-generated people, where applicable.
+
+For more information, go to How to tag media that contains an AI-generated person.
+
+You also have the option to check “AI-generated people” for AI-generated people within your image when you upload your image to your Creative Assets within A+ Content Manager and we will apply the necessary metadata for you.
+
+When to provide this metadata
+
+Provide the contains-synthetic-performer tag if your video features people who were entirely generated by AI (not based on a real person).
+
+When not to provide this metadata
+
+Do not provide this metadata if any of the following conditions apply:
+
+Your video only features real people (even if they have been altered with AI-powered tools) or
+Your video only features characters from movies, video games, or other expressive works (or example, the poster art of a movie or a video game cover art)
+Your video does not feature any people
+The people in your video aren’t photorealistic
+Types of A+ Content
+We offer three distinct types of A+ Content for product detail pages:
+
+Basic A+ Content appears in the product description section, and provides access to modules for custom headers, images, text layouts, and product comparison charts with a rich-text editor.
+
+Premium A+ Content enhances the product description section with advanced features such as interactive hotspots, multiple videos, enhanced comparison charts, larger images, carousels, and Q&A modules.
+
+A+ brand story content, which appears in the From the brand section, supports one module with up to 19 pre-formatted cards in a carousel format. It features full-screen backgrounds, image and text cards, and links to products and brand stores. Brand story can be used alongside either basic or premium A+ Content, though these features are not supported for Books, Music, Video, or DVD categories.
+
+
+Basic vs. premium
+A+ Content type	Text and images	Image size	Comparison chart	Number of modules allowed on detail page	Module selection	Video and hotspot	Navigation carousel
+Basic A+	Yes	970 x 300	Yes	5	14	No	No
+Premium A+	Yes	1464 x 600	Yes	7	19	Yes	Yes
+Technical requirements
+
+System requirements
+Requirement	Specification	Notes
+Image format	.jpg, .bmp, .png	RGB colorspace only (CYMK not supported)
+Image size	Under 2 MB per file
+Image resolution	Minimum 72 dpi
+Language	Match specified content language	Limited other languages allowed only for brand identity
+The following technical restrictions apply to your content:
+
+No animated images (GIFs)
+No HTML tags
+No CMYK color space
+No watermarks
+No QR codes
+No hyperlinks or external redirects
+
+Note: If your images are too large, they will be re-sized to fit the maximum sizes listed next to each template box (but not if they’re smaller than the template limits). You can also crop and scale your images directly in the tool.
+Content creation process
+
+Prerequisites and brand verification
+Verification step	Requirements
+Account role	Brand representatives and resellers
+ASINs	Must be registered to your brand
+Product images	Must meet technical specifications, with no animated images or watermarks
+Brand name	Must exactly match Brand Registry (case sensitive)
+GTIN and key attributes	UPC, part number, model number, style number, catalog number
+Create A+ Content:
+
+Follow these steps to create basic A+ Content:
+
+Go to Advertising in the Vendor Central menu, select A+ Content Manager, and then click Start creating A+ content.
+Name your content project, select the language, and choose the content modules. Be sure to save your progress frequently.
+To add your content, enter product descriptions in the text fields and upload images to Media Library. Ensure you add alt-text for each image. Preview the content using the desktop and mobile views.
+To apply the content, first search for ASIN families, and then select the target ASINs.
+You can use bulk upload for more than 1,000 ASINs (10,000-ASIN limit per upload).
+After submission, the review period may take up to seven business days. Publication will be complete within 24 hours after approval. Content will only be viewable on language-specific pages. We recommend that you maintain copies of all submissions for reference.
+Guidelines and best practices
+To ensure your content is of the highest quality, we recommend the following:
+
+Include unique content that doesn't duplicate the image gallery.
+Focus on product features and benefits rather than promotional language.
+Make sure all content adheres to your brand’s aesthetic and voice, while remaining professional.
+For images, ensure that you upload high-resolution files (minimum 72 dpi), submit in RGB color space (.jpg, .bmp, or .png formats), and keep files under 2MB each.
+
+
+Guidelines
+Acceptable	Not acceptable
+✓ Write clear, descriptive alt-text for all images	✗ Include time-sensitive references
+✓ Limit paragraphs to three sentences maximum	✗ Use promotional language or pricing
+✓ Use consistent terminology throughout	✗ Make competitor comparisons
+✓ Apply proper capitalization for headers	✗ Add external links or contact information
+✓ Include serial commas	✗ Include warranty and guarantee information
+✓ Use bold and italic formatting sparingly	✗ Add shipping details
+✓ Spell out numbers under 10	✗ Include QR codes or personal information
+✓ Use high-quality, clear images	✗ Upload blurry or low-quality images
+✓ Ensure text is readable	✗ Include small, unreadable text
+✓ Use unique images	✗ Duplicate images from gallery
+✓ Focus on unique product features	✗ Add watermarks
+✓ Answer common customer questions	✗ Use animated images
+✓ Maintain clear visual hierarchy
+✓ Use comparison charts for same-brand products
+✓ Format content for mobile devices
+Publication best practices
+
+We recommend that you take the following actions when you publish your content:
+
+Give the content a final review, and ensure that you check the applied ASINs, verify language variations, and review all content in the preview mode.
+After you submit your content, allow up to seven business days for approval. Be sure to monitor the approval status and address any rejection reasons.
+After your content is published, ensure the following within 24 hours:
+All ASINs are live and display correctly
+Confirm language variations
+Test all interactive elements
+We recommend that you take the following documentation and maintenance steps:
+
+Record all applied ASINs.
+Document any custom modules.
+Save template configurations.
+Schedule regular content reviews.
+
+Note: A maximum of 20 pending submissions are allowed at once. Save your work frequently as drafts to prevent loss of progress.
+Troubleshooting steps
+If your content does not display, take these steps:
+
+Verify that the content status is Approved.
+Check the ASIN status under Applied ASINs.
+Confirm that the language selection is correct.
+Ensure that you’ve waited 24 hours after approval
+If the content is still not visible, contact Selling Partner Support or use Amazon's Seller Assistant.
+If your content is rejected, take these steps:
+
+Review the rejection reasons in A+ Content Manager.
+Check against the A+ Content guidelines listed above.
+Make the required corrections.
+Resubmit for approval.
+
+Note: A+ Content features are not yet supported for products sold through Seller Central in the Books, Music, Video, or DVD (BMVD) categories. A+ Content is not the same as Amazon Business enhanced content, which is a tool that lets you upload separate file documents to the detail page.
+If you need additional support on this topic, try using Amazon's Seller Assistant.
+
+Search optimization
+On this page
+Search optimization
+Search and browse
+Search terms best practices
+Troubleshooting
+Optimize your brand's listings
+Understanding search behavior
+Search Troubleshooting tool
+Search optimization
+Customers must find your products to be able to buy them. This guide explains how to accurately classify and list your products to optimize them for search.
+
+Customers who shop on Amazon use keywords or browse refinements to find what they're looking for. By providing relevant and complete information for your product, you may increase your product's discoverability, which could lead to increased sales, so it’s important that your products are classified accurately in Browse. Product information like title, brand, product description, and other attributes must all be accurate and compliant with detail page rules. Any products that don’t comply with our guidelines may be suppressed from search until the quality issues are resolved.
+
+Note: We reserve the right to not use all supplied content from the product description, including bullet points, for retrieving products in customers' shopping search results. Reasons for not using all keywords may include, but are not limited to, search computational efficiency, potential manipulation of shopping results, irrelevant search terms, and offensive or illegal terms. However, it's recommended to keep these details updated as per the style guidelines.
+Search and browse
+Customers can discover products by browsing or searching. Most often customers use a combination of browse and search.
+
+Browse
+
+To help customers find products easily, Amazon developed a detailed product hierarchy or browse-tree structure. Customers refine by category and subcategory links until they reach the most specific product type. Amazon uses Item Type Keywords to classify products under the correct browse nodes.
+
+Accurate product classification optimizes discoverability, making it easier for Amazon to help customers find what they're looking for through browsing and searching. Classifying products is like placing your products in the correct aisle and on the correct shelf in the store. When customers search in All Departments, Amazon may limit the shopping results to products that match specific category classifications or product descriptors.
+
+Selecting and applying browse keywords
+
+Start with the item to classify and refer to Classify your products using Browse Tree Guides - BTG to learn about Browse Tree Guides. Browse Tree Guides are category-specific documents that provide specific keywords for your products.
+
+Note: The item type keyword must have the same spelling and formatting as listed in the Browse Tree Guides. Make sure to select keywords at the most specific subcategory available.
+Example: If you're selling women's running shoes:
+
+Too broad: "Shoes" or "Athletic shoes"
+Correct: "Women's road running shoes"
+Search and generic keywords
+
+For customers to find your products on Amazon, it's important to provide search terms that they might use when searching for what they want to buy. Search terms are keywords that are used by the search engine for lexical matching between an ASIN and a query. For example, if you’re listing a stainless steel refrigerator, you could include terms like fridge, freezer, icebox, cooler, energy-efficient, frost-free, adjustable shelves, temperature control, stainless steel, kitchen, household, French door, and ice maker.
+
+It's important that you provide honest details about your product, including compatibility for electronics or functionality for appliances.
+
+You can add search terms for your products. These search terms should only include generic words that enhance the discoverability of your product. For example, if you're selling headphones, your search terms can contain synonyms such as "earphones" and "earbuds." These are not visible on product detail pages, and can be updated in the Generic Keyword field of your listing.
+
+For more information on Search, visit Use search terms effectively.
+
+Note: We limit the length of the Generic Keyword attribute to less than 250 bytes. Search terms can be eliminated if prohibited search terms such as brand names, ASINs, or offensive language are supplied as generic keywords.
+Search terms best practices
+Below are some best practices to optimize your listings for search:
+
+Maintain the text length limit of search terms
+Make use of synonyms and avoid repeating keywords
+Use spelling variations, and avoid common misspellings
+Include abbreviations
+Use all lowercase letters
+Separate words with spaces, and avoid using punctuation marks such as semicolons, colons, and dashes
+Use either singular or plural words, don’t use both singular and plural forms of the same keyword
+Don’t use brand names, ASINs, profanity, or offensive terms
+Avoid using articles, prepositions, and other short words like “a”, “and,” “or,” “the,” or “with”
+Don’t use temporary statements like “new” or “on sale now,” or subjective claims like “best” or “cheapest”
+Note: Violating these rules may result in your ASIN being suppressed and may put the health of your selling account at risk.
+Troubleshooting
+This section helps you identify and resolve common issues that prevent ASINs from appearing in Amazon search results. Review the table below to find out why your product may not be searchable and follow the recommended steps to fix the issue.
+
+Issue	Description	Cause	How to check	Resolution
+No offer	ASIN needs a buyable offer to be searchable	If an ASIN's offer expires, this causes it to become unsearchable. ASINs without a buyable offer are unsearchable.	Check if your ASIN has an active offer in Manage All Inventory.	Give your ASIN an offer by updating your listing. Supply data such as Item Price, Quantity, and Offering Release Date.
+No browse node	ASIN needs to be assigned to the most relevant and specific category browse node from a browse path	ASINs that don't have a browse node assigned are not indexed by Amazon. A browse node is like a shelf in a supermarket. Your product needs to be on a "shelf" in order to be found.	Check if the ASIN is assigned to a relevant browse node by reviewing the product detail page.	Assign your ASIN to a specific, relevant browse node using change a product's category.
+Listing quality	ASIN may be removed from detail page or search suppressed	ASINs with search suppressed or detail page removed status are not searchable due to listing quality issues.	Check if the ASIN has a listing quality issue by reviewing Fix Your Products.	Go to Fix Your Products to review if the ASIN is search suppressed or inactive (detail page removed). Follow the prompts provided in the issue description section to fix listing issues.
+Future launch date	ASIN has a future launch date	ASINs with future launch dates are not searchable. To be searchable, an ASIN's launch date or offering release date must be in the past.	Check if your ASIN has a future launch date by reviewing the Offering Release Date.	To make it searchable now, update your ASIN's Offering Release Date to a date in the past. For more information, see updating your listing.
+Adult product categorization	Amazon restricts searchability of certain products	Amazon restricts the searchability of products classified as adult, which can result in the products not returning in All Department searches.	Go to Manage All Inventory, select your ASIN, and click Add missing offer details or the three dots menu. Click Edit listing to view the product type classification.	If your ASIN is correctly classified as adult, no fix is needed. Adult products are restricted from appearing in All Department searches by design. If you believe your ASIN is incorrectly classified as adult, contact Selling Partner Support or use Amazon's Seller Assistant to request review of the adult classification flag.
+Note: Any changes to an ASIN's offer, browse node, or launch date can take up to 72 hours to reflect in shopping results.
+Optimize your brand's listings
+To learn about strategies to help improve listing discoverability and overall conversion, watch this Seller University video:
+
+
+
+Understanding search behavior
+Search query automatic correction
+
+An ASIN may sometimes be unsearchable due to an automatic correction of the search query. When a search query gets corrected, the customer will see a Showing Results message with the corrected query at the top of the results. There will also be a Search instead for [original query] link for cases where the spell-corrected query isn't helpful for the customer and they want to view the results for their original query.
+
+ASIN position fluctuation
+
+We don’t guarantee a specific placement for an ASIN within search results. ASIN positions can fluctuate as we continuously strive to present the most relevant results to customers.
+
+If the position of an ASIN is changing, it may be due to the location of their search, the type of account they are logged in to, or whether they’re on desktop or mobile. You may not see the ASIN in the same position as reported by the Search Troubleshooter tool. This is expected behavior.
+
+Search result limitations
+
+Amazon limits the number of ASINs shown on the search results pages and does not show results after a certain number of pages, depending on the type of search and number of results per page.
+
+If the ASIN doesn’t appear within the set limit of results, it won’t be possible to navigate to it via the search query using the page numbers or next page links at the bottom of the search result page. Customers can use a more specific query or use filters to refine the results to discover the ASIN in the search.
+
+Search Troubleshooting tool
+The goal of search troubleshooting is to help you understand your product discoverability issues. If manual search troubleshooting tips haven't helped diagnose the search issues, you can use a tool called Determine why an ASIN is not searchable.
+
+Note: Access this tool by searching for ‘ASIN is unsearchable' within Seller Central help. Input the Search URL, ASIN (child/non-parent ASIN), and the tool will diagnose why the ASIN is not searchable.
+If you need additional support on this topic, try using Amazon's Seller Assistant.

@@ -1,0 +1,38 @@
+{
+  "skill_name": "amazon-sp-sqp-asin-ngram",
+  "skill_version": "1.3.2",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "For ASIN B00TEST on search_query 'yoga mat thick', asin_click_share is higher than asin_impression_share but asin_purchase_share is flat vs impression share. What actions does the framework suggest?",
+      "expected_output": "PDP-focused actions (price, ratings, delivery) to address click-to-purchase friction; ASIN-level framing with optional badges and cooldown.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "pdp-or-conversion-friction",
+          "condition": "Output recommends pdp_update or equivalent PDP/price/ratings/delivery fix for conversion friction"
+        },
+        {
+          "name": "asin-query-scope",
+          "condition": "Output ties reasoning to ASIN and query pair or per-row ASIN diagnostics"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "We have only 5 asin_clicks and 80 total_impressions for one query×ASIN row. Should we issue a strong price_test?",
+      "expected_output": "Hold or shrinkage: insufficient data; avoid strong price_test without thresholds or confidence; suggest aggregate or longer window.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "thin-data-caution",
+          "condition": "Output warns about thin data, low clicks/impressions, or need for thresholds before strong ops actions"
+        },
+        {
+          "name": "no-aggressive-price-test",
+          "condition": "Output does not recommend an unconditional aggressive price_test without caveats"
+        }
+      ]
+    }
+  ]
+}

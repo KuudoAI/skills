@@ -1,0 +1,10 @@
+{
+  "name": "amazon-sp-listing-optimizer",
+  "classification": "community",
+  "origin": "first-party",
+  "maintainers": [
+    "KuudoAI"
+  ],
+  "license": "PolyForm-Shield-1.0.0",
+  "registries": {}
+}

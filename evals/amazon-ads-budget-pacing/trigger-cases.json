@@ -1,0 +1,42 @@
+[
+  {
+    "query": "Pace our Sponsored Products campaign budgets against a $50,000 monthly Amazon Ads plan.",
+    "should_trigger": true
+  },
+  {
+    "query": "Why is this Amazon Ads account overspending its monthly plan, and what daily budgets should change?",
+    "should_trigger": true
+  },
+  {
+    "query": "Create a proposal showing current versus recommended Amazon campaign budgets for the rest of the month.",
+    "should_trigger": true
+  },
+  {
+    "query": "Reforecast our remaining sponsored-ads spend after a slow first two weeks.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit whether our Amazon Ads daily campaign budgets are pacing to plan and flag campaigns exhausting early.",
+    "should_trigger": true
+  },
+  {
+    "query": "Build a general Amazon Ads performance report with impressions, clicks, and conversions.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a new Sponsored Products campaign.",
+    "should_trigger": false
+  },
+  {
+    "query": "Which Amazon Ads profile belongs to our UK advertiser account?",
+    "should_trigger": false
+  },
+  {
+    "query": "Optimize keyword bids for my Sponsored Products campaign.",
+    "should_trigger": false
+  },
+  {
+    "query": "Allocate an Amazon DSP lifetime budget across insertion orders.",
+    "should_trigger": false
+  }
+]

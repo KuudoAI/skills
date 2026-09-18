@@ -1,0 +1,12 @@
+[
+  {"query": "Analyze this Amazon FBA Customer Returns Report and identify the ASINs driving return volume.", "should_trigger": true},
+  {"query": "Why did our seller-fulfilled Amazon return requests increase last month?", "should_trigger": true},
+  {"query": "Calculate defensible Amazon return rates by ASIN from these returns and shipment exports.", "should_trigger": true},
+  {"query": "Review Amazon return reasons, dispositions, customer comments, and prior-period changes.", "should_trigger": true},
+  {"query": "Does this damaged-versus-reimbursed pattern warrant an FBA reimbursement review?", "should_trigger": true},
+  {"query": "Create a client-ready Amazon returns analysis from our Seller Central files.", "should_trigger": true},
+  {"query": "Build a general Amazon Ads performance report.", "should_trigger": false},
+  {"query": "Optimize the bullet points and images on this Amazon listing.", "should_trigger": false},
+  {"query": "Audit our FBA inventory reconciliation and stranded inventory.", "should_trigger": false},
+  {"query": "Calculate product profitability after Amazon fees.", "should_trigger": false}
+]

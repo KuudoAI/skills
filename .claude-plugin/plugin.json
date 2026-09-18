@@ -1,0 +1,18 @@
+{
+  "name": "kuudo-skills",
+  "description": "Portable skills for Amazon Ads, Seller Central, Vendor Central, and related commerce workflows",
+  "version": "0.1.0",
+  "author": {
+    "name": "KuudoAI"
+  },
+  "homepage": "https://github.com/KuudoAI/skills",
+  "repository": "https://github.com/KuudoAI/skills",
+  "license": "PolyForm-Shield-1.0.0",
+  "keywords": [
+    "skills",
+    "amazon-ads",
+    "seller-central",
+    "vendor-central",
+    "commerce"
+  ]
+}

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Add the Kuudo suite's routing skill to Claude Code session context.
+
+set -euo pipefail
+
+hook_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+skill_file="${hook_directory}/../skills/using-kuudo/SKILL.md"
+
+if [[ -r "${skill_file}" ]]; then
+  skill_text="$(<"${skill_file}")"
+else
+  skill_text="Kuudo could not load the using-kuudo bootstrap skill from ${skill_file}. Continue without the bootstrap and report the missing file if Kuudo skills are expected."
+fi
+
+quote_json_string() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  value="${value//$'\b'/\\b}"
+  value="${value//$'\f'/\\f}"
+  value="${value//$'\n'/\\n}"
+  value="${value//$'\r'/\\r}"
+  value="${value//$'\t'/\\t}"
+  printf '"%s"' "${value}"
+}
+
+context=$'Kuudo skills are available.\n\nBelow is the full content of the kuudo-skills:using-kuudo bootstrap skill. For all other skills, use the host\'s Skill tool:\n\n'
+context+="${skill_text}"
+context+=$'\n'
+
+printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":'
+quote_json_string "${context}"
+printf '}}\n'

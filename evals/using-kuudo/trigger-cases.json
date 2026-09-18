@@ -1,0 +1,26 @@
+[
+  {
+    "query": "Audit my Sponsored Products campaigns.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review this Seller Central listing.",
+    "should_trigger": true
+  },
+  {
+    "query": "Calculate whether this FBA product is profitable after Amazon fees.",
+    "should_trigger": true
+  },
+  {
+    "query": "Help me analyze a Vendor Central purchase-order issue.",
+    "should_trigger": true
+  },
+  {
+    "query": "What is the weather in Boston?",
+    "should_trigger": false
+  },
+  {
+    "query": "Optimize this Shopify product page.",
+    "should_trigger": false
+  }
+]

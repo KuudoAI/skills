@@ -1,0 +1,325 @@
+Keyword attributes explained
+Overview
+The table below explains the keyword attributes that sellers encounter when managing product listings. Most of the keyword attributes require valid values, which can be found in Browse Tree Guides (BTGs). The attributes specific_uses_keywords, thesaurus_attribute_keywords and target_audience_keywords are primarily used in the U.S., and are being phased out. Free text can be input for generic_keywords and subject_keywords. Subject_keywords should only be used for Media products. You don’t have to populate platinum_keywords as they are now redundant.
+
+Field Name	Attribute Name	Description	Values	Length Limit (Bytes)	Indexed by Search?	Used by Browse?
+Intended Use	specific_uses_keywords	Describe the context the product is used in, which can be an activity or location e.g. gaming, bedroom. This attribute is primarily used in the US and is being phased out.	N/A (being phased out)	150
+Item Type Keywords (ITK)	item_type_keyword	ITKs automatically assign products to browse nodes and are primarily used in the US.	See valid values in BTGs.	250
+Other Attributes	thesaurus_attribute_keywords	Describe features of a product e.g. waterproof, glow-in-the-dark. This attribute is primarily used in the US and is being phased out.	N/A (being phased out)	N/A
+Platinum Keywords	platinum_keywords	No longer used. Previously used to populate platinum sellers storefronts, this attribute is redundant.	N/A (phased out)	N/A
+Search Terms	generic_keywords	Describe products. See help page.	Free text.	249
+Style-specific Terms	style_keywords	Describe apparel items e.g. ankle-boots, fur-lined.	See valid values in BTGs.	100
+Subject Keywords	subject_keywords	Subject Keywords should only be used to describe Media products.	Free text.	210
+Media only
+
+
+Subject Matter	thesaurus_subject_keywords	Describe what is depicted on a product e.g. a poster depicting horses.	See valid values in BTGs.	250
+Target Audience	target_audience_keywords	Describe target end users e.g. women, children, dogs. This attribute is primarily used in the US and is being phased out.	N/A (being phased out)	N/A
+How is this data used?
+Sellers populate attributes and Amazon uses the data to help customers find products. For example, Amazon uses the data to generate search results for customers keyword searches. The data is also used to automatically assign products to browse navigation, another way in which customers find products. For example, the browse assignment query of “style_keywords:sport-sandals” assigns products that have a style_keywords value of sport-sandals to the Sports Sandals browse node.
+
+Should I use the drop-down list or free text?
+On the Keywords tab that sellers see when adding or editing listings in Seller Central, sellers can either select a drop-down value or enter free text. Free text must match a valid value listed in the BTGs, so that it is possible to use the data in browse queries. Amazon does not publish the full list of valid values; rather, we direct sellers to the BTG that corresponds to the product category in which they sell, in order to ensure that they focus on the values that are relevant to them.
+
+Length Limits
+Search Terms (generic_keywords) should be less than 250 bytes long (read more). If it exceeds the limit, the attribute is completely ignored by Amazon Search.
+
+For other length limits in the table above, if limit exceeds, Amazon Search indexes up until the length limit and ignores any excess.
+
+
+Classify your products using Browse Tree Guides - BTG
+Amazon customers find products through search and browse. When customers browse, they can further refine their search by choosing specific product categories and subcategories. Most customers use a combination of browse and search.
+
+Classify your products so that they also appear in browse.
+
+To help customers find products, Amazon developed a detailed product hierarchy, known as the browse-tree structure. Customers refine their search by category links until they narrow it down to the desired product.
+
+Amazon uses Item Type Keywords (used only for US MP) or recommended browse node (used for other MPs), Product Description, Bullet Points and other detail page elements to classify your products under the correct categories.
+
+An example of the browse-tree category structure on Amazon that is used for search navigation can be seen below.
+
+Electronics > Electronics Bags & Cases > Laptop Computer Briefcases
+
+Seller account with Individual plan can only use Select a product category for classifying products one-by-one.
+
+Seller account with Professional plan has 3 options to classify products.
+
+
+Use Select a product category for classifying products one-by-one.
+If you have approximately 20-30 listings to classify, use Add Products via Upload (Product Classifier) to categorize them.
+If you have approximately more than 30 listings for classification, Use a Browse Tree Guide (BTG). It helps you to identify the correct categories for your products. BTGs provide unique numbers and keywords that are associated with a certain browse path on Amazon.
+The reference of volume is given in accordance for approximate saving of time, however, you can use any option as per your choice.
+
+Downloading and Using the BTG:
+
+Go to Inventory File Templates and BTG and download the appropriate BTG from the relevant link in the table.
+Follow the instructions in the guide and choose the categories and subcategories for your products. Use the corresponding browse node IDs when you upload your inventory template file.
+The search feature is the key method by which customers use to find products while the browse feature is used to view related products. If your product is not listed within a browse node, it will not be available in both search and browse results. Listing your product in a browse node will make it searchable, but if it is not in the most specific browse node, then customers may not find your product as they browse deeper into categories which may result in loss of prospective sales.
+
+FAQ
+
+If I search for "pressure cookers", I get over 1000 results, but when I navigate to "pressure cookers" using the browse tree (Home & Kitchen> Kitchen & Dining> Kitchen Cookware> Pots & Pans> Pressure Cookers), I get only 684 results on Amazon.com. Is search broken, or is browse broken, or both?
+
+Answer: Neither search or browse is broken. Keyword search and browse-based search are done in different ways. Keyword search will try to match the keywords to all the possible ASINs by looking at the ASIN’s attributes (e.g. title, bullet points, product description, etc) while browse-based search is dependent on the browse assignment of the ASIN. If all the ASINs are assigned to the right browse node, then the number of results in the keyword search and the browse-based search will be much closer (or the same). High quality information in the three key product attributes (title, bullet points, and product description) is critical for a product’s browse assignment.
+
+
+Note: Restrictions concerning the searchability of ASINs do apply. ASINs that are not searchable for some reason will also not appear in browse results. There's a number of reasons for an ASIN are not searchable one of them is due to relation with adult products or duet to any restriction placed thereby the listing is not searchable.
+
+Note: If your product is assigned to an incorrect browse node, you have the option to update that. To learn more about how to correct this, see “Change a product’s category or browse node”.
+
+
+Use search terms effectively
+On this page
+Prohibited search terms
+Add search terms
+Frequently asked questions
+For customers to find your products on Amazon, it’s important to provide search terms that they might use when searching for what they want to buy. Search terms are keywords that are used by the search engine for lexical matching between an ASIN and a query.
+
+On this page, search terms mean terms that you enter into the Generic keyword field when you list or update an ASIN, which are indexed in the search engine for matching.
+
+Tips for drafting and optimizing your search terms include the following:
+
+
+Maintain the text length limit of search terms.
+Make use of synonyms.
+Use spelling variations, but don’t include common misspellings.
+Include abbreviations.
+Use all lowercase letters.
+Avoid punctuation marks such as semicolons, colons, and dashes.
+Separate words with spaces.
+Avoid repetitions.
+Avoid articles, prepositions, or other short words such as “a,” “an,” “and,” “by,” “for,” “of,” “the,” or “with.”
+Use either singular or plural words.
+Example of effective search terms
+
+
+cutting chopping board butcher block bamboo wood wooden large hybrid polypropylene food grade plastic non slip kitchen dual sided surface natural bpa stain scar resistant eco friendly drip groove
+
+Prohibited search terms
+Violating the rules below may result in your ASIN being suppressed and may put the health of your selling account at risk.
+
+Prohibited words include the following:
+
+Your brand or other brand names
+ASINs
+Profanity
+Temporary statements such as “new,” or “on sale now”
+Subjective claims, such as “best,” “cheapest,” or “amazing”
+Offensive terms, including any terms that promote illegal activities or glorify hatred, violence, racial, sexual, or religious intolerance
+Examples of prohibited words
+
+Brand names	Apple, Nike, Amazon
+Temporary words	available now, brand new, current, discounted, just launched, last chance, last minute, latest, limited time, new, on sale, this week (month, year), today
+Subjective words	amazing, best, cheap, cheapest, effective, fastest, good deal, least, most, popular, trending
+Add search terms
+To add search terms, follow these steps:
+
+In Seller Central, select Manage products.
+Select the product, and from the Fix menu, click Edit.
+Click the Product details tab and enter your keywords in the Generic keyword field.
+For more information, go to Optimize your product discoverability.
+
+Note: Amazon may not use the search terms that you supply for any reason including, but not limited to, failing to follow the guidelines above.
+Frequently asked questions
+What’s the difference between bytes and characters?
+With respect to alphanumeric characters used in the English language (for example a - z, A - Z, 0 - 9), one byte corresponds to one character. However, more complex characters, such as umlauts in German (for example, ä), can correspond to two or more bytes per character.
+
+As a result, estimating the character count can be more complex than estimating the bytes count. For this reason, the Generic keyword field in Seller Central stops accepting inputs when the byte limit is reached.
+
+Are spaces and punctuation counted?
+No. For the purpose of calculating the length of search terms, Amazon search does not count spaces or punctuation. For readability, search terms should be separated by spaces. Punctuation is used, but not recommended.
+
+Why is there only one field for search terms?
+
+The field for search terms was reduced from five fields to one field to improve the quality of Amazon search results and reduce the amount of superfluous search terms. The reduced quota of search terms helps you focus on only using relevant words to describe your products.
+
+What happened to the search terms in the removed fields when the fields were reduced to one?
+To facilitate the reduction of the search term fields from five to one, the content of all search term fields was combined into one field. We requested that sellers modify the content of this field to meet the bytes limit and save their changes.
+
+How do I update the search terms for my ASINs in bulk?
+If the Category Listing report option is enabled under the Inventory drop-down menu in your Seller Central account, you can download a spreadsheet of the existing listings. If it is not enabled, you can ask Selling Partner Support to enable that option in your account. Once you've downloaded your current listings, you can use an inventory file template to perform bulk upload changes by using the partial update function.
+
+Are search term attributes required for certain product types?
+
+Effective December 6, 2023, the Generic keyword field is required for the following 23 product types:
+
+Bath toy
+Body paint
+Bath pillow
+Bath safety seating
+Bar tool set
+Bathroom container set
+Bathtub shower mat
+Broom
+Bookend
+Bed skirt
+Artificial tree
+Body positioner
+Bedding set
+Body deodorant
+Balloon
+Bed linen
+Board game
+Bed linen set
+Blanket
+Body care product
+Beauty
+Art and craft supply
+Party favor
+Why are some of my search terms not searchable?
+
+Amazon determines the relevancy of search terms automatically in order to optimize search results and improve the customer experience. As a result, the terms deemed relevant may change over time as Amazon gathers data. This process is automated and Amazon may not use all search terms supplied by sellers.
+
+Your search terms can also be eliminated, if you have used prohibited search terms such as brand names, ASINs, or offensive language. For more information on how to optimize and improve your product discoverability, go to Optimize your product discoverability.
+
+Optimize your product discoverability
+On this page
+Titles
+Bullet points and product description
+Generic keywords
+Product classification
+Optimize your brand’s listings
+Customers can only buy products that they are able to find. One way customers find your products is to search by entering keywords, which are matched against information such as title and description that you provide for a product.
+
+By providing relevant and complete information for your product, you can increase your product's discoverability which could lead to increased sales. Below are some general guidelines to improve your product discoverability.
+
+Titles
+The product title is often the first piece of information customers see about your offering, so it has to clearly and concisely communicate the key details about your product. You only have a brief moment to capture the attention of potential shoppers, so your Amazon product title should be similar to what would appear on the physical packaging: an impactful summary of your product.
+
+Product title should be informative, concise, and adhere to our guidelines. To learn more, go to Product title requirements.
+
+Bullet points and product description
+Bullet points and product description are highly effective ways to highlight the key features and benefits of your product. Bullet points appear directly on the product detail page and allow you to include up to five descriptive points. Crafting well-written, informative bullet points can help boost sales, as customers rely on this content to quickly understand a product's distinguishing characteristics and decide if it meets their needs. To learn more, go to Product bullet points requirements.
+
+The product description, presented in paragraph form on the detail page, should provide an elaboration on the key features and uses of your product. This section allows you to go into more depth, including details like product usage, benefits, technical specifications, and the best applications for the item. The product description should be concise, clear, and engaging, enticing potential buyers while providing all necessary information to make an informed purchasing decision. To learn more, go to Product detail page rules.
+
+Note: We reserve the right to not use all supplied content from the product description, including bullet points, for retrieving products in customers’ shopping search results. Reasons for not using all keywords may include, but are not limited to, search computational efficiency, potential manipulation of shopping results, irrelevant search terms, and offensive or illegal terms. However, it's recommended to keep these details updated as per the style guidelines.
+Generic keywords
+You can add search terms for your products. These search terms should only include generic words that enhance the discoverability of your product. For example, if you're selling headphones, your search terms can contain synonyms such as "earphones" and "earbuds". These are hidden from customers and can be updated in the Generic Keyword field of your listing.
+
+To find examples and guidelines on updating generic keywords, go to Use search terms effectively.
+
+Note: We limit the length of the Generic Keyword attribute to less than 250 bytes. Search terms can be eliminated if prohibited search terms such as brand names, ASINs, or offensive language are supplied as generic keywords.
+Product classification
+Proper product classification is the key to organize items into relevant categories and subcategories. By updating Item Type Keyword values, you can ensure your products are placed in the most relevant subcategories. This helps customers easily discover your offerings as they browse and search on Amazon.
+
+If the product classification information you provide is missing, inadequate, or incorrect, it will be difficult for customers to find your products. Taking the time to carefully classify your items by updating relevant Item Type Keyword is essential for improving product discoverability and driving sales. To learn more, go to Accurately classify your products.
+
+Amazon search glossary
+On this page
+Adult products
+All product search
+ASIN
+Brand name
+Browse
+Browse Node
+Browse node ID
+Browse refinements
+Bullet points
+Catalog attributes
+Catalog spam
+Description
+Generic keywords
+Index suppressed
+Item type keywords
+Keyword matching
+Keywords
+Latency
+Launch date
+Parent ASIN
+Platinum keywords
+Position
+Search constraint
+Shopping results
+Search troubleshooting
+Subject keywords
+Title
+Valid values
+Adult products
+Adult products are those which are designed for use in sexual activities or which contain explicit images, titles, or other content intended to sexually arouse. For more information, go to Adult products policies and guidelines.
+
+All product search
+All Product Search, also known as APS is an "all" search in the Amazon store. It is not category-specific. For example, searching from the home page is an All Product Search.
+
+ASIN
+Amazon Standard Identification Number, also known as ASIN is an item identifier in the Amazon Catalog. Every product that you see on the Amazon website has an ASIN.
+
+Brand name
+Brand name is a required catalog attribute. The brand name of a product appears on the product detail page. For example, jeans "by Levi’s".
+
+Browse
+Customers shop in our stores through browse links, which primarily appear on the left side of the page. Customers browse by categories, such as Electronics, Beauty, and by refinements, such as color, brand, and price.
+
+Browse Node
+The browse structure is made up of browse nodes. For example, shampoo is a leaf node within the Beauty browse structure. Products must be assigned to at least one specific, relevant browse node in order to be searchable.
+
+Browse node ID
+Every browse node has a unique ID. Browse node IDs are used for ASIN assignments and are not visible to customers.
+
+Browse refinements
+Shopping results can be refined using browse refinements, such as color, size, and brand.
+
+Bullet points
+This attribute provides information about a product’s key features and benefits. All bullet points together must be less than 1,000 characters and be written for readability. They are not always indexed by Amazon Search, but always appear in full on product detail pages. For more information, go to Bullet points.
+
+Catalog attributes
+Catalog attributes are the fields that you see when editing listings in Seller Central. Each catalog entry is a collection of attributes. For example, a book has attributes title, author, and publisher, and collectively, this information is known as catalog data.
+
+Catalog spam
+Catalog spam is catalog data that violates the terms of the seller program. For example, it is not allowed to include other brand names or ASINs in an ASIN’s catalog data. Catalog spam is irrelevant data to the product it describes. For instance, including "phone cover" in the catalog data of shoes is catalog spam.
+
+Description
+Product description is a required catalog attribute. Every ASIN must have a product description. It is a paragraph of text that describes the product and appears on a product detail page.
+
+Generic keywords
+Generic keywords is a catalog attribute for terms relevant to customer searches. They must include synonyms, abbreviations, and alternative names for a product. For more information, go to Use search terms effectively and Keyword attributes explained explained.
+
+Index suppressed
+Index suppressed is a catalog attribute. When its value is True, the ASIN is suppressed from search, which means it is not discoverable by customers. To check for supressed listings, go to Inventory > Manage Inventory > Search Suppressed. For the suppressed listing, click Edit to fix the issues. Once fixed, the products may become searchable within 72 hours.
+
+Item type keywords
+Item Type Keywords, also known as ITK are primarily used in the U.S. store. They are a means of assigning ASINs to specific browse nodes. For example, U.S. ASINs that have an ITK value of "skin-care-products" are automatically assigned to the Skin care browse nodes.
+
+Keyword matching
+Amazon Search does not do partial matching. This means that results for fitbit charge bands contain all of those words in their catalog data.
+
+Keywords
+Customers search with keywords on Amazon. Sellers include relevant keywords in their product's catalog data.
+
+Latency
+Latency refers to the time between a change being made to an ASIN and when that change goes live on the Amazon store. It can take up to 72 hours for changes to new or existing ASINs to go live. Latency can be slower or faster, depending on the website traffic volumes and other technical factors.
+
+Launch date
+This attribute represents the date that the product launches and must first be shown on the Amazon online store, and has a YYYY-MM-DD format. Products with a future launch date are not searchable.
+
+Parent ASIN
+Products with variations, such as size or color have a parent ASIN and child ASINs. The parent ASIN is the generic product and the child ASIN is the specific variation of the products. For example, Levi’s 501 jeans is the parent ASIN and Levi’s 501 Jeans (large, black) is its child ASIN. The Parent ASIN holds the item relationship together and allows for one detail page for all variations of the product instead of having separate product detail pages for each variation. Parent ASINs are not available for buying. For more information, go to Variation relationships overview.
+
+Platinum keywords
+Platinum keywords are redundant. Previously, platinum keywords were used by platinum sellers for assigning ASINs to their storefront. Storefronts are replaced by Stores and sellers no longer need to populate platinum keywords. For more information, go to Keyword attributes explained.
+
+Position
+Position refers to what position an ASIN occupies in the featured shopping results. Featured is Amazon’s default sort option.
+
+Search constraint
+Search queries, such as gluten free brownie mix, can have constraints. For example, the shopping results only contain ASINs that have met food restriction verification requirements. The search query, red dresses is constrained to show shopping results that are assigned to a dress browse node and to a red color refinement picker.
+
+Shopping results
+Shopping results are what customers see when they search for products on Amazon. Shopping results can vary in look and feel. The product discovery and shopping landscape is subject to continuous experimentation.
+
+Search troubleshooting
+The goal of search troubleshooting is to ensure that all of your products are discoverable by customers. For information on manual search troubleshooting tips, go to My ASIN is Unsearchable. You can use a tool called Determine why a listing is not displaying:
+
+
+
+Tip: access this tool by searching for "inactive" within the Seller Central help. Input your ASIN and the tool will diagnose why it may not be discoverable.
+For bulk auditing, go to Search Query Performance Dashboard. Engage with the listing enhancements and suppressed links on the Manage Inventory. To continuously audit your inventory, correct errors, and ensure that it is fully discoverable, go to the Listing Quality Dashboard.
+
+Subject keywords
+Subject keywords must only be used for media products, such as books, music and more.
+
+Title
+Title is a required catalog attribute, and every ASIN must have a title. A search result is made up of a title, description, image, price, and other features, such as badges. For more information, go to Product title requirements.
+
+Valid values
+Valid values refer to the acceptable inputs of catalog attributes that are used in assignment queries on browse nodes. For example, blue is a valid value, as used in the color browse refinement, for the catalog attribute Color name, whereas midnight blue is not a valid value.

@@ -1,0 +1,50 @@
+{
+  "skill_name": "amazon-ads-create-dsp-campaign",
+  "skill_version": "2.1.3",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Create a US DSP Performance+ campaign with display inventory, but I have not chosen a profile, budget, dates, or ASINs yet.",
+      "expected_output": "Stops before live writes and asks for the missing account scope, budget, dates, inventory, and conversion-tracking ASINs needed by the workflow.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "collects-required-inputs",
+          "condition": "Requests profile/account scope, marketplace, budget, dates, inventory types, and ASINs before creating entities"
+        },
+        {
+          "name": "no-premature-writes",
+          "condition": "Does not create a campaign, conversion tracking, ad groups, ads, or associations while required inputs are missing"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Create and launch a US DSP Performance+ display campaign using the supplied profile, $5,000 flight budget, confirmed dates, and two ASINs. Skip creatives for now.",
+      "expected_output": "Resolves the DSP advertiser, creates the campaign paused, verifies each dependent write, attaches ASIN conversion tracking, queries eligible tactics, creates one ad group per eligible display tactic, skips creatives, and activates campaign before ad groups with a complete result summary.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "creates-paused-and-verifies",
+          "condition": "Creates the campaign in PAUSED state and verifies it before creating dependent resources"
+        },
+        {
+          "name": "tracks-products-before-tactics",
+          "condition": "Attaches and verifies the supplied ASIN conversion tracking before relying on eligible automated tactics"
+        },
+        {
+          "name": "one-ad-group-per-eligible-combination",
+          "condition": "Creates and verifies one ad group for every confirmed eligible display tactic"
+        },
+        {
+          "name": "parent-first-activation",
+          "condition": "Activates the campaign before its ad groups and does not attempt child activation if the campaign activation fails"
+        },
+        {
+          "name": "reports-created-state",
+          "condition": "Returns IDs and final states for the campaign, tracking, ad groups, and intentionally skipped creatives"
+        }
+      ]
+    }
+  ]
+}

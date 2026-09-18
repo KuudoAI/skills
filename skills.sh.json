@@ -1,0 +1,35 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "KuudoAI Certified",
+      "description": "Skills reviewed and certified by KuudoAI.",
+      "skills": [
+        "amazon-ads-budget-pacing",
+        "amazon-ads-reporting"
+      ]
+    },
+    {
+      "title": "Community",
+      "description": "Community-contributed skills.",
+      "skills": [
+        "amazon-ads-accounts",
+        "amazon-ads-create-dsp-campaign",
+        "amazon-ads-creative-assets",
+        "amazon-ads-marketing-cloud",
+        "amazon-ads-sb-performance-review",
+        "amazon-ads-sp-campaign-auditor",
+        "amazon-ads-sp-search-term-explorer",
+        "amazon-product-image",
+        "amazon-profitability-calculator",
+        "amazon-sp-listing-optimizer",
+        "amazon-sp-refund-return-monitor",
+        "amazon-sp-repricing",
+        "amazon-sp-sales-traffic-analyzer",
+        "amazon-sp-sqp-asin-ngram",
+        "using-kuudo"
+      ]
+    }
+  ]
+}

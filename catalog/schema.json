@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KuudoAI skills repository catalog entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "classification", "origin", "maintainers", "license", "registries"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "classification": {
+      "enum": ["certified", "community"]
+    },
+    "origin": {
+      "enum": ["first-party", "third-party"]
+    },
+    "maintainers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registries": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "path"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40,64}$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?:\\.|(?!/)(?![A-Za-z]:(?:/|$))(?!.*\\\\)(?!.*(?:^|/)(?:\\.|\\.\\.)(?:/|$))(?:[^/]+/)*[^/]+)$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "origin": { "const": "third-party" }
+        },
+        "required": ["origin"]
+      },
+      "then": {
+        "required": ["source"]
+      }
+    }
+  ]
+}

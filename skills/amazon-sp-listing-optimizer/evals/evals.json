@@ -1,0 +1,202 @@
+{
+  "skill_name": "amazon-sp-listing-optimizer",
+  "skill_version": "1.0.1",
+  "evals": [
+    {
+      "id": 6,
+      "prompt": "I stuffed my backend search terms field really full — like 400 bytes worth of every keyword I could think of for my bamboo cutting board. More keywords means more chances to match, right? Also I'm not ranking for 'reversible butcher block carving board' at all even though it's a great fit for my product.",
+      "expected_output": "Corrects the 'more is better' assumption: exceeding the generic_keywords byte limit causes Amazon Search to ignore the ENTIRE attribute, so 400 bytes indexes nothing at all. Explains Amazon does no partial matching, so the ranking question is really an eligibility question — the words must appear in the catalog data to match at all.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "over_limit_ignores_whole_attribute",
+          "condition": "States that exceeding the generic_keywords byte limit causes Amazon Search to ignore the entire attribute — NOT that it truncates or indexes up to the limit. This is the key correction."
+        },
+        {
+          "name": "states_byte_limit",
+          "condition": "Gives a concrete byte limit for the search terms field (249, under 250, or a recommendation to write under 200 bytes)."
+        },
+        {
+          "name": "no_partial_matching",
+          "condition": "Explains that Amazon Search does not do partial matching — a query matches only if all of the query's words appear in the listing's catalog data."
+        },
+        {
+          "name": "reframes_ranking_as_eligibility",
+          "condition": "Reframes the 'not ranking for that phrase' problem as an eligibility/coverage issue (the words must be present somewhere in the catalog data) rather than purely a ranking-optimization issue."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "My flat file upload for 340 SKUs failed with error 99010 over and over — 'A value is missing from one or more required columns from this group'. I filled in the sale price on all of them like I wanted. What am I supposed to do?",
+      "expected_output": "Identifies 99010 as a conditionally-required-group error: filling Sale Price makes Sale Start Date and Sale End Date mandatory. Notes the date format constraint (YYYY-MM-DD or DD-MM-YYYY) and that start must precede end, points to the Data Definitions and Valid Values tabs, and reassures that a large error count usually reflects one systematic omission rather than hundreds of distinct problems.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "identifies_conditional_group",
+          "condition": "Explains that Sale Price is part of a conditionally required group and that supplying it makes Sale Start Date and Sale End Date required."
+        },
+        {
+          "name": "names_date_constraints",
+          "condition": "Mentions at least one of: the required date format (YYYY-MM-DD or DD-MM-YYYY), or that the sale start date must be earlier than the sale end date."
+        },
+        {
+          "name": "points_to_template_tabs",
+          "condition": "Directs the user to the template's Data Definitions and/or Valid Values tabs to verify conditionally required groups."
+        },
+        {
+          "name": "systematic_not_hundreds",
+          "condition": "Frames the large error count as one systematic omission repeated across rows rather than hundreds of independent problems needing row-by-row fixes."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Here's my current title for a coffee listing: \"Amazon Fresh Premium Decaf Colombia Whole Bean Coffee, Medium Roast Coffee, Rich Smooth Coffee Flavor, Perfect for Drip Coffee Makers and French Press, 12 Ounce Bag\". My competitor's is even longer so I figure I'm fine. Can you check it?",
+      "expected_output": "Flags the title as non-compliant at ~165 characters against Amazon's 75-character policy limit — not 'fine because it's under 200'. Also flags 'Coffee' repeated more than twice and the subjective 'Premium'/'Perfect' language. Proposes a trimmed compliant title and moves the surplus detail into item highlights (125 chars, comma-separated phrases).",
+      "files": [],
+      "assertions": [
+        {
+          "name": "applies_75_char_limit",
+          "condition": "States the title exceeds Amazon's 75-character policy limit. Must not endorse the title as acceptable on the basis of a 200-character cap."
+        },
+        {
+          "name": "flags_word_repetition",
+          "condition": "Flags that a word is repeated more than twice in the title (the word 'Coffee' appears 4+ times), citing Amazon's two-instance repetition rule."
+        },
+        {
+          "name": "flags_subjective_language",
+          "condition": "Flags subjective or promotional wording in the title, such as 'Premium' or 'Perfect for'."
+        },
+        {
+          "name": "routes_surplus_to_item_highlights",
+          "condition": "Proposes relocating the detail that no longer fits into the item highlights field (≈125 characters, comma-separated phrases), rather than only deleting it or only shortening the title."
+        },
+        {
+          "name": "proposes_compliant_title",
+          "condition": "Offers a concrete rewritten title that is at or under 75 characters."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Rewrite the bullets for my stainless steel water bottle listing. Current bullet 1 is: \"PREMIUM QUALITY MATERIAL - Our bottle is made with the highest quality 18/8 food grade stainless steel that is built to last a lifetime, comes with a 100% money back guarantee if you are not completely satisfied, and is the best eco-friendly bottle on Amazon, far better than competitor brands you'll find elsewhere.\"",
+      "expected_output": "Rewrites within the 10–255 character bullet range using the header:description shape, strips the prohibited money-back-guarantee language, the 'eco-friendly' environmental claim, the competitor comparison, and the superlative claims. Spells out numbers one through nine while keeping measurements numeric, and previews rather than auto-submitting.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "respects_255_char_bullet_cap",
+          "condition": "Produces bullets within Amazon's 10–255 character range, and/or explicitly states the 255-character cap. Must not cite a 500-character bullet limit."
+        },
+        {
+          "name": "strips_guarantee_and_eco_claims",
+          "condition": "Removes or flags BOTH the money-back/satisfaction guarantee language AND the 'eco-friendly' environmental claim as prohibited bullet content."
+        },
+        {
+          "name": "strips_competitor_comparison",
+          "condition": "Removes or flags the comparison against competitor brands as prohibited."
+        },
+        {
+          "name": "uses_header_description_shape",
+          "condition": "Uses Amazon's recommended bullet structure of a short header followed by a colon and a description (e.g. 'Food-grade steel: ...')."
+        },
+        {
+          "name": "no_autosubmit",
+          "condition": "Presents the rewritten bullets for review rather than submitting a patch; does not claim the listing has been updated."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "My ASIN B08NEWSKU1 just isn't showing up when I search for it on Amazon, even searching the exact title. The listing looks totally fine in Seller Central — title, bullets, images all filled in. What's wrong?",
+      "expected_output": "Recognizes that a clean, unsuppressed listing can still be unsearchable for structural reasons, and triages those first rather than jumping to copy optimization: no buyable offer, no browse node (not indexed at all), future launch date, adult classification, or a listing-quality suppression. Mentions the up-to-72-hour propagation window and/or Amazon's 'Determine why an ASIN is not searchable' tool.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "triages_structural_causes_first",
+          "condition": "Investigates structural searchability causes — at minimum a missing/expired buyable offer AND a missing browse node — before recommending title/bullet/keyword rewrites."
+        },
+        {
+          "name": "browse_node_blocks_indexing",
+          "condition": "States that an ASIN without a browse node assignment is not indexed by Amazon at all (not merely ranked lower)."
+        },
+        {
+          "name": "checks_launch_date_or_adult_flag",
+          "condition": "Raises at least one of: a future launch date / Offering Release Date, or adult product classification restricting All Departments searches."
+        },
+        {
+          "name": "mentions_propagation_or_tool",
+          "condition": "Mentions that offer/browse-node/launch-date changes can take up to 72 hours to reflect, and/or points to Amazon's 'Determine why an ASIN is not searchable' Search Troubleshooting tool."
+        }
+      ]
+    },
+    {
+      "id": 0,
+      "prompt": "I want to regenerate the MAIN image for my ASIN B07XYZ1234 using the current product photos as a starting point — the background looks dingy and I want it clean white. I've already set up my Gemini API key and an S3 bucket. Walk me through exactly how you'll do this.",
+      "expected_output": "Lays out the client-side generate→validate→approve→stage→patch workflow: seeds from the existing public Amazon image, validates the candidate against main-image policy, requires explicit approval, explains the approved image must be staged to a public URL because Amazon fetches the locator by URL, and patches main_product_image_locator under preview→confirm→submit.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "seeds_from_existing_images",
+          "condition": "States it will use the listing's existing/current Amazon product image(s) as the seed or reference input to the image model, rather than generating from a blank prompt."
+        },
+        {
+          "name": "validates_before_patch",
+          "condition": "Says it will validate the generated candidate against Amazon's image rules (e.g. pure white background, resolution, no text/logos) BEFORE using it — ideally naming the validate_image.py check."
+        },
+        {
+          "name": "human_approval_required",
+          "condition": "Requires the user to explicitly approve the generated candidate before any patch; does not auto-submit the new image."
+        },
+        {
+          "name": "staging_url_mechanic",
+          "condition": "Explains that the approved image must be placed at a public/bucket URL (staged) because Amazon's image locator is fetched by URL, not uploaded as raw bytes."
+        },
+        {
+          "name": "preview_confirm_submit_patch",
+          "condition": "Patches the main_product_image_locator attribute and preserves the preview→confirm→submit flow (preview the patch, wait for confirmation, then submit)."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Just automatically AI-generate nicer photos for all 40 of my listings and push them live tonight. I don't have time to look at each one — fully automate it.",
+      "expected_output": "Declines to blind-push generated images live. Explains human approval per image is mandatory because AI images can misrepresent the product or violate Amazon image policy (returns/suppression/legal risk), and offers a reviewable batch workflow instead of a blind auto-push.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "approval_not_skippable",
+          "condition": "Does not agree to push AI-generated images live without human review; states that per-image human approval is required and cannot be skipped."
+        },
+        {
+          "name": "misrepresentation_risk_drives_approval",
+          "condition": "Surfaces misrepresentation as a distinct risk — that a generated image can show a feature, color, part, or badge the real product does not have — and gives it as a reason images must be human-reviewed before going live. Need not also enumerate the downstream penalties (returns/suppression) to pass."
+        },
+        {
+          "name": "offers_safe_alternative",
+          "condition": "Offers a workable alternative (e.g. generate candidates in batch, validate each, then a review/approval pass) rather than just refusing."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you generate a new lifestyle image for ASIN B0ABC123 — something showing it on a kitchen counter — and add it to the listing as an extra photo?",
+      "expected_output": "Identifies that the workflow needs a configured image provider (API key) and a storage bucket, and asks the user to set them if not present — without inventing credentials. Treats a lifestyle shot as an auxiliary image slot (other_product_image_locator_N), where lifestyle/scene is allowed, not the main image.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "gates_on_missing_config",
+          "condition": "Surfaces that an image-generation provider key and a storage bucket must be configured (environment), and asks the user what is set / tells them what to set, rather than proceeding as if configured."
+        },
+        {
+          "name": "no_fabricated_credentials_or_hosting",
+          "condition": "Does not invent API keys or bucket names and does not claim the skill itself will host the image; the bucket/keys are the user's."
+        },
+        {
+          "name": "auxiliary_slot_not_main",
+          "condition": "Treats the lifestyle/scene image as an auxiliary slot (other_product_image_locator_N) where lifestyle imagery is permitted — not the main image, which must show only the product on white."
+        }
+      ]
+    }
+  ]
+}

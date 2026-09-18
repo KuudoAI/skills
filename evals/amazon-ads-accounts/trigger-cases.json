@@ -1,0 +1,42 @@
+[
+  {
+    "query": "What is the difference between an Amazon Ads advertiser account and a profile?",
+    "should_trigger": true
+  },
+  {
+    "query": "List the Amazon Ads accounts I can access and help me choose the right marketplace profile.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have an entity ID and a profile ID. Which identifier does this Amazon Ads tool need?",
+    "should_trigger": true
+  },
+  {
+    "query": "Which advertiser accounts are connected to my Amazon Ads manager account?",
+    "should_trigger": true
+  },
+  {
+    "query": "My UK profile is missing even though I can see the global advertiser account.",
+    "should_trigger": true
+  },
+  {
+    "query": "Register me as a new Amazon Ads advertiser.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a terms token so I can accept the Amazon Ads agreement.",
+    "should_trigger": false
+  },
+  {
+    "query": "Rename my advertiser account.",
+    "should_trigger": false
+  },
+  {
+    "query": "Link this advertiser account to my manager account.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a Sponsored Products campaign for profile 1939934761669430.",
+    "should_trigger": false
+  }
+]

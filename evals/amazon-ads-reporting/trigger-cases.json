@@ -1,0 +1,42 @@
+[
+  {
+    "query": "Build an Amazon Ads unified reporting request for Sponsored Products campaign performance.",
+    "should_trigger": true
+  },
+  {
+    "query": "Reproduce the legacy Sponsored Brands keyword report with the v1 CreateReport API.",
+    "should_trigger": true
+  },
+  {
+    "query": "Which Amazon Ads v3 campaign-report columns cannot be mapped to unified reporting?",
+    "should_trigger": true
+  },
+  {
+    "query": "Create a custom Amazon Ads report with daily clicks and sales by ad group.",
+    "should_trigger": true
+  },
+  {
+    "query": "Check whether this asynchronous Amazon Ads report is complete and download its result.",
+    "should_trigger": true
+  },
+  {
+    "query": "Write an AMC SQL query for paths to conversion.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run the legacy Sponsored Products reporting v3 endpoint directly.",
+    "should_trigger": false
+  },
+  {
+    "query": "What is the current bid on this Amazon Ads keyword?",
+    "should_trigger": false
+  },
+  {
+    "query": "Pace our Sponsored Products budgets against this month's spend plan.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a new Sponsored Brands campaign and ad group.",
+    "should_trigger": false
+  }
+]

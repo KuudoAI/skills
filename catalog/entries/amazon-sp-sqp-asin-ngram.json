@@ -1,0 +1,10 @@
+{
+  "name": "amazon-sp-sqp-asin-ngram",
+  "classification": "community",
+  "origin": "first-party",
+  "maintainers": [
+    "KuudoAI"
+  ],
+  "license": "PolyForm-Shield-1.0.0",
+  "registries": {}
+}

@@ -1,0 +1,10 @@
+{
+  "name": "amazon-ads-budget-pacing",
+  "classification": "certified",
+  "origin": "first-party",
+  "maintainers": [
+    "KuudoAI"
+  ],
+  "license": "PolyForm-Shield-1.0.0",
+  "registries": {}
+}
