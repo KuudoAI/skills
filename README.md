@@ -122,7 +122,7 @@ Follow the [MCP configuration guide](docs/mcp-configuration.md) for client setup
 - **KuudoAI Reference Skills** are first-party reference implementations maintained by KuudoAI that have not yet completed certification.
 - **Community** skills are third-party contributions that have not been KuudoAI-certified.
 
-Find each skill's status, source, and license in the [catalog](catalog/entries/). Review instructions and bundled scripts before use, especially for third-party skills.
+Browse the generated [skill catalog](catalog/skills.json) for each skill's standard description, compatibility, status, source, and license. The governance records behind it live in [catalog/entries/](catalog/entries/). Review instructions and bundled scripts before use, especially for third-party skills.
 
 ## Creating skills
 

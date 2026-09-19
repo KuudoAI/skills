@@ -7,7 +7,7 @@ import type { ErrorObject, ValidateFunction } from "ajv";
 import { collectMarkdownReferences } from "./markdown.js";
 import { parseSkillDocument } from "./frontmatter.js";
 import { isClassification, isSkillName, maximumSkillNameLength } from "./types.js";
-import type { CatalogEntry, Classification, TriggerCase, ValidationIssue } from "./types.js";
+import type { CatalogEntry, Classification, SkillCatalogMetadata, TriggerCase, ValidationIssue } from "./types.js";
 
 const standardFrontmatterFields = new Set(["name", "description", "license", "compatibility", "metadata", "allowed-tools"]);
 const scaffoldSentinel = "Author the skill instructions before requesting certification.";
@@ -101,6 +101,7 @@ export async function validateRepository(root: string): Promise<ValidationIssue[
 
 export interface ValidatedRepository {
   catalogEntries: CatalogEntry[];
+  skillMetadata: SkillCatalogMetadata[];
   issues: ValidationIssue[];
 }
 
@@ -131,8 +132,37 @@ export async function loadValidatedRepository(root: string): Promise<ValidatedRe
 
   return {
     catalogEntries: catalogRecords.flatMap((record) => record.entry === null ? [] : [record.entry]),
+    skillMetadata: await readSkillMetadata(root, skillDirectories),
     issues: sortIssues(issues),
   };
+}
+
+async function readSkillMetadata(root: string, skillDirectories: string[]): Promise<SkillCatalogMetadata[]> {
+  const metadata: SkillCatalogMetadata[] = [];
+  for (const directory of skillDirectories) {
+    let content: string;
+    try {
+      content = await readFileWithoutFollowing(join(root, directory, "SKILL.md"));
+    } catch (error) {
+      if (isMissing(error) || isSymlinkLoop(error)) continue;
+      throw error;
+    }
+    const frontmatter = parseSkillDocument(content).frontmatter;
+    if (frontmatter === null || typeof frontmatter.name !== "string" || typeof frontmatter.description !== "string") continue;
+
+    const skill: SkillCatalogMetadata = {
+      name: frontmatter.name,
+      description: frontmatter.description,
+    };
+    for (const key of ["license", "compatibility", "allowed-tools"] as const) {
+      if (typeof frontmatter[key] === "string") skill[key] = frontmatter[key];
+    }
+    if (hasOnlyStringValues(frontmatter.metadata)) {
+      skill.metadata = frontmatter.metadata as Record<string, string>;
+    }
+    metadata.push(skill);
+  }
+  return metadata.sort((left, right) => left.name.localeCompare(right.name));
 }
 
 async function validateAmazonAdsAccountRecovery(

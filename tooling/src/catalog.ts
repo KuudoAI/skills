@@ -2,13 +2,14 @@ import { constants } from "node:fs";
 import { lstat, open, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { loadValidatedRepository } from "./validate.js";
-import type { CatalogEntry, ThirdPartyCatalogEntry, ValidationIssue } from "./types.js";
+import type { CatalogEntry, SkillCatalogMetadata, ThirdPartyCatalogEntry, ValidationIssue } from "./types.js";
 
-const artifactPaths = ["skills.sh.json", "THIRD_PARTY_NOTICES.md"] as const;
+const artifactPaths = ["catalog/skills.json", "skills.sh.json", "THIRD_PARTY_NOTICES.md"] as const;
 const staleArtifactMessage = "Generated artifact is missing or stale.";
 const unsafeArtifactMessage = "Generated artifact must be a regular file and not a symbolic link.";
 
 export interface GeneratedCatalogArtifacts {
+  "catalog/skills.json"?: string;
   "THIRD_PARTY_NOTICES.md": string;
   "skills.sh.json"?: string;
 }
@@ -24,7 +25,7 @@ class RepositoryValidationError extends Error {
 export async function generateCatalogArtifacts(root: string): Promise<GeneratedCatalogArtifacts> {
   const repository = await loadValidatedRepository(root);
   if (repository.issues.length > 0) throw new RepositoryValidationError(repository.issues);
-  return renderCatalogArtifacts(repository.catalogEntries);
+  return renderCatalogArtifacts(repository.catalogEntries, repository.skillMetadata);
 }
 
 /** Write generated artifacts only when their committed content is stale. */
@@ -56,7 +57,7 @@ export async function writeCatalogArtifacts(root: string): Promise<void> {
 export async function checkCatalogArtifacts(root: string): Promise<ValidationIssue[]> {
   const repository = await loadValidatedRepository(root);
   if (repository.issues.length > 0) return repository.issues;
-  const artifacts = renderCatalogArtifacts(repository.catalogEntries);
+  const artifacts = renderCatalogArtifacts(repository.catalogEntries, repository.skillMetadata);
   const results = await Promise.all(artifactPaths.map(async (path) => ({
     path,
     state: await inspectArtifact(join(root, path)),
@@ -69,7 +70,7 @@ export async function checkCatalogArtifacts(root: string): Promise<ValidationIss
   });
 }
 
-function renderCatalogArtifacts(entries: CatalogEntry[]): GeneratedCatalogArtifacts {
+function renderCatalogArtifacts(entries: CatalogEntry[], skillMetadata: SkillCatalogMetadata[]): GeneratedCatalogArtifacts {
   const certified = entries.filter((entry) => entry.classification === "certified").map((entry) => entry.name).sort(compareStrings);
   const firstPartyReferences = entries
     .filter((entry) => entry.classification === "reference" && entry.origin === "first-party")
@@ -103,6 +104,25 @@ function renderCatalogArtifacts(entries: CatalogEntry[]): GeneratedCatalogArtifa
   const artifacts: GeneratedCatalogArtifacts = {
     "THIRD_PARTY_NOTICES.md": renderThirdPartyNotices(thirdParty),
   };
+
+  if (entries.length > 0) {
+    const metadataByName = new Map(skillMetadata.map((skill) => [skill.name, skill]));
+    artifacts["catalog/skills.json"] = `${JSON.stringify({
+      catalogVersion: 1,
+      skills: entries
+        .slice()
+        .sort((left, right) => compareStrings(left.name, right.name))
+        .map((entry) => ({
+          ...(metadataByName.get(entry.name) ?? { name: entry.name, description: "" }),
+          status: entry.classification,
+          origin: entry.origin,
+          maintainers: entry.maintainers,
+          registries: entry.registries,
+          governanceLicense: entry.license,
+          ...(entry.source ? { source: entry.source } : {}),
+        })),
+    }, null, 2)}\n`;
+  }
 
   if (groupings.length > 0) {
     artifacts["skills.sh.json"] = `${JSON.stringify({
