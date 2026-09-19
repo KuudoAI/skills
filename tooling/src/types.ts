@@ -6,6 +6,16 @@ export interface ValidationIssue {
   message: string;
 }
 
+/** Agent Skills frontmatter copied into the generated, user-facing catalog. */
+export interface SkillCatalogMetadata {
+  name: string;
+  description: string;
+  license?: string;
+  compatibility?: string;
+  metadata?: Record<string, string>;
+  "allowed-tools"?: string;
+}
+
 interface CatalogEntryBase {
   name: string;
   classification: Classification;

@@ -38,6 +38,24 @@ test("groups skills for skills.sh and sorts each group", async () => {
   });
 });
 
+test("publishes Agent Skills discovery metadata in the generated catalog", async () => {
+  const root = await createCatalogRepository([validEntry("alpha")]);
+
+  const artifacts = await generateCatalogArtifacts(root);
+  const catalog = JSON.parse(artifacts["catalog/skills.json"]!);
+
+  assert.equal(catalog.catalogVersion, 1);
+  assert.deepEqual(catalog.skills, [{
+    name: "alpha",
+    description: "Use when a test needs the alpha fixture.",
+    status: "reference",
+    origin: "first-party",
+    maintainers: ["KuudoAI"],
+    registries: {},
+    governanceLicense: "UNLICENSED",
+  }]);
+});
+
 test("sorts multiple skills alphabetically within the same group", async () => {
   const root = await createCatalogRepository([
     validEntry("zulu"),

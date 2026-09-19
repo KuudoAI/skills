@@ -1,0 +1,271 @@
+{
+  "catalogVersion": 1,
+  "skills": [
+    {
+      "name": "amazon-ads-accounts",
+      "description": "Use when Amazon Ads work requires distinguishing advertiser accounts, profiles, entity IDs, DSP advertiser IDs, or manager accounts; listing accessible accounts; choosing a marketplace profile; or tracing account relationships.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "1.0.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-budget-pacing",
+      "description": "Use when an Amazon Ads advertiser needs to pace sponsored-ads campaign budgets against a monthly spend plan, calculate or review a daily budget change set, reforecast remaining spend, or explain account-level pacing variance. Do not use for general performance reporting, campaign creation, or account selection without a pacing objective.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires Python 3.10+. Offline proposals use bundled JSON inputs; live reads and writes require an Amazon Ads integration. Optional warehouse and sandbox runners may supply actuals or scheduled execution.",
+      "metadata": {
+        "version": "0.2.1"
+      },
+      "status": "certified",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-create-dsp-campaign",
+      "description": "Create and launch an Amazon DSP Performance+ (P+) or Brand+ (B+) campaign end-to-end using this amazon-ads-mcp server's allv1_* tools. Drives the full setup: gather user inputs, query the advertiser account to resolve the DSP account ID, create the DSP campaign in PAUSED state, attach ASIN conversion tracking, query eligible automated targeting tactics, create one ad group per (inventoryType, tactic) combination, optionally create ads and ad-group associations, then activate everything in strict parent-first order with verification reads between writes. Supports P+ tactics (CUSTOMER_ACQUISITION, REMARKETING, RETENTION, MAXIMIZE_PERFORMANCE) and B+ tactics (PROSPECTING) across DISPLAY, VIDEO_OLV, VIDEO_STV, AUDIO, and LIVE_EVENTS inventory. Trigger whenever the user mentions creating a DSP P+ or B+ campaign, launching automated DSP targeting, setting up Performance+ or Brand+ ad groups, or any variant like 'spin up a P+ campaign', 'launch Brand+ prospecting', 'create DSP automated targeting'.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "2.1.3",
+        "visibility": "public"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-creative-assets",
+      "description": "Build and ship Amazon Ads creative assets end to end: generate compliant images (custom and lifestyle images, brand logos, display banners) and ad copy, then register them through the Amazon Ads MCP creative assets API. IF the user wants ad creative for Sponsored Brands, Sponsored Display, Amazon DSP, or eCommerce display — asks what size or file format an ad image must be, wants a lifestyle image for an ad, needs one image resized into square/wide/tall, asks whether text or a logo may appear in the creative, wants ad headline copy inside Amazon's limits, or has a rejected ad — OR wants to upload, register, version, search, or check the status of a creative asset (assetId, assetSubType, failedSpecChecks, PROCESSING, upload URL, creative asset library) — THEN invoke this skill. DO NOT invoke for retail product listing photos on a detail page (that is the amazon-product-image skill), or for campaign structure, bidding, budgets, or reporting.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Creative specs and policy work standalone. Registering assets requires the Amazon Ads MCP (code-mode meta-tools) plus an out-of-band HTTP PUT for the upload step; image generation requires an image tool.",
+      "metadata": {
+        "version": "0.3.1"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-marketing-cloud",
+      "description": "Use whenever the user works with Amazon Marketing Cloud (AMC): SQL, workflows, audiences (rule-based or lookalike), playbooks (frequency, off-Amazon conversions, keyword clustering, lookalikes, programmatic audience framework, enhanced scoring, CLTV), custom attribution (first/last-touch, linear, position-based), first-party data uploads, ad-product filtering, AMC sandbox, cross-channel overlap, reach, frequency, or NTB analysis. Triggers: \"AMC\", \"Amazon Marketing Cloud\", \"AMC SQL\", \"AMC workflow\", \"AMC audience\", \"AMC query\", \"AMC playbook\", DSP audiences, attribution model, path-to-conversion, ad frequency, NTB, DOOH, Sponsored TV incremental reach, Sponsored Brands, Brand Store insights, Events Manager / CAPI, Audience Segment Insights, Amazon Your Garage, or SQL referencing tables like sponsored_ads_traffic, dsp_impressions, dsp_clicks, amazon_attributed_events_by_traffic_time, conversions_all, conversions_with_relevance.\n",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "0.3.7"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-reporting",
+      "description": "Use when requests involve Amazon Ads unified/v1 reporting, CreateReport, reproducing a familiar Sponsored Products, Sponsored Brands, or Sponsored Display report on v1, v3-to-v1 report migration, report-field compatibility, or retrieving an asynchronous v1 report. Excludes AMC, legacy-v3 execution, live entity state, and campaign mutation.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Offline request generation needs no integration; live operations require access to an Amazon Ads API client with unified/v1 reporting capabilities.",
+      "metadata": {
+        "version": "0.3.1"
+      },
+      "status": "certified",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-sb-performance-review",
+      "description": "Produce a Sponsored Brands (SB) campaign performance review from SB Campaigns Report data: portfolio summary, top and worst campaigns by efficiency, low-CTR creative signals, new-to-brand (NTB) analysis when present, placement or format splits if columns exist, and actionable recommendations. Use when users ask for Sponsored Brands audits, SB headline/video/store spotlight reviews, brand awareness efficiency, NTB share, SB CTR vs benchmarks, or SB campaign deep-dives. The agent must fetch and parse the report for the user’s environment — do not assume a global variable, fixed file path, or stable Amazon export schema; write loader and column-mapping code after inspecting the actual artifact.\n",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "0.1.3"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-sp-campaign-auditor",
+      "description": "Use when auditing Sponsored Products campaign portfolio structure through Amazon Ads MCP, including spend concentration, budget utilization, delivery gaps, low-engagement campaigns, targeting-type mix, or campaign naming hygiene.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires a configured Amazon Ads MCP connection with reporting access. Account discovery and report creation depend on the tools and schemas exposed by that server.",
+      "metadata": {
+        "version": "0.3.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-ads-sp-search-term-explorer",
+      "description": "Mine Sponsored Products search terms end-to-end via the Amazon Ads MCP: generate the SP Search Term report via allv1_AdsApiv1CreateReport using v1 dotted field IDs (searchTerm.value, metric.totalCost, metric.sales, budgetCurrency.value — not legacy Console headers), pre-flight validate with report_fields before CreateReport, filter adProduct.value SPONSORED_PRODUCTS, download CSV and parse with the v1 DictReader pattern, partition PAT ASINs in searchTerm.value, elicit brand markers and thresholds, segment into generic and branded gold tables, surface negatives, sufficiency-gated rising stars, and PAT stream. Never use metric.cost / metric.spend or legacy CSV column names. Trigger on: SP search term mining, search term gold, search term negatives, search term report, PAT vs keyword, brand vs generic split, rising stars, exact-match harvest, attribution window questions, or any variant of \"find me wasted spend / scale-worthy keywords / branded defenders\" via the Amazon Ads MCP.\n",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires amazon_ads MCP server >= 0.3.1 (report_fields, CreateReport, RetrieveReport, QueryAdvertiserAccount, download_export, read_download)",
+      "metadata": {
+        "version": "0.4.3"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-product-image",
+      "description": "Use when creating, editing, auditing, or troubleshooting Amazon listing images, including main images, alternate images, infographics, lifestyle imagery, fashion photography, multipacks, swatches, suppression, or image error 100239.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Audits require viewable source images and listing context. Generation or editing requires a client-provided image tool. Uploads and live status checks require the user's configured Amazon connection.",
+      "metadata": {
+        "version": "1.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-profitability-calculator",
+      "description": "Calculate Amazon per-unit margin, break-even or target-margin price, affordable ad spend, and period P&L waterfalls. Use for ASIN profitability, unit economics, contribution or channel margin, landed cost, COGS, TACoS, fee and return impact, settlement reconciliation, or period-over-period margin movement. Excludes live repricing, return-reason diagnosis, and ad campaign reporting.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Amazon SP-API MCP (meta-tool pattern) for live fee estimates, returns, storage and settlement data; Amazon Ads MCP for the advertising line. Both optional - without them the skill runs in manual mode on seller-supplied fees and labels the output as such. Scripts need Python 3 only, no dependencies.",
+      "metadata": {
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-listing-optimizer",
+      "description": "Audit, optimize, and edit Amazon Seller listings and A+ Content via the amazon_sp MCP server. Use whenever the user asks to review, audit, optimize, edit, fix, rewrite, or \"look at\" an Amazon product listing — titles, item highlights, bullet points, descriptions, search terms, browse nodes, attributes, images, variations, brand attributes, A+ Content modules, or Brand Story. Also use for diagnosing suppressed or unsearchable listings, submission error codes (90057, 90220, 90225, 90248, 97779, 99001, 99010), variation/child-SKU issues, brand-name errors, or any work involving catalog_getCatalogItem, listings_getListingsItem, listings_patchListingsItem, listings_putListingsItem, or aplus_* tools. Trigger even when the user just names an ASIN/SKU and asks to \"review it\", \"check it\", \"clean it up\", or \"fix the listing\" — that is all listing work. Also use to improve, regenerate, or AI-generate listing images from existing product photos with an image model (Gemini/OpenAI), then validate and patch them.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "1.0.1"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-refund-return-monitor",
+      "description": "Analyze Amazon FBA customer returns and seller-fulfilled return requests from Seller Central or SP-API exports. Use for return volume, high-return ASINs or SKUs, return-rate calculations, reason and disposition analysis, customer-comment themes, prior-period comparisons, damaged-versus-reimbursed review candidates, or client-ready Amazon returns reporting. Do not use for general Amazon Ads reporting, listing optimization without returns evidence, or financial refund totals without transaction data.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Works from provided tabular exports without a live integration. Live retrieval requires a client-configured Amazon Selling Partner API integration exposing current report operations; document, spreadsheet, or dashboard delivery requires corresponding host capabilities.",
+      "metadata": {
+        "version": "0.6.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-repricing",
+      "description": "Design and run an Amazon repricing strategy from live SP-API data: compute per-SKU floors from real fee estimates, diagnose why the Featured Offer (Buy Box) is being lost, segment the catalog, write rules and guardrails, and produce a reviewable price change-set. IF the user is losing the Buy Box, asks what price to set, wants a repricing strategy or repricing rules, is in a price war or being undercut, needs a floor or break-even price, asks about Automate Pricing or a third-party repricer, or mentions ANY_OFFER_CHANGED, featured offer expected price, getCompetitivePricing, or Buy Box percentage — THEN invoke this skill. It proposes price changes and validates them before any write, and never applies prices unattended. DO NOT invoke for advertising bids or ad budgets (that is amazon-budget-pacing), listing copy or images, inventory forecasting, or returns analysis.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Amazon SP-API MCP (meta-tool pattern) for pricing, fees, listings, and reports. Degrades to advisory mode without it, where floors and competitive position depend entirely on seller-supplied figures.",
+      "metadata": {
+        "version": "0.1.1"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-sales-traffic-analyzer",
+      "description": "Use when analyzing Amazon Seller Central Sales & Traffic Business Reports or GET_SALES_AND_TRAFFIC_REPORT data for traffic, conversion, ordered sales, ASIN performance, daily trends, or optional Amazon Business B2B segmentation.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires Python 3.10+ and a writable filesystem to run the bundled analyzer and create report artifacts.",
+      "metadata": {
+        "version": "0.4.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-sqp-asin-ngram",
+      "description": "ASIN-level Amazon SQP / organic search diagnostics tied to search queries and n-gram themes: impression/click/purchase share, conversion index, funnel gaps, shipping and price friction, variant cannibalization, and lift-aware opportunity ranking. Use when users analyze Search Query Performance per ASIN, need SKU-specific SEO/PDP/ops recommendations from SQP, want RankScore-style prioritization, report QA badges for findings, stop-word hygiene for n-grams, or ASIN+query decision records alongside ngram-keyword-framework query-level rules. Not a substitute for Ads-only n-gram bid rules — use ngram-keyword-framework for sponsored search-term rollups.\n",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "1.3.2"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "using-kuudo",
+      "description": "Use at the start of Amazon commerce work involving Amazon Ads, Seller Central, or Vendor Central when Kuudo skills are installed.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "metadata": {
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    }
+  ]
+}
