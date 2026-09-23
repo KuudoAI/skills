@@ -43,7 +43,7 @@ Browse the full collection in [`skills/`](skills/). Every skill's instructions a
 
 Install the whole suite in **Claude Code or Codex**, or choose **one portable skill** for another compatible client. Use one installation mode per client to avoid duplicate skills.
 
-The commands below use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. Public-repository installation is covered in the [installation guide](docs/plugin-installation.md) for when the repository is published.
+The commands below use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. To install straight from GitHub instead, see the [installation guide](docs/plugin-installation.md) for Claude Code and Codex, or install by name with the Skills CLI below.
 
 ### Claude Code
 
@@ -92,7 +92,7 @@ Install an individual skill from your local copy with the [Skills CLI](https://s
 npx skills add /absolute/path/to/skills --skill amazon-profitability-calculator
 ```
 
-Once the repository is public, you can install by name or package URL:
+You can also install straight from GitHub, by name or package URL:
 
 ```bash
 npx skills add KuudoAI/skills --skill <skill-name>
