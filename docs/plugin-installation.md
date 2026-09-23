@@ -18,7 +18,7 @@ claude plugin marketplace add /absolute/path/to/skills --scope local
 claude plugin install kuudo-skills@kuudo-skills-dev --scope local
 ```
 
-After this repository is public, `claude plugin marketplace add KuudoAI/skills --scope local` can replace the local path. Publication is separate from the local package contract.
+To install from GitHub instead of a local copy, `claude plugin marketplace add KuudoAI/skills --scope local` replaces the local path; the install command is the same.
 
 ## Whole suite in Codex
 
@@ -29,7 +29,7 @@ codex plugin marketplace add /absolute/path/to/skills
 codex plugin add kuudo-skills@kuudo-skills-dev
 ```
 
-After this repository is public, `codex plugin marketplace add KuudoAI/skills` can replace the local path. These commands were checked against `codex-cli 0.154.0`; use `codex plugin --help` and `codex plugin marketplace --help` to recheck the command surface on a different version.
+To install from GitHub instead of a local copy, `codex plugin marketplace add KuudoAI/skills` replaces the local path; the add command is the same. These commands were checked against `codex-cli 0.154.0`; use `codex plugin --help` and `codex plugin marketplace --help` to recheck the command surface on a different version.
 
 ## One portable skill
 
