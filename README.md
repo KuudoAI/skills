@@ -111,7 +111,7 @@ Kuudo provides Amazon MCP connections for the major surfaces these skills work a
 
 - [Amazon Ads MCP](https://www.kuudo.com/features/amazon-ads-mcp/) for Sponsored Products, Sponsored Brands, Sponsored Display, DSP, and advertising operations.
 - [Amazon Selling Partner API (SP-API) MCP](https://www.kuudo.com/features/amazon-selling-partner-mcp/) for Seller Central orders, listings, inventory, fees, and feeds.
-- [Amazon Vendor Central MCP](https://www.kuudo.com/features/amazon-vendor-central-mcp/) for purchase orders, advance shipment notices, invoices, chargebacks, and vendor analytics.
+- [Amazon Vendor Central MCP](https://www.kuudo.com/features/amazon-vendor-central-mcp/) for purchase orders, advance shipment notices, invoices, and vendor analytics.
 - [Amazon Marketing Cloud (AMC)](https://www.kuudo.com/features/amc/) for audiences, attribution, incrementality, and AMC analysis.
 
 Follow the [MCP configuration guide](docs/mcp-configuration.md) for client setup. Each skill describes its requirements; several also support reports or manual inputs, so you can start with data you already have.
