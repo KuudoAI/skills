@@ -7,14 +7,19 @@ one row per SKU with Amazon's days of supply, recommended ship-in quantity and
 date, health status, and a risk band. The download is streamed into memory and
 never written to disk, because the report is the seller's data.
 
-Usage:
-  planning_report.py URL_OR_PATH [--skus SKU1,SKU2] [--all] [--limit N]
-                     [--full] [--critical 7] [--warning 21]
+Usage (filter first; the default answer is the at-risk slice):
+  planning_report.py URL_OR_PATH                       # at-risk bands, top 25
+  planning_report.py URL_OR_PATH --skus A,B             # just these SKUs
+  planning_report.py URL_OR_PATH --max-days 30          # days of supply < 30
+  planning_report.py URL_OR_PATH --bands CRITICAL,WARNING --min-t30 10
+  planning_report.py URL_OR_PATH --needs-ship-in        # Amazon recommends a ship-in
+  planning_report.py URL_OR_PATH --in-transit           # SKUs with stock on the way
+  planning_report.py URL_OR_PATH --all --limit 0        # everything: large, see below
 
-Output is sized for catalogs of 500+ SKUs. Rows carry compact fields unless
---full is given, at most --limit rows are printed (default 60), and the
-result says how many rows were left out. band_counts always covers the whole
-report.
+Filters combine with AND. band_counts always covers the whole report, and the
+output says how many rows matched, how many were printed, and roughly how
+large the full match would be. --all with more than 60 matching rows adds a
+context_warning. Only ask for everything when the user explicitly wants it.
 
 Bands: OUT_OF_STOCK (0 available, sold in the last 30 days), CRITICAL
 (<7 days), WARNING (<21), OUT_NO_RECENT_SALES (0 available and no recent sales,
@@ -131,6 +136,7 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
     names = lambda c: c if isinstance(c, tuple) else (c,)
     missing = [names(col)[0] for col in COLUMNS.values() if not any(n in header for n in names(col))]
     wanted = {s.strip() for s in args.skus.split(",")} if args.skus else None
+    bands = {b.strip().upper() for b in args.bands.split(",")} if args.bands else None
 
     rows = []
     for record in reader:
@@ -151,14 +157,33 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
         counts[row["band"]] = counts.get(row["band"], 0) + 1
 
     at_risk = ("OUT_OF_STOCK", "CRITICAL", "WARNING", "OUT_NO_RECENT_SALES")
-    shown = rows if (args.all or wanted) else [r for r in rows if r["band"] in at_risk]
+    filtered = bool(wanted or bands or args.max_days is not None or args.min_t30 is not None
+                    or args.needs_ship_in or args.in_transit)
+
+    def keep(r: dict) -> bool:
+        if bands and r["band"] not in bands:
+            return False
+        if not (args.all or filtered) and r["band"] not in at_risk:
+            return False
+        if args.max_days is not None and (r["days_of_supply"] is None or r["days_of_supply"] >= args.max_days):
+            return False
+        if args.min_t30 is not None and (r["units_shipped_t30"] or 0) < args.min_t30:
+            return False
+        if args.needs_ship_in and not (r["recommended_ship_in_quantity"] or 0) > 0:
+            return False
+        if args.in_transit and not r["inbound_in_transit"] > 0:
+            return False
+        return True
+
+    shown = [r for r in rows if keep(r)]
     order = {b: i for i, b in enumerate(at_risk + ("UNKNOWN", "HEALTHY", "INACTIVE"))}
     shown.sort(key=lambda r: (order[r["band"]], r["days_of_supply"] if r["days_of_supply"] is not None else 1e9))
     matched = len(shown)
+    projected = [{k: r[k] for k in COMPACT} for r in shown] if not args.full else shown
+    full_match_bytes = sum(len(json.dumps(r, separators=(",", ":"))) + 3 for r in projected)
     if args.limit:
-        shown = shown[: args.limit]
-    if not args.full:
-        shown = [{k: r[k] for k in COMPACT} for r in shown]
+        projected = projected[: args.limit]
+    shown = projected
 
     return {
         "source": "GET_FBA_INVENTORY_PLANNING_DATA",
@@ -168,7 +193,14 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
         "thresholds_days": {"critical_below": args.critical, "warning_below": args.warning},
         "missing_columns": missing,
         "rows_matched": matched,
+        "rows_printed": len(shown),
         "rows_omitted": matched - len(shown),
+        "full_match_size_kb": round(full_match_bytes / 1024, 1),
+        **({"context_warning": (
+            f"{matched} rows (about {round(full_match_bytes / 1024)} KB) match. "
+            "That is a lot of context. Prefer a filter (--max-days, --bands, "
+            "--min-t30, --needs-ship-in, --in-transit, --skus) unless the user "
+            "explicitly asked for everything.")} if args.all and matched > 60 else {}),
         "rows": shown,
     }
 
@@ -177,8 +209,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("source", help="Pre-signed report URL or local TSV path")
     parser.add_argument("--skus", help="Comma-separated seller SKUs to include")
-    parser.add_argument("--all", action="store_true", help="Include HEALTHY SKUs")
-    parser.add_argument("--limit", type=int, default=60, help="Max rows to print (0 = no cap)")
+    parser.add_argument("--all", action="store_true", help="Every band, including HEALTHY/INACTIVE (large!)")
+    parser.add_argument("--bands", help="Comma-separated bands to include, e.g. CRITICAL,WARNING")
+    parser.add_argument("--max-days", type=float, help="Only SKUs with days of supply below this")
+    parser.add_argument("--min-t30", type=float, help="Only SKUs that shipped at least this many units in 30 days")
+    parser.add_argument("--needs-ship-in", action="store_true", help="Only SKUs Amazon recommends shipping in")
+    parser.add_argument("--in-transit", action="store_true", help="Only SKUs with shipped/receiving inbound units")
+    parser.add_argument("--limit", type=int, default=25, help="Max rows to print (0 = no cap)")
     parser.add_argument("--full", action="store_true", help="Print every field per row")
     parser.add_argument("--critical", type=float, default=7.0)
     parser.add_argument("--warning", type=float, default=21.0)

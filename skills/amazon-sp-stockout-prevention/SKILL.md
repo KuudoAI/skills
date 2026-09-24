@@ -87,6 +87,37 @@ On the KuudoAI Amazon SP MCP:
 - There is no sleep in the sandbox. Wait between polls on the host, or in
   separate calls, about 15 to 30 seconds apart.
 
+## Context budget: filter first, always
+
+Keep the context small. Never pull a whole catalog into the conversation
+to answer a question about part of it.
+
+1. **Translate the question into a filter before you fetch anything.**
+
+   | Question | Filter |
+   |---|---|
+   | "Am I at risk?" | The at-risk bands (the script's default) |
+   | "Anything under two weeks?" | `--max-days 14` |
+   | "What should I send in?" | `--needs-ship-in` |
+   | "What's on the way?" | `--in-transit` |
+   | "How are my top sellers?" | `--min-t30 <n>` |
+   | "How's SKU X?" | `--skus X` |
+
+2. **Filter where the data lives.**
+   - Inventory reads filter inside `execute` and return counts plus matching
+     rows only, using the pattern in
+     [data-sources.md](references/data-sources.md#filtered-inventory-read).
+   - Report reads go through the script's flags.
+   - Raw rows never reach the reply path.
+3. **Return counts for everything and rows for the slice.** Band counts
+   cover the whole catalog. Rows cover only what matched, 25 by default.
+   Say how many matched and how many you showed.
+4. **"Everything" only on explicit request, with a warning first.** If the
+   user asks for all SKUs, state the size before fetching, for example
+   "That's 500 SKUs, about 150 KB. It will crowd this conversation." Offer a
+   filter first. If they still want it, run `--all --limit 0`. The script
+   adds a `context_warning` whenever more than 60 rows would print.
+
 ## 2. Get the numbers
 
 ### Inventory (instant)
@@ -106,6 +137,9 @@ For each SKU, keep:
 - `inventoryDetails.fulfillableQuantity`
 - inbound quantities: `inboundWorkingQuantity` (not shipped yet),
   `inboundShippedQuantity`, and `inboundReceivingQuantity`
+
+Keep only the SKUs that match your filter. Everything else is returned as
+counts.
 - `reservedQuantity`:
   - `pendingTransshipmentQuantity` and `fcProcessingQuantity` become
     available soon
@@ -224,8 +258,8 @@ some paths.
 
 | Path | Cost at 500 SKUs | How to run it |
 |---|---|---|
-| Inventory | 10 pages, a few seconds, one block | Page inside one block; the token expires in about 30 seconds. Return a summary (at-risk SKUs plus counts), never all rows; 500 raw rows exceed the output limit |
-| Amazon's report plus the script | The same 4 calls at any size | The script prints the 60 highest-risk SKUs in compact form (about 20 KB) plus `band_counts` for the whole catalog, and says how many rows it left out. Use `--skus` to drill in and `--limit 0` only when you truly need every row |
+| Inventory | 10 pages, a few seconds, one block | Page inside one block; the token expires in about 30 seconds. Filter in the sandbox and return counts plus matching rows (see *Context budget*) |
+| Amazon's report plus the script | The same 4 calls at any size | The default is the at-risk slice: 25 compact rows, about 8 KB at 500 SKUs, plus counts for the whole catalog. `--all --limit 0` is about 155 KB, so use it only on explicit request, after warning |
 | Estimate fallback (no Python) | 1 `getOrderMetrics` call per SKU at about 0.5/s; 500 SKUs would take 15+ minutes | **Don't estimate every SKU.** Cover up to about 90 stocked SKUs (2 blocks): first the ones the seller names, then the lowest fulfillable. Say the result is partial, with how many SKUs were checked, and recommend running where the report can be read |
 | Inbound gap | Grows with the number of recent plans, not SKUs | Batch all flagged SKUs into one pass; see [references/inbound-gap.md](references/inbound-gap.md) |
 

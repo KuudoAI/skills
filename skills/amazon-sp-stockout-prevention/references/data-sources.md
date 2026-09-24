@@ -37,6 +37,46 @@ Sandbox note: `execute` returns only the value of `return`, and `print()`
 output is dropped. Convert values to plain dicts, lists, and strings before
 returning them; `json.dumps(default=...)` can fail in the sandbox.
 
+## Filtered inventory read
+
+Page and filter **inside** one `execute`, and return counts plus matching
+rows only. On a 500-SKU catalog this returns well under 5 KB, where the raw
+pages would be several hundred KB. Change `keep()` to match the question.
+The example keeps stocked SKUs that are low on stock or have units in
+transit.
+
+```python
+await call_tool("set_active_identity", {"identity_id": SID})
+MK = "ATVPDKIKX0DER"
+LOW = 50                      # the question's threshold, set on the host
+counts = {"skus": 0, "stocked": 0, "zero_stock": 0, "in_transit": 0}
+rows, tok = [], None
+def keep(sku, f, t):
+    return f > 0 and (f < LOW or t > 0)
+while True:
+    a = {"granularityType": "Marketplace", "granularityId": MK,
+         "marketplaceIds": [MK], "details": True}
+    if tok:
+        a["nextToken"] = tok
+    r = await call_tool("fba-inventory_getInventorySummaries", a)
+    pl = r.get("payload") or r
+    for s in pl.get("inventorySummaries", []):
+        d = s.get("inventoryDetails") or {}
+        f = d.get("fulfillableQuantity", 0)
+        t = d.get("inboundShippedQuantity", 0) + d.get("inboundReceivingQuantity", 0)
+        counts["skus"] += 1
+        counts["stocked" if f > 0 else "zero_stock"] += 1
+        if t > 0:
+            counts["in_transit"] += 1
+        if keep(s["sellerSku"], f, t):
+            rows.append({"sku": s["sellerSku"], "fulfillable": f, "in_transit": t})
+    tok = (r.get("pagination") or pl.get("pagination") or {}).get("nextToken")
+    if not tok:
+        break
+rows.sort(key=lambda x: x["fulfillable"])
+return {"counts": counts, "matched": len(rows), "rows": rows[:25]}
+```
+
 ## Sales: `getOrderMetrics` (instant)
 
 ```json
