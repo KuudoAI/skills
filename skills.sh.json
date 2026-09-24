@@ -28,6 +28,7 @@
         "amazon-sp-repricing",
         "amazon-sp-sales-traffic-analyzer",
         "amazon-sp-sqp-asin-ngram",
+        "connect-to-kuudo",
         "using-kuudo"
       ]
     }
