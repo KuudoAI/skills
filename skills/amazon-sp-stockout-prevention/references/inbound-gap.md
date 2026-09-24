@@ -20,7 +20,7 @@ can flag 50+ SKUs, and searching plans once per SKU repeats the same calls
 4. Stop when every wanted SKU's in-transit units are covered, or when the
    plans are older than 90 days.
 
-With 45 calls per `execute`, carry the `paginationToken`, the position in
+With about 40 calls per `execute` (there's also a 30-second limit), carry the `paginationToken`, the position in
 the current page, and the partial map between blocks.
 
 **Carry state as a JSON string.** Pass it into the next block as
@@ -76,7 +76,7 @@ account can hold hundreds of stale ACTIVE drafts, so narrow the search:
 2. **Find plans that hold the SKU.** The cheapest way is
    `listInboundPlanItems(inboundPlanId)`, one call per plan: match on `msku`,
    then open only the matching plans with `getInboundPlan`. Cover plans
-   updated in the last 90 days, 45 or fewer calls per `execute`. Skip this
+   updated in the last 90 days, about 40 or fewer fast calls per `execute` (30-second limit). Skip this
    entirely if inventory shows no inbound units.
    - A 400 saying "not supported for Amazon Warehousing and Distribution"
      means an AWD plan. Skip it.

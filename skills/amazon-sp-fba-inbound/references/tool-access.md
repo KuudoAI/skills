@@ -119,8 +119,11 @@ sandbox** (counts, totals, the first few rows) and return only that.
 
 Sandbox limits:
 
+- **A 30-second time limit per `execute`** (measured live). At about 0.5
+  to 1 second per call, run 20 or fewer `getInboundPlan` or `getShipment`
+  calls per block. Fast listing calls can go up to about 40.
 - **At most 50 `call_tool()` calls per `execute`.** Call 51 fails with
-  `Tool call limit exceeded`. Plan fan-outs in chunks of 45 or fewer, and
+  `Tool call limit exceeded`. Plan fan-outs in chunks (see the time limit above), and
   carry a cursor between blocks.
 - Output over about 30 KB is truncated, so return summaries.
 - No `asyncio.sleep`, no network, no file I/O. No `dir`, `hasattr`, or
@@ -194,6 +197,136 @@ hasn't seen.** The confirm goes in its own block, after the typed `CONFIRM`.
 **Polling.** There is no sleep, so don't spin on `getInboundOperationStatus`
 in a loop. If the status is `IN_PROGRESS`, return it and check again in a
 later `execute`.
+
+## Filter-first read patterns
+
+Both patterns return counts for everything and rows for the slice. Measured
+live on 2026-09-24 against a seller with 187 ACTIVE plans and a 780-box
+shipment.
+
+### Plan overview (filter by plan status first)
+
+A plan's list-level `status` already tells you a lot. **SHIPPED** means its
+shipments have left, so count those plans without opening them. Open only
+recent **ACTIVE** plans; they're the ones that need sorting into draft,
+awaiting a decision, or ready to ship.
+
+One live seller had 205 plans updated in 60 days, 175 of them SHIPPED.
+Opening everything took 11 blocks and about 205 calls. Opening only ACTIVE
+plans takes 1 or 2.
+
+Each `execute` also has a 30-second time limit, and `getInboundPlan` takes
+about 0.5 to 1 second, so open 20 or fewer per block.
+
+**Phase 1: list and count.** A few calls; returns counts plus recent ACTIVE
+IDs only.
+
+```python
+await call_tool("set_active_identity", {"identity_id": SID})
+P = "fba-inbound_"
+CUTOFF = "2026-07-26"          # 60 days back, computed on the host
+out = {"shipped_recent": 0, "active_recent_ids": [], "listed_at_least": {}}
+for status in ("SHIPPED", "ACTIVE"):
+    tok = None
+    while True:
+        a = {"status": status, "sortBy": "LAST_UPDATED_TIME", "sortOrder": "DESC", "pageSize": 30}
+        if tok:
+            a["paginationToken"] = tok
+        r = await call_tool(P + "listInboundPlans", a)
+        page = r.get("inboundPlans", [])
+        out["listed_at_least"][status] = out["listed_at_least"].get(status, 0) + len(page)
+        fresh = [p["inboundPlanId"] for p in page if p.get("lastUpdatedAt", "") >= CUTOFF]
+        if status == "SHIPPED":
+            out["shipped_recent"] += len(fresh)
+        else:
+            out["active_recent_ids"] += fresh
+        tok = (r.get("pagination") or {}).get("nextToken")
+        if not tok or len(fresh) < len(page):
+            break          # sorted by update time, so older pages are all stale
+return out
+```
+
+**Phase 2: sort recent ACTIVE plans into buckets,** 20 or fewer IDs per
+block. Accumulate the totals on the host.
+
+```python
+await call_tool("set_active_identity", {"identity_id": SID})
+P = "fba-inbound_"
+IDS = ["wf…", "wf…"]           # 20 or fewer per block
+buckets = {"ready_to_ship": 0, "awaiting_decision": 0, "draft": 0, "other": 0, "awd": 0}
+ready = []
+for pid in IDS:
+    try:
+        g = await call_tool(P + "getInboundPlan", {"inboundPlanId": pid})
+    except Exception as e:
+        buckets["awd" if "Warehousing and Distribution" in str(e) else "other"] += 1
+        continue
+    sh = g.get("shipments", [])
+    rts = [x["shipmentId"] for x in sh if x["status"] == "READY_TO_SHIP"]
+    if rts:
+        buckets["ready_to_ship"] += 1
+        ready += [{"plan": pid, "shipment": x} for x in rts]
+    elif any(o.get("status") == "OFFERED" for o in g.get("placementOptions", [])):
+        buckets["awaiting_decision"] += 1   # confirm expiry with listPlacementOptions
+    elif not sh:
+        buckets["draft"] += 1
+    else:
+        buckets["other"] += 1
+return {"buckets": buckets, "ready_to_ship": ready[:25], "ready_total": len(ready)}
+```
+
+**Phase 3, only when the question needs it:** open SHIPPED plans for
+shipment-level status, such as "what arrives this week" or "is SKU X on the
+way". Filter first: the 20 most recent, or only the plans whose
+`listInboundPlanItems` contain the SKU. Don't open all of them to answer
+"what's in progress"; the SHIPPED count already answers that.
+
+Report the phase 1 counts ("175 plans shipped since Jul 26"), the phase 2
+buckets, and at most 25 rows. Say how many matched, and give the cutoff.
+
+### Shipment contents summary
+
+Return units per SKU and a box summary, never raw box records.
+
+```python
+await call_tool("set_active_identity", {"identity_id": SID})
+P = "fba-inbound_"
+PLAN = "wf…"
+SH = "sh…"
+units, tok = {}, None
+while True:
+    a = {"inboundPlanId": PLAN, "shipmentId": SH, "pageSize": 1000}
+    if tok:
+        a["paginationToken"] = tok
+    r = await call_tool(P + "listShipmentItems", a)
+    for i in r.get("items", []):
+        units[i["msku"]] = units.get(i["msku"], 0) + i.get("quantity", 0)
+    tok = (r.get("pagination") or {}).get("nextToken")
+    if not tok:
+        break
+n_boxes, weight, dims, tok = 0, 0.0, {}, None
+while True:
+    a = {"inboundPlanId": PLAN, "shipmentId": SH, "pageSize": 1000}
+    if tok:
+        a["paginationToken"] = tok
+    r = await call_tool(P + "listShipmentBoxes", a)
+    for b in r.get("boxes", []):
+        q = b.get("quantity", 1) or 1
+        n_boxes += q
+        w = b.get("weight") or {}
+        weight += (w.get("value") or 0) * q
+        d = b.get("dimensions") or {}
+        k = f"{d.get('length')}x{d.get('width')}x{d.get('height')} {d.get('unitOfMeasurement', '')}"
+        dims[k] = dims.get(k, 0) + q
+    tok = (r.get("pagination") or {}).get("nextToken")
+    if not tok:
+        break
+top = sorted(units.items(), key=lambda x: -x[1])
+return {"skus": len(units), "units": sum(units.values()),
+        "top_skus": [{"msku": m, "units": u} for m, u in top[:25]],
+        "boxes": n_boxes, "total_weight": round(weight, 1),
+        "box_sizes": dict(sorted(dims.items(), key=lambda x: -x[1])[:5])}
+```
 
 ## Errors
 

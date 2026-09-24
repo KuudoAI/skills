@@ -77,8 +77,9 @@ On the KuudoAI Amazon SP MCP:
 
 **Sandbox limits.**
 
-- At most 50 `call_tool()` calls per `execute`. Plan fan-outs in chunks of
-  45.
+- At most 50 `call_tool()` calls **and 30 seconds** per `execute`. Detail
+  reads (`getInboundPlan`, `getShipment`) take about 0.5 to 1 second each,
+  so run 20 or fewer per block. Fast list calls can go up to about 40.
 - Output over about 30 KB is truncated, so summarize inside the sandbox.
 - Only `return` values come back; `print()` output is dropped.
 - `datetime.now()` and `%` string formatting fail in the sandbox. Compute
@@ -260,7 +261,7 @@ some paths.
 |---|---|---|
 | Inventory | 10 pages, a few seconds, one block | Page inside one block; the token expires in about 30 seconds. Filter in the sandbox and return counts plus matching rows (see *Context budget*) |
 | Amazon's report plus the script | The same 4 calls at any size | The default is the at-risk slice: 25 compact rows, about 8 KB at 500 SKUs, plus counts for the whole catalog. `--all --limit 0` is about 155 KB, so use it only on explicit request, after warning |
-| Estimate fallback (no Python) | 1 `getOrderMetrics` call per SKU at about 0.5/s; 500 SKUs would take 15+ minutes | **Don't estimate every SKU.** Cover up to about 90 stocked SKUs (2 blocks): first the ones the seller names, then the lowest fulfillable. Say the result is partial, with how many SKUs were checked, and recommend running where the report can be read |
+| Estimate fallback (no Python) | 1 `getOrderMetrics` call per SKU at about 0.5/s; 500 SKUs would take 15+ minutes | **Don't estimate every SKU.** Cover up to about 60 stocked SKUs (3 blocks of about 20): first the ones the seller names, then the lowest fulfillable. Say the result is partial, with how many SKUs were checked, and recommend running where the report can be read |
 | Inbound gap | Grows with the number of recent plans, not SKUs | Batch all flagged SKUs into one pass; see [references/inbound-gap.md](references/inbound-gap.md) |
 
 ## 3. Classify and present
@@ -337,7 +338,7 @@ about directly) that has shipped or receiving units:
    drafts.
    - List each status with `listInboundPlans`, sorted by
      `LAST_UPDATED_TIME` descending.
-   - Find the plans holding the SKU with `listInboundPlanItems`, 45 or fewer
+   - Find the plans holding the SKU with `listInboundPlanItems`, about 40 or fewer
      per block.
    - Keep shipments that are `SHIPPED`, `IN_TRANSIT`, `DELIVERED`,
      `CHECKED_IN`, or `RECEIVING`.

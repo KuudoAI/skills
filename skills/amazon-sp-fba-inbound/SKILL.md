@@ -241,6 +241,35 @@ case-sensitive, so copy them.
    - the free-cancellation deadline (`voidableUntil`)
    - the one next action the seller owns
 
+### Context budget: filter first, always
+
+Inbound data gets large fast. One live account had 187 ACTIVE plans, plus
+its SHIPPED ones, and one shipment returned 780 boxes. Don't pull whole
+lists into the conversation.
+
+1. **Translate the question into a filter before you fetch anything.**
+
+   | Question | Filter |
+   |---|---|
+   | "What's in progress?" | Plans updated in the last 60 days, in flight or awaiting a decision |
+   | "What's on the way?" | Shipments `SHIPPED`, `IN_TRANSIT`, or `RECEIVING` |
+   | "What's stuck?" | Stalled or expired placement options, and drafts older than N days |
+   | "Where's shipment X?" | That shipment only |
+   | "Which plans hold SKU Y?" | Plans whose items include Y |
+
+2. **Filter inside `execute`.** Return counts for everything and rows only
+   for the slice, 25 by default. Use the two patterns in
+   [tool-access.md](references/tool-access.md#filter-first-read-patterns):
+   the *plan overview* and the *shipment contents summary*.
+3. **Say what you left out**: the number matched, the number shown, and
+   the cutoff date.
+4. **"Everything" only on explicit request, with a warning first.** For
+   example, all 187 plans or all 780 box IDs. State the size before
+   fetching ("That's 187 plans / 780 boxes; it will crowd this
+   conversation") and offer a filter. Box IDs are needed only to add
+   small-parcel tracking; return just `boxId`s then, never full box
+   records.
+
 For a status question, answer with the fewest reads, and summarize inside
 `execute`.
 
@@ -252,7 +281,7 @@ For a status question, answer with the fewest reads, and summarize inside
 | "What carrier?" | `getShipment.selectedTransportationOptionId`, matched in `listTransportationOptions(shipmentId=…)` |
 | "When must it arrive?" | `getShipment.selectedDeliveryWindow` (`startDate`, `endDate`, `editableUntil`). `dates` is often empty |
 | "Is tracking in?" | `getShipment.trackingDetails`, which is **always present, even when empty**. Tracking exists only if `spdTrackingDetail.spdTrackingItems` is non-empty or `ltlTrackingDetail.freightBillNumber` has a value. Never test the object itself for truthiness |
-| "What's in it?" | `listShipmentItems`; `listShipmentBoxes` (can be hundreds, so return counts) |
+| "What's in it?" | The *shipment contents summary* pattern: units per SKU (top 25) and box count, weight, and dimensions. Never the raw box list |
 
 **About the plan list.** On a real account, the ACTIVE list is mostly stale
 drafts; one test account had 183 going back to 2023. It also includes AWD
@@ -272,10 +301,15 @@ Page each list until `pagination.nextToken` is empty, passing it back as
    the total as a bare number, for example "187 ACTIVE plans". Don't add a
    guess about what they are. The
    raw list overflows the roughly 30 KB output limit.
-2. Open plans with `getInboundPlan` in `lastUpdatedAt` order, **not
-   `createdAt`**. A plan created months ago can still hold a live shipment,
+2. **SHIPPED plans:** count them from the list; don't open them for an
+   overview. Their shipments have already left. Open them only when the
+   question needs shipment-level status, and then filter first (the most
+   recent, or those holding a SKU).
+   **ACTIVE plans:** open them with `getInboundPlan` in `lastUpdatedAt`
+   order, **not `createdAt`**. A plan created months ago can still hold a live shipment,
    and live shipments keep updating. Open every plan updated in the last 60
-   days, 45 or fewer per `execute` (the per-block limit is 50 calls). Sort
+   days, 20 or fewer per `execute` (each block has a 50-call and 30-second
+   limit; this is phase 2 of the plan overview pattern). Sort
    each into one bucket:
    - **draft:** no shipments.
    - **awaiting a decision:** a placement option is `OFFERED` and not yet
@@ -302,7 +336,7 @@ Page each list until `pagination.nextToken` is empty, passing it back as
 
 "In progress" means in flight plus awaiting a decision.
 
-For in-flight shipments in an overview, a `getShipment` fan-out (45 or
+For in-flight shipments in an overview, a `getShipment` fan-out (20 or
 fewer per block) adds the FBA ID, the FC, and the delivery window. Give
 carrier-specific next steps only after you've checked `shippingSolution`
 on the selected transportation option.

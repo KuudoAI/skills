@@ -93,7 +93,7 @@ return {"counts": counts, "matched": len(rows), "rows": rows[:25]}
 - **Response:** `payload[]` holds `interval`, `unitCount`, `orderItemCount`,
   `orderCount`, `averageUnitPrice`, and `totalSales`.
 - **Call cost:** one call per SKU, with a low rate limit (about 0.5 per second,
-  burst 15). Stay within 45 SKUs per `execute`. Beyond about 40 stocked SKUs,
+  burst 15). Stay within about 20 SKUs per `execute`: after the burst of 15 it runs at about 2 seconds per call, against the 30-second limit. Beyond about 40 stocked SKUs,
   the planning report is cheaper, because one file covers every SKU.
 - **Interval:** use the last 30 *complete* days. Order data for the current
   day is partial.
