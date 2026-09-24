@@ -1,7 +1,7 @@
 {
   "skill_name": "amazon-sp-fba-inbound",
   "skill_version": "0.1.0",
-  "description": "Dry-run behavioral evals. No live MCP: the runner simulates the KuudoAI Amazon SP MCP (code mode, fba-inbound_* names, strict unknown-key rejection) from a server-rules file plus per-eval fixtures, and records every tool call with full params plus the final seller-facing reply. Session context: seller identity 'Acme Outdoor (US)' is active, region na, marketplace US (ATVPDKIKX0DER). Evals with mode=live-read run against the live KuudoAI SP MCP through a read-only harness that blocks every write operation and logs all calls to calls.jsonl.",
+  "description": "Dry-run behavioral evals. No live MCP: the runner simulates a code-mode SP-API MCP server (fba-inbound_* names, strict unknown-key rejection) from a server-rules file plus per-eval fixtures, and records every tool call with full params plus the final seller-facing reply. Session context: seller identity 'Acme Outdoor (US)' is active, region na, marketplace US (ATVPDKIKX0DER). Evals with mode=live-read run against a live SP-API MCP server through a read-only harness that blocks every write operation and logs all calls to calls.jsonl.",
   "evals": [
     {
       "id": 0,
@@ -144,7 +144,7 @@
       "eval_name": "package-not-loaded-diagnosis",
       "fixture": "package-not-loaded",
       "prompt": "What inbound plans do I have going right now?",
-      "expected_output": "Searches for inbound tools, finds none, and tells the user the fulfillment-inbound package must be enabled in SP_API_PACKAGES; does not fabricate plans or substitute unrelated tools.",
+      "expected_output": "Searches for inbound tools, finds none, and tells the user the Fulfillment Inbound operations must be enabled in the server configuration; does not fabricate plans or substitute unrelated tools.",
       "files": [],
       "assertions": [
         {
@@ -153,7 +153,7 @@
         },
         {
           "name": "names-the-fix",
-          "condition": "Tells the user to enable the fulfillment-inbound package via SP_API_PACKAGES (both named) and restart/reload the server"
+          "condition": "Tells the user to enable the Fulfillment Inbound operations (and the v0 label operations) in the server configuration"
         },
         {
           "name": "no-fabrication",

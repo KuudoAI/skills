@@ -9,8 +9,8 @@ match `metadata.version` in SKILL.md.
 ### Added
 
 - First KuudoAI release. Adapted from the Amazon Selling Partner
-  `stockout-prevention` skill (Apache-2.0) and rewritten for the KuudoAI
-  Amazon SP MCP. Validated read-only against the live server.
+  `stockout-prevention` skill (Apache-2.0) and rewritten for a code-mode
+  SP-API MCP server. Validated read-only against the live server.
 - Amazon's own forecast-based numbers from `GET_FBA_INVENTORY_PLANNING_DATA`:
   `days-of-supply` and the recommended ship-in quantity and date. They're
   read through the bundled `scripts/planning_report.py`, which streams the

@@ -19,14 +19,14 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 
 - First KuudoAI release. Adapted from the Amazon Selling Partner
   `fba-inbound-management` skill (Apache-2.0) and substantially rewritten to
-  work with the KuudoAI Amazon SP MCP. The rewrite was verified against the
+  work with a code-mode SP-API MCP server. The rewrite was verified against the
   Fulfillment Inbound v2024-03-20 OpenAPI model and Amazon's use-case guides.
 
 ### Changed (compared with the upstream skill)
 
 - **Tool resolution.** The skill now resolves tools by `operationId` through
-  server discovery, instead of hard-coding the `fbaInbound_*` names. On the
-  KuudoAI server the names are `fba-inbound_<operationId>` and
+  server discovery, instead of hard-coding the `fbaInbound_*` names. On a
+  code-mode server the names are `fba-inbound_<operationId>` and
   `fulfillment-inbound-v0_<operationId>`.
 - **No `entityId`.** The skill no longer asks for or passes `entityId`. The
   seller comes from the server's active identity, and the marketplace is
@@ -66,8 +66,8 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 
 ### Validated live
 
-- Validated read-only against the running KuudoAI Amazon SP MCP (4.0.3).
-  Server specifics now match that server: three meta-tools with no `tags`;
+- Validated read-only against a live SP-API MCP server. The code-mode
+  specifics now match it: three meta-tools with no `tags`;
   a required `set_active_identity`; plain-string errors; `entityId` silently
   ignored; 403 when a seller lacks inbound access; AWD plans in
   `listInboundPlans`; `get_schema` needs `detail="full"`.
@@ -88,7 +88,7 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 ### Also added
 
 - Request shapes for every write.
-- A KuudoAI server access guide.
+- A tool-access guide.
 - `getBillOfLading` for partnered pallet shipments.
 - Status enums and rate limits.
 - Content-update limits.

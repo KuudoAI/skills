@@ -1,7 +1,6 @@
 # Data sources
 
-These were checked against the live KuudoAI Amazon SP MCP (4.0.3) on
-2026-09-24. `get_schema(detail="full")` wins if it disagrees.
+These were verified live, read-only, on 2026-09-24. `get_schema(detail="full")` wins if it disagrees.
 
 ## FBA Inventory: `getInventorySummaries` (instant)
 
