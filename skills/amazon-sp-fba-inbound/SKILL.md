@@ -246,7 +246,7 @@ For a status question, answer with the fewest reads, and summarize inside
 
 | Question | Read |
 |---|---|
-| "What plans do I have / what's in progress?" | `listInboundPlans` with `status=ACTIVE`, `sortBy=LAST_UPDATED_TIME`, `sortOrder=DESC`, paged, de-duplicated by ID (see the note below) |
+| "What plans do I have / what's in progress?" | `listInboundPlans` with `status=ACTIVE` **and** `status=SHIPPED`, `sortBy=LAST_UPDATED_TIME`, `sortOrder=DESC`, paged, de-duplicated by ID (see the note below). ACTIVE holds drafts and `READY_TO_SHIP` shipments; in-transit and receiving shipments sit in SHIPPED plans |
 | "What's in plan X / which shipments?" | `getInboundPlan` (shipments plus packing and placement option statuses) |
 | "Where is shipment X?" | `getShipment`: `destination.warehouseId`, `status`, `shipmentConfirmationId` |
 | "What carrier?" | `getShipment.selectedTransportationOptionId`, matched in `listTransportationOptions(shipmentId=…)` |
@@ -256,7 +256,16 @@ For a status question, answer with the fewest reads, and summarize inside
 
 **About the plan list.** On a real account, the ACTIVE list is mostly stale
 drafts; one test account had 183 going back to 2023. It also includes AWD
-plans. Page through it until `nextToken` is empty, and count unique
+plans.
+
+Once a plan's shipments leave, the plan moves to **SHIPPED**. That's where
+`IN_TRANSIT`, `RECEIVING`, and `CHECKED_IN` shipments live, so an overview
+built from ACTIVE alone misses everything already on its way. Read recent
+SHIPPED plans too (the last 60 days by `lastUpdatedAt`). Report them as
+**in transit or receiving**, separate from **ready to ship**.
+
+Page each list until `pagination.nextToken` is empty, passing it back as
+`paginationToken`, and count unique
 `inboundPlanId`s; paging can repeat rows.
 
 1. Count the full list, and return only a summary from the sandbox. State

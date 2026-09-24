@@ -18,6 +18,31 @@ match `metadata.version` in SKILL.md.
 - `OUT_OF_STOCK` and `INACTIVE` bands, so dormant zero-stock SKUs don't show
   up as critical.
 
+### Added after live smoke and eval rounds
+
+- **Inbound-gap search.** Now covers `SHIPPED`-status plans, where
+  in-transit shipments live. It searches them first and stops once the
+  in-transit units are covered. A live smoke test showed that ACTIVE plans
+  held only stale drafts.
+- **New states:**
+  - an `OUT_NO_RECENT_SALES` band: zero stock and no sales, but Amazon
+    recommends a ship-in
+  - a *watch* tier: healthy by days, but "Low stock" or inbound not yet
+    shipped
+- **Report reuse.** Reuses the newest planning report already finished
+  today (`reports_getReports`). The script adds `inbound_in_transit`.
+- **Nothing inbound.** A SKU with no inbound units gets a clear
+  "nothing on the way" answer instead of a plan search.
+- **Recent pace.** The 7-day vs 30-day pace comparison is shown when they
+  differ by more than about 25%.
+- **Other changes:**
+  - the home marketplace is the default, with participations listed via
+    `sellers_getMarketplaceParticipations`
+  - the identity is looked up once and re-selected each block
+  - AWD is checked only when the seller uses it
+- **Pricing.** Price is never offered as a lever, and price fields are
+  dropped inside the sandbox.
+
 ### Changed (compared with the upstream skill)
 
 - **Tool resolution.** Tools are resolved by `operationId` through server

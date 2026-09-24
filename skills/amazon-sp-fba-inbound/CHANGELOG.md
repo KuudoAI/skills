@@ -72,6 +72,12 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   ignored; 403 when a seller lacks inbound access; AWD plans in
   `listInboundPlans`; `get_schema` needs `detail="full"`.
 
+### Fixed after live smoke testing
+
+- **Plan status overviews** now read `SHIPPED`-status plans as well as
+  `ACTIVE`. Once shipments leave, the plan moves to SHIPPED, so an
+  ACTIVE-only overview missed everything in transit or being received.
+
 ### Also added
 
 - Request shapes for every write.

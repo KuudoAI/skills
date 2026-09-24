@@ -130,6 +130,9 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
         for field, column in COLUMNS.items():
             value = pick(record, column)
             row[field] = number(value) if field in NUMERIC else (value or None)
+        # Units actually on their way: shipped plus at the FC being received.
+        # inbound_quantity also counts working units that haven't left the seller.
+        row["inbound_in_transit"] = (row["inbound_shipped"] or 0) + (row["inbound_received"] or 0)
         row["band"] = band(row, args.critical, args.warning)
         rows.append(row)
 
@@ -167,8 +170,11 @@ def main() -> int:
     try:
         text = read_text(args.source)
     except Exception as exc:  # expired URL, network, or file errors
-        print(json.dumps({"error": f"{type(exc).__name__}: {exc}",
-                          "hint": "Pre-signed URLs expire after about 5 minutes. Call getReportDocument again for a fresh one."}))
+        error = {"error": f"{type(exc).__name__}: {exc}"}
+        if args.source.startswith(("https://", "http://")):
+            error["hint"] = ("Pre-signed URLs expire after about 5 minutes. "
+                             "Call getReportDocument again for a fresh one.")
+        print(json.dumps(error))
         return 1
     print(json.dumps(summarize(text, args), indent=1))
     return 0

@@ -78,6 +78,10 @@
         {
           "name": "no-unprompted-price",
           "condition": "Reply does not bring up price as a lever or option (the seller did not ask about price)"
+        },
+        {
+          "name": "mentions-pace-change",
+          "condition": "Notes that FR810R's last-7-day pace (~7.6/day) is materially slower than the 30-day pace, and the later stockout date it implies (~Oct 12)"
         }
       ]
     },
@@ -128,6 +132,43 @@
         {
           "name": "concise",
           "condition": "Does not paste the identity list (fewer than 20 merchant IDs shown)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "live-sku-gap-with-inbound",
+      "mode": "live-read",
+      "prompt": "Seller A2GQWJZXTY0M66: will FRO599S run out before my next shipment lands?",
+      "expected_output": "No. ~39 days of supply (Amazon) \u2192 stockout ~Nov 1-2; ~990 units in transit in SHIPPED-status plans, earliest shipments IN_TRANSIT with delivery windows starting 2026-09-27 (AVP1/HIA1), plus RECEIVING/CHECKED_IN units \u2014 stock lands well before the stockout date. May mention Amazon's small top-up recommendation (~430 units by Oct 1).",
+      "assertions": [
+        {
+          "name": "selects-correct-seller",
+          "condition": "Selects identity 6193 before inventory/sales calls"
+        },
+        {
+          "name": "finds-in-transit-shipments",
+          "condition": "Finds FRO599S in-transit shipments by searching SHIPPED-status plans (evidence in calls.jsonl: listInboundPlans with status SHIPPED) rather than reporting no inbound or only ACTIVE drafts"
+        },
+        {
+          "name": "arrival-window",
+          "condition": "Reports dated delivery windows from getShipment for the in-transit shipments (live: Sep 20\u201326, Sep 27\u2013Oct 3, Oct 4\u201310), none later than ~Oct 10, and uses the earliest to judge the gap"
+        },
+        {
+          "name": "correct-verdict",
+          "condition": "Concludes stock should land before FRO599S runs out (days of cover ~30-39, stockout late Oct / early Nov), i.e. negative gap / no stockout expected"
+        },
+        {
+          "name": "no-draft-confusion",
+          "condition": "No quantity from the stale ACTIVE July drafts (3,900-unit plans) appears in the reply as incoming stock, and the in-transit figure is based on shipment status / inventory (~990), not plan totals"
+        },
+        {
+          "name": "no-unprompted-price",
+          "condition": "Reply does not bring up price as a lever"
+        },
+        {
+          "name": "no-write-attempts",
+          "condition": "No harness call refused as a write"
         }
       ]
     }

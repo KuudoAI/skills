@@ -49,9 +49,12 @@ On the KuudoAI Amazon SP MCP:
 - **Call `set_active_identity` at the top of every `execute` block that
   touches seller data.** On this server the selection is shared across
   sessions, so re-selecting pins each call.
-- Find the identity by filtering `list_identities` (it returns
-  `{"result": [...]}`) by merchant ID **inside** the sandbox. Agency tokens
-  list 150+ sellers.
+- Find the identity once. Filter `list_identities` inside the sandbox; it
+  returns `{"result": [{id, label, attributes: {account_id,
+  declared_region}}]}`, where `label` is the merchant ID. Agency tokens list
+  150+ sellers.
+- Keep the matching `id`, then just call `set_active_identity(id)` at the
+  top of each later block. There's no need to re-list.
 - If the token has exactly one identity, use it and say which one.
   Otherwise, if the user hasn't said which seller, ask: give counts, never
   the list. Never use whichever seller happens to be active.
@@ -63,9 +66,11 @@ On the KuudoAI Amazon SP MCP:
 - There is no `entityId` argument.
 - Pass `marketplaceIds` / `granularityId` explicitly. One marketplace per
   run.
-- No marketplace named? Use the identity's home marketplace (its
-  `declared_region` country, mapped through `list_marketplaces`) and say so.
-  Offer the others the seller participates in.
+- No marketplace named? Use the identity's home marketplace
+  (`attributes.declared_region` is a country code; map it with
+  `list_marketplaces`) and say so. To offer the others,
+  `sellers_getMarketplaceParticipations` lists the marketplaces the seller
+  actually sells in; `list_marketplaces` lists all of Amazon's.
 
 **Sandbox limits.**
 
@@ -100,20 +105,25 @@ For each SKU, keep:
     available soon
   - `pendingCustomerOrderQuantity` is already sold
 
-Drop SKUs with zero fulfillable **and** zero inbound unless the seller asks
-about one. Those are already out of stock or dormant; report them as a
-count.
+On the estimate path, set aside SKUs with zero fulfillable **and** zero
+inbound; they have no days of cover to compute. When Amazon's report is
+available, let its bands decide instead. A zero-stock SKU that is still
+selling is **OUT_OF_STOCK**, not dormant.
 
 ### Velocity (instant; the trailing-30-day estimate)
 
 Call `getOrderMetrics` per SKU with:
 
 - `granularity: "Total"`
-- the last 30 full days as `interval`, for example
-  `2026-08-23T00:00:00-07:00--2026-09-22T00:00:00-07:00`
+- the last 30 **complete** days as `interval`, ending at midnight today in
+  the marketplace's time zone. For example, on 2026-09-24:
+  `2026-08-25T00:00:00-07:00--2026-09-24T00:00:00-07:00`
 - `sku` (mutually exclusive with `asin`)
 - **`fulfillmentNetwork: "AFN"`**, so merchant-fulfilled sales don't
   inflate FBA velocity
+
+Keep only `unitCount` inside the sandbox. Drop `averageUnitPrice` and
+`totalSales`, so no price anchor reaches the reply.
 
 Then compute:
 
@@ -146,7 +156,9 @@ To read the report:
 
 1. **Reuse today's report if one exists.** Call `reports_getReports` with
    `reportTypes: ["GET_FBA_INVENTORY_PLANNING_DATA"]`,
-   `processingStatuses: ["DONE"]`, and `createdSince` = today. Otherwise call
+   `processingStatuses: ["DONE"]`, `marketplaceIds`, and `createdSince` =
+   today. Take the one with the latest `dataEndTime`; on a tie, the newest
+   `createdTime`. Otherwise call
    `createReport` with `reportType: "GET_FBA_INVENTORY_PLANNING_DATA"` and
    `marketplaceIds`. `createReport` is rate-limited to about 1 per minute.
 2. Poll `getReport` in later calls until `processingStatus` is `DONE`. It
@@ -195,7 +207,7 @@ The estimate still has uses:
 |---|---|
 | Normal run on a host that can run the script | Report is primary. Use the estimate only as a cross-check for flagged SKUs, or where the report has no value |
 | Host can't run Python or reach HTTPS | Estimate, labelled, and say why |
-| A single-SKU question that needs an instant answer | Estimate now; offer Amazon's numbers |
+| A single-SKU question | Check for today's report first (one call). If there is none, give the estimate now and offer Amazon's numbers |
 
 The details are in [references/data-sources.md](references/data-sources.md).
 
@@ -211,6 +223,7 @@ the estimate.
 | **CRITICAL** | Under 7 | Will run out within a week |
 | **WARNING** | 7 to under 21 | Approaching risk; act soon |
 | **HEALTHY** | 21 or more | Fine. Don't manufacture risk |
+| *watch* | HEALTHY by days, but Amazon's health status says "Low stock", or inbound units are still `working` (not shipped) | Mention briefly. It isn't a warning |
 | **INACTIVE** | 0 available, no sales, no recommendation | Dormant. Give a count, not a warning |
 
 These bands are this skill's heuristic, not an Amazon rule. When Amazon's
@@ -255,18 +268,30 @@ shipment of this SKU is on the way. Measure the gap against:
 
 Then go to step 5.
 
-**AWD.** If the seller uses AWD, `AWD_listInventory` may show stock that can
-replenish FBA. A 403 means AWD isn't visible for this seller; say so rather
-than implying there's none.
+**AWD.** Check only when there's a sign the seller uses AWD, such as AWD
+plans in the inbound list or the seller mentioning it. Call
+`AWD_listInventory` with `{"sku": "<sku>", "details": "SHOW"}`; it may show
+stock that can replenish FBA. A 403 means AWD isn't visible for this seller.
+Say so rather than implying there's none.
 
-For each OUT_OF_STOCK, CRITICAL, or WARNING SKU that does have shipped or
-receiving units:
+For each OUT_OF_STOCK, CRITICAL, or WARNING SKU (or any SKU the seller asks
+about directly) that has shipped or receiving units:
 
-1. Find the plans that hold it. List `ACTIVE` plans with `listInboundPlans`,
-   sorted by `LAST_UPDATED_TIME` descending. Open recent plans with
-   `getInboundPlan` (45 or fewer per block), and keep shipments that are
-   `SHIPPED`, `IN_TRANSIT`, `DELIVERED`, `CHECKED_IN`, or `RECEIVING`.
-   Include `READY_TO_SHIP` too, and flag it as not yet shipped.
+1. Find the plans that hold it. **Search `status=SHIPPED` plans first.**
+   Once a plan's shipments leave, the plan moves from ACTIVE to SHIPPED, so
+   in-transit stock lives there. Then search `ACTIVE` plans for shipments
+   that are ready to ship. In a live test, every in-transit shipment of the
+   SKU was in a SHIPPED plan, and the ACTIVE plans holding it were stale
+   drafts.
+   - List each status with `listInboundPlans`, sorted by
+     `LAST_UPDATED_TIME` descending.
+   - Find the plans holding the SKU with `listInboundPlanItems`, 45 or fewer
+     per block.
+   - Keep shipments that are `SHIPPED`, `IN_TRANSIT`, `DELIVERED`,
+     `CHECKED_IN`, or `RECEIVING`.
+   - Include `READY_TO_SHIP` too, and flag it as not yet shipped.
+   - Stop once the matched shipments account for the SKU's
+     `inboundShipped` plus `inboundReceiving` units.
 2. Match the SKU to shipments with `listShipmentItems(inboundPlanId,
    shipmentId)`, matching on `msku`.
 3. Take arrival from `getShipment.selectedDeliveryWindow.startDate` (and

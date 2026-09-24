@@ -10,10 +10,34 @@ that have shipped or receiving units.
 `listInboundPlans` returns plan summaries only: no SKUs and no dates. A real
 account can hold hundreds of stale ACTIVE drafts, so narrow the search:
 
-1. **List plans.** Call `fba-inbound_listInboundPlans` with
-   `{"status": "ACTIVE", "sortBy": "LAST_UPDATED_TIME", "sortOrder": "DESC",
-   "pageSize": 30}`. To page, pass the response's `pagination.nextToken` as
-   the request's **`paginationToken`**.
+1. **List plans, SHIPPED first.** When a plan's shipments leave, the plan's
+   status moves from ACTIVE to **SHIPPED**, so in-transit stock sits in
+   SHIPPED plans. ACTIVE plans hold `READY_TO_SHIP` shipments, plus many
+   stale drafts.
+
+   A live check on 2026-09-24:
+   - A SKU's 990 in-transit units were split across SHIPPED plans:
+     `IN_TRANSIT`, `SHIPPED`, `RECEIVING`, and `CHECKED_IN` shipments.
+   - All ten ACTIVE plans containing that SKU were unshipped July drafts.
+
+   Call `fba-inbound_listInboundPlans` with
+   `{"status": "SHIPPED", "sortBy": "LAST_UPDATED_TIME", "sortOrder":
+   "DESC", "pageSize": 30}` (30 is the maximum), then repeat with `"status": "ACTIVE"`. To page,
+   pass the response's `pagination.nextToken` as the request's
+   **`paginationToken`**. Stop once the matched shipment quantities account
+   for the SKU's `inboundShipped` plus `inboundReceiving` units.
+
+   In a live smoke test, covering 990 in-transit units took 2 pages and 41
+   calls. Plan-level quantities can exceed the in-transit total (1,260
+   matched vs 990), because plans also count shipments that were already
+   received. Judge what's still coming by each **shipment's** status, not
+   by the plan's total.
+
+   **Stop early.** You don't need every shipment, only the arrival dates
+   that decide the gap. Once the matched `SHIPPED` and `IN_TRANSIT`
+   shipments cover the in-transit units, stop and use the earliest window.
+   One live run traced all 13 matching plans and spent about 82 calls; half
+   that would have given the same answer.
 2. **Find plans that hold the SKU.** The cheapest way is
    `listInboundPlanItems(inboundPlanId)`, one call per plan: match on `msku`,
    then open only the matching plans with `getInboundPlan`. Cover plans
