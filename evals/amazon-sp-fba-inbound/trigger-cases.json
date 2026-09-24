@@ -1,0 +1,18 @@
+[
+  {"query": "I need to send 400 units of my yoga mats (SKU YM-BLK-6MM) to Amazon FBA from our warehouse in Reno. Can you set up the inbound shipment?", "should_trigger": true},
+  {"query": "what inbound plans do i have open right now and which ones haven't shipped yet", "should_trigger": true},
+  {"query": "Amazon split my shipment into 3 FCs, show me the placement options and what each one costs before I pick", "should_trigger": true},
+  {"query": "Our freight carrier gave us PRO number 88231974 for shipment FBA18XYZ, please add it to Amazon", "should_trigger": true},
+  {"query": "Can you get me the box labels for shipment FBA17QK2LMN, plain paper please?", "should_trigger": true},
+  {"query": "I'm using UPS partnered carrier for this FBA inbound. What's the quote and how long do I have to cancel for free?", "should_trigger": true},
+  {"query": "cancel inbound plan wf1a2b3c4d-... we're not sending that stock anymore", "should_trigger": true},
+  {"query": "Shipping inventory to an Amazon fulfillment center in India for the first time — what do I need to book the drop-off appointment?", "should_trigger": true},
+  {"query": "I don't know exactly what goes in each carton yet but I have 4 pallets ready to go to Amazon next week", "should_trigger": true},
+  {"query": "Which of my FBA SKUs will stock out in the next 30 days and how many units should I reorder?", "should_trigger": false},
+  {"query": "Show me my stranded and excess FBA inventory and the storage fees I'm paying on it.", "should_trigger": false},
+  {"query": "Create a multi-channel fulfillment order to ship 2 units from FBA to a Shopify customer.", "should_trigger": false},
+  {"query": "We're a vendor (1P) — how do I respond to Amazon's new purchase order and confirm the ship date?", "should_trigger": false},
+  {"query": "Move 20 pallets from AWD into FBA replenishment automatically.", "should_trigger": false},
+  {"query": "My FBA shipment was received short by 12 units, help me file a reimbursement case.", "should_trigger": false},
+  {"query": "Calculate FBA fulfillment fees and margin for a 2.4 lb product priced at $34.99.", "should_trigger": false}
+]
