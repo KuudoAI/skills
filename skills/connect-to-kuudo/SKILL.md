@@ -44,7 +44,20 @@ Cursor has no add command; add the same server to `.cursor/mcp.json`:
 }
 ```
 
-Then call the MCP server's connect tool with `capabilities: ["read_account", "read_organization"]`, a `name` (the tool and the project, e.g. `"Claude Code – acme/ads-reporting"`), and a `reason` (what the connection is for, in plain language). Both appear on the approval page and later at `/developers/agent-connections` — they're the human's only way to recognize this connection, so make them specific. Pass `login_hint` set to the human's email only if the human has actually given it in this conversation; never guess or invent one.
+Call the MCP server's `connect_agent` tool once — its input schema requires `provider`; everything else is optional but should still be set deliberately:
+
+```json
+{
+  "provider": "https://app.kuudo.com",
+  "capabilities": ["read_account", "read_organization"],
+  "mode": "delegated",
+  "name": "Claude Code – acme/ads-reporting",
+  "reason": "Read the organization ID for the ads-reporting pipeline",
+  "login_hint": "you@example.com"
+}
+```
+
+Pass `mode: "delegated"` explicitly — never `"autonomous"` — even though Kuudo only offers delegated mode: omitting `mode` makes the tool return a mode-selection prompt instead of connecting when it can't assume a single mode. `name` (the tool and the project) and `reason` (what the connection is for, in plain language) appear on the approval page and later at `/developers/agent-connections` — they're the human's only way to recognize this connection, so make them specific. Only set `login_hint` to the human's email if the human has actually given it in this conversation; never guess or invent one. Never pass `force_approval: true` — see [One connection per human](#one-connection-per-human).
 
 ### Fallback: direct CLI
 
@@ -76,22 +89,45 @@ Then wait. Never open, follow, fill in, or approve the link yourself, and never 
 
 ## If the wait times out
 
-`@auth/agent-cli@0.5.1` stops waiting after about 5 minutes (`approval_timeout`) even though the link is good for 15. A timeout is not the same as expiry — the human may still be signing up or about to approve. Before doing anything else, check status:
+`@auth/agent-cli@0.5.1` stops waiting after about 5 minutes (`approval_timeout`) even though the link is good for 15. A timeout is not the same as expiry, and neither is the same as denial — the human may still be signing up or about to approve. Before doing anything else, check status.
+
+Over MCP, call `agent_status` with the `agent_id` `connect_agent` returned:
+
+```json
+{ "agent_id": "<agent-id>" }
+```
+
+With the CLI:
 
 ```bash
 npx @auth/agent-cli@0.5.1 status <agent-id>
 ```
 
-- Still pending and unexpired: keep waiting (poll `status` again, or let the human know the link is still live) — do not reconnect.
-- `approval_expired`, or the connection was denied or revoked: only now reconnect. Reconnecting registers a new agent with a new link; the old link stops working.
+- Still pending and unexpired: keep waiting (check status again, or let the human know the link is still live) — do not reconnect.
+- `approval_expired`, or the human explicitly denied it (`agent_rejected`): only now reconnect — call `connect_agent` (or the CLI's `connect`) again. Reconnecting registers a new agent with a new link; the old link stops working. Only do this if the human still wants to connect; a denial is a "no," not a glitch to retry past.
+- `agent_revoked`: this was an approved, active connection that later got revoked — a different situation from the wait timing out. Reconnect only if the agent still needs access.
 
 ## One connection per human
 
-One local Agent Auth installation belongs to one human — whoever approves its first connection becomes its permanent owner. A different human approving a later connection from the same installation is refused with `capability_request_owner_mismatch`. Never try to work around this (for example, with a `force_approval` option) to move an installation to a different person; if a second human needs to connect, they need their own installation (their own `--storage-dir`, machine, or account profile), not this one.
+One local Agent Auth installation belongs to one human — whoever approves its first connection becomes its permanent owner. A different human approving a later connection from the same installation is refused with `capability_request_owner_mismatch`. Never pass `connect_agent`'s `force_approval: true` (the plain CLI has no equivalent flag) to move an installation to a different person — it exists specifically to reset the existing binding so a different user can authenticate, which is exactly the switch this rule forbids. If a second human needs to connect, they need their own installation (their own `--storage-dir`, machine, or account profile), not this one.
 
 ## After connecting: read account and organization
 
-Once approved, execute the two granted capabilities:
+Once approved, call `execute_capability` with the `agent_id` `connect_agent` returned:
+
+```json
+{ "agent_id": "<agent-id>", "capability": "read_account" }
+```
+
+```json
+{
+  "agent_id": "<agent-id>",
+  "capability": "read_organization",
+  "arguments": { "organization_id": "<organization-id-from-read_account>" }
+}
+```
+
+With the CLI:
 
 ```bash
 npx @auth/agent-cli@0.5.1 execute <agent-id> read_account
@@ -99,15 +135,16 @@ npx @auth/agent-cli@0.5.1 execute <agent-id> read_organization \
   --args '{"organization_id":"<organization-id-from-read_account>"}'
 ```
 
-`read_account` returns the human's account ID, name, email, and the ID of the organization they approved. `read_organization` needs that exact organization ID and returns its name and slug. Use the MCP host's own connect/execute tools instead of the CLI when running through MCP.
+`read_account` returns the human's account ID, name, email, and the ID of the organization they approved. `read_organization` needs that exact `organization_id` (in `arguments` over MCP, in `--args` on the CLI) and returns the organization's name and slug.
 
 ## Errors
 
 | Error | Meaning | What to do |
 | --- | --- | --- |
-| `approval_timeout` | This client's own wait gave up before the 15-minute link expired. | Run `status`; the approval may still complete. Don't reconnect yet. |
+| `approval_timeout` | This client's own wait gave up before the 15-minute link expired. | Check status; the approval may still complete. Don't reconnect yet. |
 | `approval_expired` | The 15-minute link actually ran out. | Reconnect — a new agent and link. |
-| `agent_revoked` | The human denied or later revoked the connection. | Reconnect from the agent if it still needs access. |
+| `agent_rejected` | The human explicitly denied the approval request. | Reconnect only if the human still wants to connect; don't treat a "no" as a retry-able glitch. |
+| `agent_revoked` | An approved, active connection was later revoked. | Reconnect from the agent if it still needs access. |
 | `capability_request_owner_mismatch` | A different human than this installation's owner tried to approve it. | Use a separate installation per human; never force it. |
 | `agent_access_denied` | The connection lost access (membership or binding changed) after being active. | Reconnect from the agent. |
 | `organization_not_found` | The `organization_id` passed to `read_organization` doesn't match the approved one. | Use the `organization_id` `read_account` returned; don't guess one. |
@@ -117,6 +154,8 @@ npx @auth/agent-cli@0.5.1 execute <agent-id> read_organization \
 
 - Requesting capabilities beyond `read_account` and `read_organization`.
 - Paraphrasing, shortening, or partially retyping the approval link or code.
-- Reconnecting on a plain `approval_timeout` without checking `status` first.
+- Reconnecting on a plain `approval_timeout` without checking status first.
+- Treating `agent_rejected` (the human said no) the same as `approval_timeout` or `approval_expired` (nobody has answered yet) and reconnecting anyway.
 - Approving, denying, or signing in on the human's behalf, or asking for their password or verification email.
 - Putting `--url` directly before a subcommand name with nothing else in between.
+- Passing `force_approval: true` to move a connection to a different human instead of using a separate installation.
