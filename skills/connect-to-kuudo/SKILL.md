@@ -63,7 +63,11 @@ A single wait for approval can time out before the human has actually finished �
 
 ## One connection per human
 
-One local Agent Auth installation belongs to one human — whoever approves its first connection becomes its permanent owner. A different human approving a later connection from the same installation is refused with `capability_request_owner_mismatch`. Never pass `connect_agent`'s `force_approval: true` to move an installation to a different person — it exists specifically to reset the existing binding so a different user can authenticate, which is exactly the switch this rule forbids. If a second human needs to connect, they need their own installation, not this one.
+One local Agent Auth installation is meant for one human. Once a human approves a connection from it, connections the installation registers after that belong to the same human, and a different human approving one of them is refused with `capability_request_owner_mismatch`.
+
+That protection only covers connections registered after the first approval. Keep at most one connection waiting for approval per installation: if two are pending before anyone has approved either, a different human who approves the second one takes over the installation, and the first human's connections from it are revoked. Wait for the pending connection to be approved, denied, or expired before starting another.
+
+Never pass `connect_agent`'s `force_approval: true` to move an installation to a different person — it exists specifically to reset the existing binding so a different user can authenticate, which is exactly the switch this rule forbids. If a second human needs to connect, they need their own installation, not this one.
 
 ## After connecting: read account and organization
 
@@ -105,3 +109,4 @@ Once approved, call `execute_capability` with the `agent_id` `connect_agent` ret
 - Approving, denying, or signing in on the human's behalf, or asking for their password or verification email.
 - Running MCP setup commands, editing client configuration, or installing a package to work around missing Agent Auth tools instead of pointing the human to Kuudo's own connection guide.
 - Passing `force_approval: true` to move a connection to a different human instead of using a separate installation.
+- Starting a second connection from the same installation while an earlier one is still waiting for approval.
