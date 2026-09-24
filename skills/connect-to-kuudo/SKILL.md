@@ -1,8 +1,8 @@
 ---
 name: connect-to-kuudo
-description: Use when an AI agent needs to connect to a human's Kuudo account before calling any Kuudo capability — registering a delegated Agent Auth connection, presenting the human's approval link, and reading account/organization data once approved. Covers the connect/approve/execute flow, approval timeouts and expiry, and the one-installation-per-human rule. Do not use to design or modify the Agent Auth protocol itself, to request capabilities beyond read_account and read_organization, or to approve, deny, or sign in on the human's behalf.
+description: Use when an AI agent needs to connect to a human's Kuudo account before calling any Kuudo capability — checking whether the session already exposes the Agent Auth MCP tools, registering a delegated connection with them, presenting the human's approval link, and reading account/organization data once approved. Covers the connect/approve/execute flow, approval timeouts and expiry, and the one-installation-per-human rule. Do not use to configure an MCP server, edit client configuration, or install packages — point the human to Kuudo's own connection guide instead. Do not use to design or modify the Agent Auth protocol itself, to request capabilities beyond read_account and read_organization, or to approve, deny, or sign in on the human's behalf.
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
-compatibility: Requires running `npx @auth/agent-cli@0.5.1` (Node.js and outbound network access) and a way to show the human a link — an auto-opened browser or a link printed for them to open themselves.
+compatibility: Requires the human's client to already have an MCP connection to Kuudo's Agent Auth server, exposing tools such as connect_agent, execute_capability, and agent_status, and a way to show the human a link. This skill uses the session's actual exposed tool names and schemas; it does not configure MCP, edit client config, or install anything itself.
 metadata:
   version: "0.1.0"
 ---
@@ -11,40 +11,21 @@ metadata:
 
 ## Overview
 
-Kuudo authenticates AI agents through Agent Auth's delegated mode: an agent registers, a human approves the connection from their browser, and the agent then acts as that human inside the one organization they approved. This skill covers connecting for the first time, presenting the approval link, and reading data once approved — not building an integration against the protocol itself.
+Kuudo authenticates AI agents through Agent Auth's delegated mode: an agent registers, a human approves the connection from their browser, and the agent then acts as that human inside the one organization they approved. Connecting the client to Kuudo's Agent Auth MCP server is a one-time, client-owned setup step outside this skill — see [Before you start](#before-you-start). This skill covers using that connection for the first time, presenting the approval link, and reading data once approved.
 
 The agent never creates a Kuudo account, signs in, or approves its own request, and never sees the human's password or the contents of their verification email. A human without a Kuudo account yet creates one from the approval link.
 
+## Before you start
+
+Check the current session's exposed MCP tools for Kuudo's Agent Auth server. In `@auth/agent-cli@0.5.1`'s MCP mode these are named `connect_agent`, `execute_capability`, and `agent_status` — use whichever names and input schemas the session actually exposes, never an invented alias. This skill never configures an MCP server, edits `.cursor/mcp.json` or any other client configuration file, or installs a package — that setup belongs to the human and their client, not this skill.
+
+If those tools aren't available in the session, stop here. Tell the human that connecting to Kuudo needs a one-time MCP connection first, and point them to Kuudo's "Connect your AI agent to Kuudo" guide at https://docs.kuudo.com. Do not attempt the setup yourself.
+
 ## Connect
 
-Use `@auth/agent-cli`, pinned to `0.5.1`, against `https://app.kuudo.com`. Request exactly two capabilities: `read_account` and `read_organization`. Never request more.
+Once the tools are available, request exactly two capabilities: `read_account` and `read_organization`. Never request more.
 
-### Preferred: MCP
-
-If the agent's host (Claude Code, Cursor, Codex, etc.) supports MCP, add Kuudo as a server once:
-
-```bash
-claude mcp add kuudo -- npx @auth/agent-cli@0.5.1 mcp --url https://app.kuudo.com
-```
-
-```bash
-codex mcp add kuudo -- npx @auth/agent-cli@0.5.1 mcp --url https://app.kuudo.com
-```
-
-Cursor has no add command; add the same server to `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "kuudo": {
-      "command": "npx",
-      "args": ["@auth/agent-cli@0.5.1", "mcp", "--url", "https://app.kuudo.com"]
-    }
-  }
-}
-```
-
-Call the MCP server's `connect_agent` tool once — its input schema requires `provider`; everything else is optional but should still be set deliberately:
+Call `connect_agent` once — its input schema requires `provider`; everything else is optional but should still be set deliberately:
 
 ```json
 {
@@ -59,25 +40,6 @@ Call the MCP server's `connect_agent` tool once — its input schema requires `p
 
 Pass `mode: "delegated"` explicitly — never `"autonomous"` — even though Kuudo only offers delegated mode: omitting `mode` makes the tool return a mode-selection prompt instead of connecting when it can't assume a single mode. `name` (the tool and the project) and `reason` (what the connection is for, in plain language) appear on the approval page and later at `/developers/agent-connections` — they're the human's only way to recognize this connection, so make them specific. Only set `login_hint` to the human's email if the human has actually given it in this conversation; never guess or invent one. Never pass `force_approval: true` — see [One connection per human](#one-connection-per-human).
 
-### Fallback: direct CLI
-
-Without MCP, call `connect` directly:
-
-```bash
-npx @auth/agent-cli@0.5.1 connect \
-  --provider https://app.kuudo.com \
-  --url https://app.kuudo.com \
-  --capabilities read_account read_organization \
-  --mode delegated \
-  --name "Claude Code – acme/ads-reporting" \
-  --reason "Read the organization ID for the ads-reporting pipeline" \
-  --login-hint you@example.com
-```
-
-`--login-hint` is optional and only a hint shown on the approval page — omit it if the human hasn't given an email. `--mode delegated` is the default; never pass `--mode autonomous`. Add `--no-browser` to print the link instead of opening it.
-
-`--url` is a variadic top-level flag, not a `connect` option: it swallows every bare word after it until the next `--flag`. Always give it after the subcommand name, as in the command above — `auth-agent --url https://app.kuudo.com connect ...` swallows `connect` itself and breaks the command. If a wrapper needs `--url` before a subcommand, follow it immediately with another flag (e.g. `--host-name`) so it can't consume the subcommand word.
-
 ## Present the approval link
 
 Registering returns an approval URL (and, for device authorization, a short user code) valid for **15 minutes**. Show it to the human exactly as returned — verbatim, not paraphrased, not shortened. Tell them:
@@ -89,27 +51,19 @@ Then wait. Never open, follow, fill in, or approve the link yourself, and never 
 
 ## If the wait times out
 
-`@auth/agent-cli@0.5.1` stops waiting after about 5 minutes (`approval_timeout`) even though the link is good for 15. A timeout is not the same as expiry, and neither is the same as denial — the human may still be signing up or about to approve. Before doing anything else, check status.
-
-Over MCP, call `agent_status` with the `agent_id` `connect_agent` returned:
+A single wait for approval can time out before the human has actually finished — signing up and verifying an email can take a few minutes. A timeout is not the same as expiry, and neither is the same as denial. Before doing anything else, call `agent_status` with the `agent_id` `connect_agent` returned:
 
 ```json
 { "agent_id": "<agent-id>" }
 ```
 
-With the CLI:
-
-```bash
-npx @auth/agent-cli@0.5.1 status <agent-id>
-```
-
 - Still pending and unexpired: keep waiting (check status again, or let the human know the link is still live) — do not reconnect.
-- `approval_expired`, or the human explicitly denied it (`agent_rejected`): only now reconnect — call `connect_agent` (or the CLI's `connect`) again. Reconnecting registers a new agent with a new link; the old link stops working. Only do this if the human still wants to connect; a denial is a "no," not a glitch to retry past.
+- `approval_expired`, or the human explicitly denied it (`agent_rejected`): only now reconnect — call `connect_agent` again. Reconnecting registers a new agent with a new link; the old link stops working. Only do this if the human still wants to connect; a denial is a "no," not a glitch to retry past.
 - `agent_revoked`: this was an approved, active connection that later got revoked — a different situation from the wait timing out. Reconnect only if the agent still needs access.
 
 ## One connection per human
 
-One local Agent Auth installation belongs to one human — whoever approves its first connection becomes its permanent owner. A different human approving a later connection from the same installation is refused with `capability_request_owner_mismatch`. Never pass `connect_agent`'s `force_approval: true` (the plain CLI has no equivalent flag) to move an installation to a different person — it exists specifically to reset the existing binding so a different user can authenticate, which is exactly the switch this rule forbids. If a second human needs to connect, they need their own installation (their own `--storage-dir`, machine, or account profile), not this one.
+One local Agent Auth installation belongs to one human — whoever approves its first connection becomes its permanent owner. A different human approving a later connection from the same installation is refused with `capability_request_owner_mismatch`. Never pass `connect_agent`'s `force_approval: true` to move an installation to a different person — it exists specifically to reset the existing binding so a different user can authenticate, which is exactly the switch this rule forbids. If a second human needs to connect, they need their own installation, not this one.
 
 ## After connecting: read account and organization
 
@@ -127,15 +81,7 @@ Once approved, call `execute_capability` with the `agent_id` `connect_agent` ret
 }
 ```
 
-With the CLI:
-
-```bash
-npx @auth/agent-cli@0.5.1 execute <agent-id> read_account
-npx @auth/agent-cli@0.5.1 execute <agent-id> read_organization \
-  --args '{"organization_id":"<organization-id-from-read_account>"}'
-```
-
-`read_account` returns the human's account ID, name, email, and the ID of the organization they approved. `read_organization` needs that exact `organization_id` (in `arguments` over MCP, in `--args` on the CLI) and returns the organization's name and slug.
+`read_account` returns the human's account ID, name, email, and the ID of the organization they approved. `read_organization` needs that exact `organization_id` in `arguments` and returns the organization's name and slug.
 
 ## Errors
 
@@ -157,5 +103,5 @@ npx @auth/agent-cli@0.5.1 execute <agent-id> read_organization \
 - Reconnecting on a plain `approval_timeout` without checking status first.
 - Treating `agent_rejected` (the human said no) the same as `approval_timeout` or `approval_expired` (nobody has answered yet) and reconnecting anyway.
 - Approving, denying, or signing in on the human's behalf, or asking for their password or verification email.
-- Putting `--url` directly before a subcommand name with nothing else in between.
+- Running MCP setup commands, editing client configuration, or installing a package to work around missing Agent Auth tools instead of pointing the human to Kuudo's own connection guide.
 - Passing `force_approval: true` to move a connection to a different human instead of using a separate installation.

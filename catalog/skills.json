@@ -254,9 +254,9 @@
     },
     {
       "name": "connect-to-kuudo",
-      "description": "Use when an AI agent needs to connect to a human's Kuudo account before calling any Kuudo capability — registering a delegated Agent Auth connection, presenting the human's approval link, and reading account/organization data once approved. Covers the connect/approve/execute flow, approval timeouts and expiry, and the one-installation-per-human rule. Do not use to design or modify the Agent Auth protocol itself, to request capabilities beyond read_account and read_organization, or to approve, deny, or sign in on the human's behalf.",
+      "description": "Use when an AI agent needs to connect to a human's Kuudo account before calling any Kuudo capability — checking whether the session already exposes the Agent Auth MCP tools, registering a delegated connection with them, presenting the human's approval link, and reading account/organization data once approved. Covers the connect/approve/execute flow, approval timeouts and expiry, and the one-installation-per-human rule. Do not use to configure an MCP server, edit client configuration, or install packages — point the human to Kuudo's own connection guide instead. Do not use to design or modify the Agent Auth protocol itself, to request capabilities beyond read_account and read_organization, or to approve, deny, or sign in on the human's behalf.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
-      "compatibility": "Requires running `npx @auth/agent-cli@0.5.1` (Node.js and outbound network access) and a way to show the human a link — an auto-opened browser or a link printed for them to open themselves.",
+      "compatibility": "Requires the human's client to already have an MCP connection to Kuudo's Agent Auth server, exposing tools such as connect_agent, execute_capability, and agent_status, and a way to show the human a link. This skill uses the session's actual exposed tool names and schemas; it does not configure MCP, edit client config, or install anything itself.",
       "metadata": {
         "version": "0.1.0"
       },

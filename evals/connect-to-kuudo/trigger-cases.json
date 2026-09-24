@@ -20,11 +20,19 @@
     "should_trigger": true
   },
   {
+    "query": "My agent doesn't see a connect_agent tool for Kuudo in this session — what should I tell the user?",
+    "should_trigger": true
+  },
+  {
     "query": "Approve this Kuudo agent connection on the user's behalf since they're away from their laptop.",
     "should_trigger": false
   },
   {
     "query": "Grant this Kuudo agent connection billing and deployment capabilities, not just read access.",
+    "should_trigger": false
+  },
+  {
+    "query": "Add the Kuudo MCP server to my Claude Code config so I can connect my agent.",
     "should_trigger": false
   },
   {
