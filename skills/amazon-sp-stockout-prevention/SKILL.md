@@ -60,6 +60,9 @@ On the KuudoAI Amazon SP MCP:
   the list. Never use whichever seller happens to be active.
 - A 403 `Unauthorized` means the seller's app authorization is inactive.
   Report it; don't retry.
+- "Openbridge service is unavailable" for one seller while others respond
+  means that seller's connection can't get an Amazon token. Report a broken
+  connection, not an outage; retry at most once.
 
 **Parameters.**
 
@@ -78,6 +81,9 @@ On the KuudoAI Amazon SP MCP:
   45.
 - Output over about 30 KB is truncated, so summarize inside the sandbox.
 - Only `return` values come back; `print()` output is dropped.
+- `datetime.now()` and `%` string formatting fail in the sandbox. Compute
+  "today" and the date windows on the host, pass them in as literals, and
+  use f-strings.
 - There is no sleep in the sandbox. Wait between polls on the host, or in
   separate calls, about 15 to 30 seconds apart.
 

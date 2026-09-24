@@ -125,8 +125,12 @@ Sandbox limits:
 - Output over about 30 KB is truncated, so return summaries.
 - No `asyncio.sleep`, no network, no file I/O. No `dir`, `hasattr`, or
   `print` output.
-- The stdlib is restricted. `json`, `re`, `math`, and `datetime` work.
-  `time`, `collections`, and `itertools` don't.
+- The stdlib is restricted. `json`, `re`, and `math` work. `time`,
+  `collections`, and `itertools` don't.
+- `datetime` imports, but `datetime.now()` fails ("OS function not
+  implemented"). Get today's date on the host and write it into the code
+  as a literal.
+- `%` string formatting fails. Use f-strings.
 
 **Write, check, read, and summarize in one block:**
 
@@ -200,6 +204,7 @@ string, not JSON. Catch it with `except Exception as e` and read `str(e)`:
 |---|---|---|
 | `Unknown tool: <name>` | Wrong name, or package not loaded | `search`; check packages |
 | `Provider identity selection is required.` | No identity selected | `list_identities`, ask which seller, `set_active_identity` |
+| `Openbridge service is unavailable.` for one seller while others work | The provider can't mint an Amazon token for that seller's connection (upstream 500 on its token exchange) | Report a broken connection for that seller, not an outage. Retry at most once; the connection needs re-authorization in Openbridge |
 | `…HTTP error 403: … 'code': 'Unauthorized'…` | The seller's app authorization is inactive or lacks the Amazon Fulfillment role | Don't retry. Tell the seller to re-authorize (Seller Central, Manage Your Apps) or reconnect through the provider |
 | `…HTTP error 400: … {'errors': [{'code', 'message', 'details'}]}` | Amazon rejected the request | Read `message`; fix the input |
 | `…HTTP error 400: … not supported for Amazon Warehousing and Distribution inbound plans` | An AWD plan appeared in `listInboundPlans` | Label it AWD and skip; this skill doesn't manage AWD |
