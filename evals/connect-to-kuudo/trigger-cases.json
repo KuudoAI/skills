@@ -1,0 +1,42 @@
+[
+  {
+    "query": "Connect this agent to Kuudo so it can read the organization ID.",
+    "should_trigger": true
+  },
+  {
+    "query": "Set up an Agent Auth connection to Kuudo before calling any Kuudo capability.",
+    "should_trigger": true
+  },
+  {
+    "query": "The Kuudo approval link timed out — what should I do before reconnecting?",
+    "should_trigger": true
+  },
+  {
+    "query": "How do I present the Kuudo device-authorization link and code to the user?",
+    "should_trigger": true
+  },
+  {
+    "query": "Kuudo just told my agent agent_revoked — how do I reconnect it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Approve this Kuudo agent connection on the user's behalf since they're away from their laptop.",
+    "should_trigger": false
+  },
+  {
+    "query": "Grant this Kuudo agent connection billing and deployment capabilities, not just read access.",
+    "should_trigger": false
+  },
+  {
+    "query": "Audit my Sponsored Products campaigns.",
+    "should_trigger": false
+  },
+  {
+    "query": "What is the weather in Boston?",
+    "should_trigger": false
+  },
+  {
+    "query": "Change how the Agent Auth plugin validates and replays JWTs.",
+    "should_trigger": false
+  }
+]

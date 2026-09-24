@@ -253,6 +253,22 @@
       "governanceLicense": "PolyForm-Shield-1.0.0"
     },
     {
+      "name": "connect-to-kuudo",
+      "description": "Use when an AI agent needs to connect to a human's Kuudo account before calling any Kuudo capability — registering a delegated Agent Auth connection, presenting the human's approval link, and reading account/organization data once approved. Covers the connect/approve/execute flow, approval timeouts and expiry, and the one-installation-per-human rule. Do not use to design or modify the Agent Auth protocol itself, to request capabilities beyond read_account and read_organization, or to approve, deny, or sign in on the human's behalf.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires running `npx @auth/agent-cli@0.5.1` (Node.js and outbound network access) and a way to show the human a link — an auto-opened browser or a link printed for them to open themselves.",
+      "metadata": {
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
       "name": "using-kuudo",
       "description": "Use at the start of Amazon commerce work involving Amazon Ads, Seller Central, or Vendor Central when Kuudo skills are installed.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
