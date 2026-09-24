@@ -212,10 +212,22 @@ The estimate still has uses:
 | Situation | Use |
 |---|---|
 | Normal run on a host that can run the script | Report is primary. Use the estimate only as a cross-check for flagged SKUs, or where the report has no value |
-| Host can't run Python or reach HTTPS | Estimate, labelled, and say why |
+| Host can't run Python or reach HTTPS | Estimate, labelled, and say why. It's partial on big catalogs (see *Scale*) |
 | A single-SKU question | Check for today's report first (one call). If there is none, give the estimate now and offer Amazon's numbers |
 
 The details are in [references/data-sources.md](references/data-sources.md).
+
+### Scale: catalogs up to 500 SKUs
+
+The limit is per `execute` block, not per catalog, so size matters only on
+some paths.
+
+| Path | Cost at 500 SKUs | How to run it |
+|---|---|---|
+| Inventory | 10 pages, a few seconds, one block | Page inside one block; the token expires in about 30 seconds. Return a summary (at-risk SKUs plus counts), never all rows; 500 raw rows exceed the output limit |
+| Amazon's report plus the script | The same 4 calls at any size | The script prints the 60 highest-risk SKUs in compact form (about 20 KB) plus `band_counts` for the whole catalog, and says how many rows it left out. Use `--skus` to drill in and `--limit 0` only when you truly need every row |
+| Estimate fallback (no Python) | 1 `getOrderMetrics` call per SKU at about 0.5/s; 500 SKUs would take 15+ minutes | **Don't estimate every SKU.** Cover up to about 90 stocked SKUs (2 blocks): first the ones the seller names, then the lowest fulfillable. Say the result is partial, with how many SKUs were checked, and recommend running where the report can be read |
+| Inbound gap | Grows with the number of recent plans, not SKUs | Batch all flagged SKUs into one pass; see [references/inbound-gap.md](references/inbound-gap.md) |
 
 ## 3. Classify and present
 

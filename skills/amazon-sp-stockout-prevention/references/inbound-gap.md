@@ -5,6 +5,41 @@ Inventory already tells you **how many** units are on the way for each SKU
 **when** they arrive. Run it only for OUT_OF_STOCK, CRITICAL, and WARNING SKUs
 that have shipped or receiving units.
 
+## Batch every flagged SKU into one pass
+
+Cost should scale with the number of **plans**, not SKUs. A 500-SKU catalog
+can flag 50+ SKUs, and searching plans once per SKU repeats the same calls
+50 times. Instead:
+
+1. Put every flagged SKU with in-transit units into one `wanted` set.
+2. Walk recent SHIPPED plans, then ACTIVE plans, once each. Call
+   `listInboundPlanItems` per plan and record any item whose `msku` is in
+   `wanted`.
+3. Call `getInboundPlan`, `listShipmentItems`, and `getShipment` only for
+   the plans that matched.
+4. Stop when every wanted SKU's in-transit units are covered, or when the
+   plans are older than 90 days.
+
+With 45 calls per `execute`, carry the `paginationToken`, the position in
+the current page, and the partial map between blocks.
+
+**Carry state as a JSON string.** Pass it into the next block as
+`st = json.loads('<json>')`. Pasting JSON straight into Python breaks on
+`null`, `true`, and `false`.
+
+**Measured live on 2026-09-24** (a 251-SKU catalog, 32 SKUs with 1,905
+in-transit units):
+
+- 3 blocks, 98 calls, and about 60 seconds
+- 89 SHIPPED plans scanned, 69 matched
+- all 32 SKUs covered without reaching ACTIVE plans
+
+Searching per SKU would have repeated that 89-plan scan 32 times.
+
+Reading arrival windows (`getShipment`) costs one call per matched shipment.
+Fetch them only for the SKUs you actually flag, and take the earliest
+window, instead of dating every matched plan.
+
 ## Finding the shipments that hold a SKU
 
 `listInboundPlans` returns plan summaries only: no SKUs and no dates. A real

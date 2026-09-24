@@ -9,7 +9,12 @@ never written to disk, because the report is the seller's data.
 
 Usage:
   planning_report.py URL_OR_PATH [--skus SKU1,SKU2] [--all] [--limit N]
-                     [--critical 7] [--warning 21]
+                     [--full] [--critical 7] [--warning 21]
+
+Output is sized for catalogs of 500+ SKUs. Rows carry compact fields unless
+--full is given, at most --limit rows are printed (default 60), and the
+result says how many rows were left out. band_counts always covers the whole
+report.
 
 Bands: OUT_OF_STOCK (0 available, sold in the last 30 days), CRITICAL
 (<7 days), WARNING (<21), OUT_NO_RECENT_SALES (0 available and no recent sales,
@@ -54,6 +59,11 @@ COLUMNS = {
     "low_inventory_fee_this_week": "Low-Inventory-Level fee applied in current week?",
     "snapshot_date": "snapshot-date",
 }
+# Fields printed per row by default; --full prints every field above.
+COMPACT = ("sku", "band", "available", "inbound_in_transit", "units_shipped_t7",
+           "units_shipped_t30", "days_of_supply", "total_days_of_supply",
+           "recommended_ship_in_quantity", "recommended_ship_in_date",
+           "health_status", "low_inventory_fee_this_week")
 NUMERIC = {
     "available", "inbound_quantity", "inbound_working", "inbound_shipped",
     "inbound_received", "reserved_fc_transfer", "reserved_fc_processing",
@@ -144,8 +154,11 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
     shown = rows if (args.all or wanted) else [r for r in rows if r["band"] in at_risk]
     order = {b: i for i, b in enumerate(at_risk + ("UNKNOWN", "HEALTHY", "INACTIVE"))}
     shown.sort(key=lambda r: (order[r["band"]], r["days_of_supply"] if r["days_of_supply"] is not None else 1e9))
+    matched = len(shown)
     if args.limit:
         shown = shown[: args.limit]
+    if not args.full:
+        shown = [{k: r[k] for k in COMPACT} for r in shown]
 
     return {
         "source": "GET_FBA_INVENTORY_PLANNING_DATA",
@@ -154,6 +167,8 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
         "band_counts": counts,
         "thresholds_days": {"critical_below": args.critical, "warning_below": args.warning},
         "missing_columns": missing,
+        "rows_matched": matched,
+        "rows_omitted": matched - len(shown),
         "rows": shown,
     }
 
@@ -163,7 +178,8 @@ def main() -> int:
     parser.add_argument("source", help="Pre-signed report URL or local TSV path")
     parser.add_argument("--skus", help="Comma-separated seller SKUs to include")
     parser.add_argument("--all", action="store_true", help="Include HEALTHY SKUs")
-    parser.add_argument("--limit", type=int, default=0, help="Max rows to print")
+    parser.add_argument("--limit", type=int, default=60, help="Max rows to print (0 = no cap)")
+    parser.add_argument("--full", action="store_true", help="Print every field per row")
     parser.add_argument("--critical", type=float, default=7.0)
     parser.add_argument("--warning", type=float, default=21.0)
     args = parser.parse_args()
@@ -176,7 +192,12 @@ def main() -> int:
                              "Call getReportDocument again for a fresh one.")
         print(json.dumps(error))
         return 1
-    print(json.dumps(summarize(text, args), indent=1))
+    result = summarize(text, args)
+    rows = result.pop("rows")
+    # One compact line per row keeps 500-SKU output small and still readable.
+    head = json.dumps(result, separators=(",", ":"))
+    body = ",\n ".join(json.dumps(r, separators=(",", ":")) for r in rows)
+    print(head[:-1] + ',"rows":[\n ' + body + "\n]}")
     return 0
 
 
