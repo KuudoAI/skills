@@ -78,6 +78,13 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   `ACTIVE`. Once shipments leave, the plan moves to SHIPPED, so an
   ACTIVE-only overview missed everything in transit or being received.
 
+### Fixed from PR review
+
+- **`MANUAL_PROCESS` gate.** `setPackingInformation` with a
+  `MANUAL_PROCESS` box now requires a typed `CONFIRM`, because Amazon
+  charges a manual-processing fee. The skill offers `BARCODE_2D` and
+  `BOX_CONTENT_PROVIDED` as fee-free alternatives.
+
 ### Also added
 
 - Request shapes for every write.

@@ -23,7 +23,12 @@ with a partnered carrier or the seller's own. Small parcel is not offered.
    - `BARCODE_2D`: leave `items` empty. The seller prints 2D box-content
      barcodes.
    - `MANUAL_PROCESS`: leave `items` empty. Amazon enters the contents and
-     charges a manual processing fee. Mention the fee.
+     charges a manual-processing fee. **This is a hard gate**, like the
+     others in SKILL.md section 4:
+     - Present the fee: a per-unit fee under Amazon's current schedule. The
+       API doesn't return the amount beforehand, so don't invent one.
+     - Offer the fee-free options, `BARCODE_2D` or `BOX_CONTENT_PROVIDED`.
+     - Call `setPackingInformation` only after the seller types `CONFIRM`.
 5. Run `generateTransportationOptions` with pallets, freight info and
    contact, then `listTransportationOptions`.
 6. Own carrier only: generate, list, and confirm the delivery window.

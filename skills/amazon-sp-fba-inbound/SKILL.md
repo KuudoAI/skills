@@ -360,8 +360,9 @@ Match the gate to the blast radius. Nothing in this API has a dry run.
 | `confirmTransportationOptions` | Locks carrier and quote; one confirmation per plan. Irreversible even at no charge (own carrier) | **Hard** |
 | `cancelInboundPlan` | Voids every shipment; carrier charges after `voidableUntil`. The API cannot cancel a single shipment | **Hard** |
 | `confirmShipmentContentUpdatePreview` | Accepts the changed transport cost | **Hard** |
+| `setPackingInformation` with any box using `contentInformationSource: MANUAL_PROCESS` | Amazon enters the box contents and charges a manual-processing fee | **Hard.** The API doesn't return the fee before the call, so say a per-unit manual-processing fee applies under Amazon's current fee schedule. Don't invent an amount. Offer `BARCODE_2D` or `BOX_CONTENT_PROVIDED` as the fee-free alternatives |
 | `confirmPackingOption`, `confirmDeliveryWindowOptions`, `scheduleSelfShipAppointment` | Shape the plan; no direct fee | Explicit choice. A single fee-free packing option needs no choice |
-| Everything else (creates, sets, generates, reads) | Reversible or read-only | Proceed with the seller's given data |
+| Everything else (creates, sets, generates, reads) | Reversible, no fee, or read-only | Proceed with the seller's given data |
 
 **Hard gate:**
 

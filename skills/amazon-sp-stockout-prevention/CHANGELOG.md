@@ -43,6 +43,12 @@ match `metadata.version` in SKILL.md.
 - **Pricing.** Price is never offered as a lever, and price fields are
   dropped inside the sandbox.
 
+### Fixed from PR review
+
+- **`planning_report.py` counts.** `--skus` no longer drops rows before
+  counting. `skus_in_report` and `band_counts` always cover the whole
+  report, and every filter now applies only to the rows displayed.
+
 ### Changed (compared with the upstream skill)
 
 - **Tool resolution.** Tools are resolved by `operationId` through server

@@ -101,7 +101,8 @@ These operations need only the path parameter `inboundPlanId`:
   - `BOX_CONTENT_PROVIDED`
   - `BARCODE_2D`: `items` must be empty.
   - `MANUAL_PROCESS`: `items` must be empty. Amazon charges a manual
-    processing fee.
+    processing fee, so any request that includes it is a **hard gate**
+    (typed `CONFIRM`; see SKILL.md section 4).
 
 ## Placement
 

@@ -139,9 +139,7 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
     bands = {b.strip().upper() for b in args.bands.split(",")} if args.bands else None
 
     rows = []
-    for record in reader:
-        if wanted and record.get("sku") not in wanted:
-            continue
+    for record in reader:          # every row is parsed and counted; filters apply only to display
         row = {}
         for field, column in COLUMNS.items():
             value = pick(record, column)
@@ -161,6 +159,8 @@ def summarize(text: str, args: argparse.Namespace) -> dict:
                     or args.needs_ship_in or args.in_transit)
 
     def keep(r: dict) -> bool:
+        if wanted and r["sku"] not in wanted:
+            return False
         if bands and r["band"] not in bands:
             return False
         if not (args.all or filtered) and r["band"] not in at_risk:
