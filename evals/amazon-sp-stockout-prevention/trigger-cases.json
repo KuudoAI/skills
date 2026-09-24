@@ -1,0 +1,50 @@
+[
+ {
+  "query": "For seller A2GQWJZXTY0M66, am I going to run out of anything in the next couple weeks?",
+  "should_trigger": true
+ },
+ {
+  "query": "how many days of cover do I have left on FR810R at current sales pace?",
+  "should_trigger": true
+ },
+ {
+  "query": "which FBA SKUs should I send more units of next, and how many does Amazon recommend?",
+  "should_trigger": true
+ },
+ {
+  "query": "will the Estes shipment land before we sell out of the 12in cast iron?",
+  "should_trigger": true
+ },
+ {
+  "query": "quick FBA inventory health check \u2014 anything critical?",
+  "should_trigger": true
+ },
+ {
+  "query": "we're low on the blue yoga mats, how bad is it and is anything already on the way?",
+  "should_trigger": true
+ },
+ {
+  "query": "create an inbound plan for 715 units of FR810R from our Athens warehouse",
+  "should_trigger": false
+ },
+ {
+  "query": "raise the price on FR810R to $44.99 for the next two weeks",
+  "should_trigger": false
+ },
+ {
+  "query": "what am I paying in aged inventory surcharges this month?",
+  "should_trigger": false
+ },
+ {
+  "query": "reconcile September's FBA inventory ledger against our receipts",
+  "should_trigger": false
+ },
+ {
+  "query": "which of my inbound shipments are stuck or still just drafts?",
+  "should_trigger": false
+ },
+ {
+  "query": "show me sessions and conversion rate by ASIN for last month",
+  "should_trigger": false
+ }
+]

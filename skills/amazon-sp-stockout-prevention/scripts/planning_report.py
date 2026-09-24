@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+"""Summarize Amazon's FBA inventory planning report for stockout triage.
+
+Reads GET_FBA_INVENTORY_PLANNING_DATA (tab-separated) from the pre-signed URL
+returned by getReportDocument, or from a local file, and prints compact JSON:
+one row per SKU with Amazon's days of supply, recommended ship-in quantity and
+date, health status, and a risk band. The download is streamed into memory and
+never written to disk, because the report is the seller's data.
+
+Usage:
+  planning_report.py URL_OR_PATH [--skus SKU1,SKU2] [--all] [--limit N]
+                     [--critical 7] [--warning 21]
+
+Bands: OUT_OF_STOCK (0 available, sold in the last 30 days), CRITICAL
+(<7 days), WARNING (<21), OUT_NO_RECENT_SALES (0 available and no recent sales,
+but Amazon recommends a ship-in: confirm the listing is active), HEALTHY,
+INACTIVE (0 available, no sales, no recommendation), UNKNOWN (no
+days-of-supply value). By default only the at-risk bands are listed; --all
+lists every SKU. Standard library only (Python 3.9+).
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import gzip
+import io
+import json
+import sys
+import urllib.request
+
+# Report columns this summary uses, keyed by output field. A tuple lists
+# alternative header names: Amazon's documented names and the live report's
+# headers don't always agree (docs: "Reserved FC Transfer", live: "fc-transfer").
+COLUMNS = {
+    "sku": "sku",
+    "asin": "asin",
+    "product_name": "product-name",
+    "available": "available",
+    "inbound_quantity": "inbound-quantity",
+    "inbound_working": "inbound-working",
+    "inbound_shipped": "inbound-shipped",
+    "inbound_received": "inbound-received",
+    "reserved_fc_transfer": ("fc-transfer", "Reserved FC Transfer"),
+    "reserved_fc_processing": "Reserved FC Processing",
+    "units_shipped_t7": "units-shipped-t7",
+    "units_shipped_t30": "units-shipped-t30",
+    "days_of_supply": "days-of-supply",
+    "total_days_of_supply": "Total Days of Supply (including units from open shipments)",
+    "recommended_ship_in_quantity": "Recommended ship-in quantity",
+    "recommended_ship_in_date": "Recommended ship-in date",
+    "health_status": "fba-inventory-level-health-status",
+    "alert": "alert",
+    "low_inventory_fee_this_week": "Low-Inventory-Level fee applied in current week?",
+    "snapshot_date": "snapshot-date",
+}
+NUMERIC = {
+    "available", "inbound_quantity", "inbound_working", "inbound_shipped",
+    "inbound_received", "reserved_fc_transfer", "reserved_fc_processing",
+    "units_shipped_t7", "units_shipped_t30", "days_of_supply",
+    "total_days_of_supply", "recommended_ship_in_quantity",
+}
+
+
+def read_text(source: str) -> str:
+    """Return the report text from an HTTPS URL or a local path."""
+    if source.startswith(("https://", "http://")):
+        with urllib.request.urlopen(source, timeout=120) as response:
+            raw = response.read()
+    else:
+        with open(source, "rb") as handle:
+            raw = handle.read()
+    if raw[:2] == b"\x1f\x8b":  # GZIP when compressionAlgorithm is set
+        raw = gzip.decompress(raw)
+    for encoding in ("utf-8-sig", "cp1252", "latin-1"):
+        try:
+            return raw.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")
+
+
+def number(value: str | None) -> float | None:
+    if value is None or value.strip() in ("", "-", "N/A"):
+        return None
+    try:
+        return float(value.replace(",", ""))
+    except ValueError:
+        return None
+
+
+def pick(record: dict, column: str | tuple) -> str | None:
+    for name in (column if isinstance(column, tuple) else (column,)):
+        if name in record:
+            return record[name]
+    return None
+
+
+def band(row: dict, critical: float, warning: float) -> str:
+    """Risk band. Zero stock is split so dormant SKUs don't read as critical."""
+    available = row["available"] or 0
+    sold = row["units_shipped_t30"] or 0
+    ship_in = row["recommended_ship_in_quantity"] or 0
+    if available <= 0:
+        if sold > 0:
+            return "OUT_OF_STOCK"
+        return "OUT_NO_RECENT_SALES" if ship_in > 0 else "INACTIVE"
+    days = row["days_of_supply"]
+    if days is None:
+        return "UNKNOWN"
+    if days < critical:
+        return "CRITICAL"
+    if days < warning:
+        return "WARNING"
+    return "HEALTHY"
+
+
+def summarize(text: str, args: argparse.Namespace) -> dict:
+    reader = csv.DictReader(io.StringIO(text), delimiter="\t")
+    header = reader.fieldnames or []
+    names = lambda c: c if isinstance(c, tuple) else (c,)
+    missing = [names(col)[0] for col in COLUMNS.values() if not any(n in header for n in names(col))]
+    wanted = {s.strip() for s in args.skus.split(",")} if args.skus else None
+
+    rows = []
+    for record in reader:
+        if wanted and record.get("sku") not in wanted:
+            continue
+        row = {}
+        for field, column in COLUMNS.items():
+            value = pick(record, column)
+            row[field] = number(value) if field in NUMERIC else (value or None)
+        row["band"] = band(row, args.critical, args.warning)
+        rows.append(row)
+
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row["band"]] = counts.get(row["band"], 0) + 1
+
+    at_risk = ("OUT_OF_STOCK", "CRITICAL", "WARNING", "OUT_NO_RECENT_SALES")
+    shown = rows if (args.all or wanted) else [r for r in rows if r["band"] in at_risk]
+    order = {b: i for i, b in enumerate(at_risk + ("UNKNOWN", "HEALTHY", "INACTIVE"))}
+    shown.sort(key=lambda r: (order[r["band"]], r["days_of_supply"] if r["days_of_supply"] is not None else 1e9))
+    if args.limit:
+        shown = shown[: args.limit]
+
+    return {
+        "source": "GET_FBA_INVENTORY_PLANNING_DATA",
+        "snapshot_date": rows[0]["snapshot_date"] if rows else None,
+        "skus_in_report": len(rows),
+        "band_counts": counts,
+        "thresholds_days": {"critical_below": args.critical, "warning_below": args.warning},
+        "missing_columns": missing,
+        "rows": shown,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("source", help="Pre-signed report URL or local TSV path")
+    parser.add_argument("--skus", help="Comma-separated seller SKUs to include")
+    parser.add_argument("--all", action="store_true", help="Include HEALTHY SKUs")
+    parser.add_argument("--limit", type=int, default=0, help="Max rows to print")
+    parser.add_argument("--critical", type=float, default=7.0)
+    parser.add_argument("--warning", type=float, default=21.0)
+    args = parser.parse_args()
+    try:
+        text = read_text(args.source)
+    except Exception as exc:  # expired URL, network, or file errors
+        print(json.dumps({"error": f"{type(exc).__name__}: {exc}",
+                          "hint": "Pre-signed URLs expire after about 5 minutes. Call getReportDocument again for a fresh one."}))
+        return 1
+    print(json.dumps(summarize(text, args), indent=1))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
