@@ -23,11 +23,13 @@
         "amazon-ads-sp-search-term-explorer",
         "amazon-product-image",
         "amazon-profitability-calculator",
+        "amazon-sp-fba-inbound",
         "amazon-sp-listing-optimizer",
         "amazon-sp-refund-return-monitor",
         "amazon-sp-repricing",
         "amazon-sp-sales-traffic-analyzer",
         "amazon-sp-sqp-asin-ngram",
+        "amazon-sp-stockout-prevention",
         "connect-to-kuudo",
         "using-kuudo"
       ]
