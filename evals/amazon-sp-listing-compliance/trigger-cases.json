@@ -1,0 +1,66 @@
+[
+ {
+  "query": "can I sell a kids' bluetooth night light on amazon? it's aimed at toddlers",
+  "should_trigger": true
+ },
+ {
+  "query": "what do I need to list an OTC pain reliever in the US store",
+  "should_trigger": true
+ },
+ {
+  "query": "is it ok to say our bamboo cutting board is antibacterial in the title? seller central keeps rejecting it",
+  "should_trigger": true
+ },
+ {
+  "query": "I'm getting 'approval required' when I try to add ASIN B0TESTWATCH as new condition \u2014 what does that mean and what do I need",
+  "should_trigger": true
+ },
+ {
+  "query": "we want to start selling a face serum from a new supplier, they don't have GMP docs yet. are we allowed?",
+  "should_trigger": true
+ },
+ {
+  "query": "before I change the category on SKU TOWEL-01 to Health & Household, check if that triggers any compliance requirements",
+  "should_trigger": true
+ },
+ {
+  "query": "which labels or disclosures does Amazon require for a wool throw blanket made in Peru",
+  "should_trigger": true
+ },
+ {
+  "query": "are magnetic desk toy sets restricted on amazon?",
+  "should_trigger": true
+ },
+ {
+  "query": "my listing for SKU MUG-11 has error 90220 about country_of_origin, can you fix it",
+  "should_trigger": false
+ },
+ {
+  "query": "rewrite the bullets on my stainless water bottle listing so they convert better",
+  "should_trigger": false
+ },
+ {
+  "query": "why can't customers buy GLASS-JAR-12? it shows no issues",
+  "should_trigger": false
+ },
+ {
+  "query": "my backend search terms are 400 bytes, is that a problem",
+  "should_trigger": false
+ },
+ {
+  "query": "what's my account health rating and do I have any policy violations this month",
+  "should_trigger": false
+ },
+ {
+  "query": "should I lower my price to win the featured offer on B07XYZ1234",
+  "should_trigger": false
+ },
+ {
+  "query": "audit my A+ content for the coffee grinder ASIN",
+  "should_trigger": false
+ },
+ {
+  "query": "draft an appeal for my suspended listing \u2014 they said it was a counterfeit complaint",
+  "should_trigger": false
+ }
+]
