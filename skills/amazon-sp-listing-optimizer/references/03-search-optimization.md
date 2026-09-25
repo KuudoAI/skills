@@ -6,8 +6,8 @@ compliance.
 
 Source: Seller Central "Search optimization", "Keyword attributes explained",
 "Classify your products using Browse Tree Guides", "Use search terms effectively",
-"Optimize your product discoverability", and the Amazon search glossary — preserved in
-`00-source-amazon-seller-central.txt` and `00-source-keyword-attributes.txt`.
+"Optimize your product discoverability", and the Amazon search glossary (realigned
+2026-07-25).
 
 ---
 
@@ -33,6 +33,11 @@ adding a word guarantees matching on it.
 ---
 
 ## Keyword attributes — the full field set
+
+> **Naming.** Seller Central help spells these in the plural
+> (`generic_keywords`). In the Listings API the attributes are singular
+> (`generic_keyword`, `specific_uses_keyword`, …), which is what you read and
+> patch (verified live).
 
 `generic_keywords` is the field sellers know, but it's one of several keyword
 attributes, each with its own byte limit and purpose. Most require **valid values from
@@ -193,6 +198,14 @@ browse node or no offer is wasted work.
 | **Listing quality** | Search-suppressed or detail-page-removed listings aren't searchable | **Fix Your Products** in Seller Central | Follow the prompts in the issue description; see `01-policy-rules.md` § 9 |
 | **Future launch date** | An ASIN with a launch/offering release date in the future is not searchable | Check the Offering Release Date | Set the Offering Release Date to a past date |
 | **Adult categorization** | Products classified adult are restricted from All Departments searches **by design** | Manage All Inventory → select ASIN → Add missing offer details / ⋯ → Edit listing → product type classification | If correctly classified, no fix — explain the behavior. If misclassified, the user opens a Selling Partner Support case to request review |
+
+**Checking through the API:** the audit's `getListingsItem` call answers most of
+this table without Seller Central. A missing `DISCOVERABLE` flag in
+`summaries[].status` confirms the listing isn't searchable, and `offers` plus
+`fulfillmentAvailability` show a missing offer or zero stock. These causes often
+come with an **empty `issues[]`**, so don't read "no issues" as "should be
+searchable". Status flags and the buyability diagnostic are in
+`10-status-and-buyability.md`.
 
 **Propagation:** changes to an ASIN's offer, browse node, or launch date take **up to
 72 hours** to reflect in shopping results. Say this before a user concludes the fix

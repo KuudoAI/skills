@@ -10,7 +10,7 @@ Load this whenever doing any A+ work — drafting, auditing, suggesting modules,
 
 - **Brand Registry required** for all A+ Content and Brand Story.
 - **Basic A+ Content** — any Professional seller enrolled in Brand Registry, or vendor with approved vendor account, or Emerging Brand owner with registered trademark.
-- **Premium A+ Content** — registered brand that meets the higher threshold (typically: brand with approved A+ Content on 5+ ASINs). Check eligibility in A+ Content Manager.
+- **Premium A+ Content** — the same Brand Registry requirement as Basic. Amazon states there is **no additional eligibility criteria** for Premium, and both tiers are free. Don't tell a brand-registered seller they have to earn Premium first.
 
 If the seller isn't Brand Registry enrolled, A+ Content isn't available. Don't promise delivery; explain the requirement and point to brand registry enrollment.
 
@@ -331,7 +331,7 @@ When auditing existing A+ Content for a brand:
 When drafting new A+ Content:
 
 1. **Confirm Brand Registry status** with the user before drafting.
-2. **Confirm Basic vs Premium eligibility.**
+2. **Choose Basic or Premium.** Any brand-registered seller can use either; Premium adds video, hotspots, carousels, Q&A, and larger images.
 3. **Map the product story** — what problem, what solution, what proof, what's the brand promise.
 4. **Draft module-by-module:**
    - Each module has its own purpose; don't repeat content.

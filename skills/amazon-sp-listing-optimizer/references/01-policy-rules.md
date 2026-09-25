@@ -2,7 +2,7 @@
 
 The hard, non-negotiable rules. Load this when checking a listing for compliance, drafting copy that must pass review, or diagnosing a suppression.
 
-Source of record: Seller Central "Product title requirements and guidelines", "Product bullet point requirements", "Attributes guide", "A+ Content guide", and "Search optimization" — preserved verbatim in `00-source-amazon-seller-central.txt`. When this file and that source disagree, the source wins and this file is stale.
+Source of record: Seller Central "Product title requirements and guidelines", "Product bullet point requirements", "Attributes guide", "A+ Content guide", and "Search optimization" (realigned 2026-07-25). When current Seller Central help disagrees with this file, the live page wins and this file is stale.
 
 ## Table of contents
 
@@ -231,7 +231,7 @@ Note that Amazon reserves the right not to use all supplied bullet content for s
 
 **Limit: 249 bytes** (Keyword attributes explained), documented elsewhere as "less than 250 bytes". Seller Central's Generic keyword field simply **stops accepting input** once the byte limit is reached.
 
-**Exceeding the limit does not truncate — the entire attribute is ignored by Amazon Search.** This is specific to `generic_keywords`. Every other keyword attribute indexes up to its limit and discards only the excess. Lead with this consequence when a user is over: they don't lose the tail, they lose *all* their backend keywords.
+**Exceeding the limit does not truncate — the entire attribute is ignored by Amazon Search.** This is specific to `generic_keywords` (`generic_keyword` in the Listings API). Every other keyword attribute indexes up to its limit and discards only the excess. Lead with this consequence when a user is over: they don't lose the tail, they lose *all* their backend keywords.
 
 Note the one conflicting number in Amazon's own docs: error **97779** ("Generic keywords length exceeded") is documented at **200 bytes** while the keyword-attribute table says 249. Both are current. Practical guidance: **write to under 200 bytes** — it satisfies both, and the cost of being wrong (total loss of indexing, or a rejected feed) is far higher than the cost of a few unused bytes. If asked, say both numbers are published rather than asserting one. Error handling for 97779 is in `02-attributes-and-error-codes.md`.
 

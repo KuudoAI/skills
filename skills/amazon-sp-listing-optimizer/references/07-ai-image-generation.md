@@ -194,10 +194,12 @@ is mandatory and is the safeguard against shipping a misrepresentative image.
    Storage setup). Capture the returned `url`, then confirm it is publicly
    fetchable as an image: `python scripts/validate_image.py "<url>"`. A bad or
    HTML URL is caught here, not later as `IMAGE_NOT_ACCESSIBLE` on the patch.
-7. **Preview the patch** with `confirm=false`: a `replace`/`add` on the chosen
-   `*_image_locator` attribute with `media_location` = the staged URL (see
-   06-patch-construction.md for the wrapper shape). Show the diff.
-8. **Confirm, then submit** with a fresh idempotency key. Report submission ID.
+7. **Preview the patch** with `mode: "VALIDATION_PREVIEW"` (or the host's
+   dry-run flag): a `replace`/`add` on the chosen `*_image_locator` attribute
+   with `media_location` = the staged URL (see 06-patch-construction.md for
+   the shape). Show the diff.
+8. **Confirm, then submit** the same call without `mode`, in its own block
+   (plus a fresh idempotency key on hosts that use one). Report submission ID.
 9. **Verify** propagation by re-pulling `catalog_getCatalogItem` in ~15 minutes.
 
 ## The validator

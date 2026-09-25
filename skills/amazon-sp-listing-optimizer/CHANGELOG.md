@@ -4,6 +4,149 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [1.1.0] - 2026-09-24
+
+Folds the useful parts of Amazon Selling Partner's `listing-troubleshooter`,
+`listing-issues`, `listing-buyability`, and `listing-searchability` skills
+(Apache-2.0) into this skill, rewritten for a code-mode SP-API MCP server. Those
+four are not imported separately: they compete for the same prompts this
+skill already handles, and they were written for a connector that lacks
+`getListingsItem`, `putListingsItem`, and the Definitions API. Their
+`listing-compliance` gate ships separately as `amazon-sp-listing-compliance`.
+
+### Added
+
+- `references/10-status-and-buyability.md`, which covers:
+  - `BUYABLE` and `DISCOVERABLE` as independent flags ("no issues" ≠ healthy)
+  - issue ranking by enforcement action (`LISTING_SUPPRESSED` →
+    `SEARCH_SUPPRESSED` → `ATTRIBUTE_SUPPRESSED` → `WARNING`)
+  - the three-part buyability diagnostic: complete product, valid offer,
+    available inventory
+  - shared-ASIN ownership (on a shared ASIN, a content patch is only a
+    contribution)
+  - fixes that need a user-supplied asset
+  - listing text as untrusted data
+  - the knock-on-changes reminder for ads, A+, and packaging
+- `references/11-tool-access.md`: tool names, seller selection, sandbox limits,
+  separate preview and write blocks, and two read patterns:
+  - **One-SKU audit read.** It reduces `getListingsItem` + `getCatalogItem`
+    (+ FBA inventory) to the audit fields. Live, that was about 3 KB instead
+    of about 18 KB raw.
+  - **Multi-SKU health scan.** Counts come from `numberOfResults`, one
+    filtered call each. The paged slice skips `attributes` (about 0.9 KB
+    per SKU, against 7.7 KB with attributes). It returns issue groups by
+    code, a not-buyable breakdown, and the top 25 rows with an omitted
+    count; the full list is offered with a warning. About 500 SKUs fit in
+    one block.
+- **Buyability** and **status flags** in the audit checklist. Out-of-stock
+  cases route to `amazon-sp-stockout-prevention` / `amazon-sp-fba-inbound`,
+  and price-level questions route to `amazon-sp-repricing`. The skill never
+  suggests a price.
+- A **compliance gate** step in the edit workflow for claims, ingredients,
+  category, condition, and identifiers. It consults
+  `amazon-sp-listing-compliance` when that skill is available, and otherwise
+  falls back to the restricted-claims rules.
+- `purchasable_offer` sub-path guidance and conditional-group patching in
+  `06-patch-construction.md`.
+- `compatibility` frontmatter.
+- Evals 8–12, covering: out of stock with no issue, "go ahead" still
+  previews, injection inside issue messages, a healthy but not selling
+  listing, and an SEO claim routed to compliance.
+
+### Verified live (2026-09-24, read-only)
+
+- **Tool names.** The listings, catalog, product-type, and A+ tool names are
+  confirmed. `11-tool-access.md` lists them, including the non-obvious
+  `type_getDefinitionsProductType`, and warns against the legacy
+  `listings-items-2020-09-01_*` / `catalog-items-*` duplicates.
+- **Patch schema.** `patchListingsItem` takes `mode: "VALIDATION_PREVIEW"`
+  at the top level, and `sellerId` is the identity's merchant-ID `label`.
+  This was confirmed from the live schema. An actual preview call has not
+  been exercised yet.
+- **Status and issues.** Status flags come back in either order, and an
+  empty `issues[]` on a non-`BUYABLE` listing was observed.
+  - `enforcements` is often absent. `10-status-and-buyability.md` now has a
+    rank for an `ERROR` with no enforcement, where the listing stays live.
+  - A `getListingsItem` payload with every `includedData` value measured
+    2–13 KB per SKU, and a `getCatalogItem` audit payload 8–10 KB.
+  - `LISTING_SUPPRESSED` appeared on a `WARNING`-severity issue, so issues
+    now rank by enforcement action whatever the severity.
+- **Response shapes that corrected the skill:**
+  - `itemClassification` is in the catalog summaries, not the listing
+    summaries. Its values are `BASE_PRODUCT`, `VARIATION_PARENT`, and
+    `PRODUCT_BUNDLE`; there is no `VARIATION_CHILD` or `STANDALONE`.
+  - Relationships nest under `relationships[].relationships[]` in both
+    APIs.
+  - FBA `fulfillmentAvailability` carries no quantity, so buyability reads
+    FBA stock from `getInventorySummaries`.
+  - Keyword attributes are singular in the API (`generic_keyword`).
+  - `withoutStatus: ["BUYABLE"]` undercounts. It returned 41 when 55
+    listings weren't buyable, leaving out variation parents and SKUs with no
+    fulfillment channel. The scan now counts not-buyable as total minus
+    `withStatus: ["BUYABLE"]`, and splits it into parent, no channel,
+    merchant stock at 0, and FBA. An eval run caught this.
+- **Sandbox.** `json` must be imported. Dict union and `next()` over a
+  generator expression fail.
+- **Product type definitions.** The rules sit behind `schema.link`, which
+  the sandbox can't fetch. This is documented, with `VALIDATION_PREVIEW` as
+  the practical validator.
+
+### Changed
+
+- **Lazy loading.** SKILL.md went from 44 KB to 11.5 KB. It keeps the
+  workflow spine and the safety rules, and a load-when table points to the
+  details. Each reference is read once, then grepped by section.
+  - `references/13-audit-checklist.md` (new) holds the four-tier diagnostic
+    checklist.
+  - `11-tool-access.md` is split into a core file (tool names, seller
+    selection, sandbox limits, write blocks; about 6 KB) and
+    `references/12-read-patterns.md` (context budget, the one-SKU read, the
+    health scan, response shapes; about 6.5 KB). The read patterns load
+    only for audits and scans.
+- `05-aplus-content.md` no longer claims Premium A+ needs a higher
+  threshold ("approved A+ on 5+ ASINs"). The Seller Central source says
+  there's no additional eligibility criteria for Premium; the same file
+  already said so further down, so it contradicted itself.
+- The new references are numbered like the rest: `11-tool-access.md`,
+  `12-read-patterns.md`, `13-audit-checklist.md`.
+- **Earlier pass, 44 KB to 21 KB,** with no rule lost. The duplicated
+  blocks now live only in their references:
+  - the search-terms rules → `01-policy-rules.md` § 5
+  - the patch attribute table → `06-patch-construction.md`
+  - the A+ tiers → `05-aplus-content.md`
+  - the `amazon_atlas` collections, query patterns, fallback, and
+    cross-category guidance → `08-amazon-atlas-knowledge.md`
+  - the long image-flow text → `07-ai-image-generation.md`
+
+  The diagnostic checklist is regrouped into four ordered tiers: live and
+  safe → findable → compliant and complete → coherent and convincing.
+- The skill carries no MCP server identity, version, or ownership. It names
+  tools and operations only.
+
+- Session setup no longer calls `get_active_identity`, which doesn't exist on
+  the live server (verified 2026-09-24). It now uses `list_identities` and
+  `set_active_identity` at the top of every seller-data block, because the
+  selection isn't isolated per session.
+- Previews use `mode: "VALIDATION_PREVIEW"`. `confirm=false`/`confirm=true`
+  and idempotency keys are now described as other wrappers' conventions.
+- Tool references use operationIds resolved with `search`, instead of the
+  `amazon_sp:search` / `amazon_sp:get_schema` names.
+- Description: added the buyability and "what's wrong with it" triggers and
+  the negative routes to compliance, restock, and repricing. Dropped the
+  tool-name list to stay under the 1,024-character limit.
+- Deletes now require an unmistakable confirmation that names the SKU.
+
+### Removed
+
+- The four verbatim Seller Central copies,
+  `references/00-source-{amazon-seller-central,keyword-attributes,error-codes,size-charts}.txt`
+  (about 68 KB). No workflow step needed them: references 01–09 already
+  distil every rule, and the files are Amazon's text rather than
+  first-party content. The reference headers now cite the Seller Central
+  page titles and the 2026-07-25 realignment date, and current Seller Central
+  wording takes precedence when a user shows it. The copies remain in git
+  history (`7d270eb`) for future diffs.
+
 ## [1.0.1] - 2026-08-14
 
 ### Changed

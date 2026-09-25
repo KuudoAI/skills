@@ -191,11 +191,28 @@
       "governanceLicense": "PolyForm-Shield-1.0.0"
     },
     {
-      "name": "amazon-sp-listing-optimizer",
-      "description": "Audit, optimize, and edit Amazon Seller listings and A+ Content via the amazon_sp MCP server. Use whenever the user asks to review, audit, optimize, edit, fix, rewrite, or \"look at\" an Amazon product listing — titles, item highlights, bullet points, descriptions, search terms, browse nodes, attributes, images, variations, brand attributes, A+ Content modules, or Brand Story. Also use for diagnosing suppressed or unsearchable listings, submission error codes (90057, 90220, 90225, 90248, 97779, 99001, 99010), variation/child-SKU issues, brand-name errors, or any work involving catalog_getCatalogItem, listings_getListingsItem, listings_patchListingsItem, listings_putListingsItem, or aplus_* tools. Trigger even when the user just names an ASIN/SKU and asks to \"review it\", \"check it\", \"clean it up\", or \"fix the listing\" — that is all listing work. Also use to improve, regenerate, or AI-generate listing images from existing product photos with an image model (Gemini/OpenAI), then validate and patch them.",
+      "name": "amazon-sp-listing-compliance",
+      "description": "Pre-flight compliance gate for Amazon Seller Central listings. Works out which Amazon listing requirements and regulatory rules (FDA, EPA, CPSC, FCC, FTC, required disclosures, GTIN, category gating) apply to a product, checks whether the seller is gated or ineligible on the ASIN, asks the seller once for the facts only they know, and returns a met/unmet checklist with a go or hold. Never writes a listing itself. Use whenever a seller asks \"can I list this\", \"what do I need to sell X\", \"is this compliant\", or about restricted or gated categories, certificates, or required labels, and before any listing edit that adds or changes a product claim (antimicrobial, FDA approved, organic, bamboo), ingredients, category, condition, or identifiers. Do not use for fixing listing errors, copy optimization, or buyability (amazon-sp-listing-optimizer), account-health or policy questions unrelated to a specific product, or legal advice.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Uses the Listings Restrictions API (getListingsRestrictions) on an SP-API MCP server. Where the host also exposes Amazon's Seller Assistant (Amazon's Selling Partner connector does), it can confirm current rules live; without it the gate runs on the bundled regulatory map and says so. Without any server it can still classify and ask, but can't check gating.",
       "metadata": {
-        "version": "1.0.1"
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
+      "name": "amazon-sp-listing-optimizer",
+      "description": "Audit, optimize, fix, and edit Amazon Seller Central listings and A+ Content through an SP-API MCP server, for one listing or a whole catalog. Use whenever the user asks to review, audit, optimize, edit, fix, rewrite, or \"look at\" a listing — titles, item highlights, bullets, descriptions, search terms, browse nodes, attributes, images, variations, brand, A+ modules, or Brand Story. Also use to diagnose why a listing is suppressed, shows errors or warnings, isn't in search, or can't be bought (inactive, no offer), and for submission error codes such as 90057, 99001, 99010, or 97779. Trigger even when the user just names an ASIN or SKU and says \"check it\", \"clean it up\", or \"what's wrong with it\". Also use to regenerate listing images from existing product photos with an image model (Gemini/OpenAI), then validate and patch them. Do not use for \"can I sell this product\" compliance pre-checks (amazon-sp-listing-compliance), restock planning, or price-level strategy (amazon-sp-repricing).",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires an SP-API MCP server exposing Listings Items (getListingsItem, searchListingsItems, patchListingsItem) and Catalog Items; Product Type Definitions, FBA Inventory, and A+ Content operations are used when present. AI image work also needs the user's own image-model key, a storage bucket, and a host that can run the bundled Python scripts.",
+      "metadata": {
+        "version": "1.1.0"
       },
       "status": "reference",
       "origin": "first-party",
