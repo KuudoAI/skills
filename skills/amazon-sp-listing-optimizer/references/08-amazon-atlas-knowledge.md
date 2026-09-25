@@ -17,7 +17,7 @@ by the client for the active deployment.
 
 ## Connecting and discovering
 
-`amazon_atlas` uses a **meta-tool surface** like `amazon_sp`:
+`amazon_atlas` uses a **meta-tool surface** like a code-mode SP-API server:
 
 - `amazon_atlas:search` — find concrete tools by query.
 - `amazon_atlas:get_schema` — get exact parameters before calling.
@@ -102,6 +102,39 @@ chroma_query_documents(
 Use `amazon_atlas:execute` with a Python block that calls `chroma_query_documents`
 for each collection and returns trimmed rows (title + short preview), to avoid
 pulling large payloads into context.
+
+## When to query
+
+- Drafting or rewriting a title, bullet, or description for a specific
+  product.
+- Auditing image or copy compliance for a category-specific listing.
+- Grounding an ambiguous decision in an authoritative rule (`amazon_rules`).
+- Before A+ work, for current A+ guidance (`amazon_vendors`).
+- The product is in a category not covered earlier in the conversation.
+
+**Don't query** for universal length limits, prohibited content,
+suppression triggers, or brand-name policy (`01-policy-rules.md` has them),
+or for patch mechanics (`06-patch-construction.md`).
+
+## When it's unavailable or returns nothing useful
+
+1. Apply the general rules in `01-policy-rules.md`.
+2. Say so plainly: "I don't have category-specific guidance for X; want me
+   to draft from general principles, or do you have a reference to share?"
+3. **Don't fabricate category rules.** A hallucinated category rule does
+   more damage than none.
+
+## Cross-category products
+
+Some products straddle two categories: aprons (Home & Kitchen, worn like
+apparel), branded kitchen towels, branded reusable bags, pet apparel.
+
+- The catalog `classifications` path is where Amazon shelves the product.
+  Start there.
+- Run **two queries**, one per plausible `topic`, and apply the stricter
+  rules from both.
+- If the product is worn, apparel-style rules (department, model versus
+  flat-lay imagery, size runs) generally apply whatever the shelf category.
 
 ## How this maps to the skill's own references
 

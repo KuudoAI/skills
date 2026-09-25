@@ -15,7 +15,7 @@ description: >-
   forecasting or stockout risk, FBA inventory health, outbound or
   multi-channel orders, AWD, Vendor (1P) shipments, listings, or advertising.
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
-compatibility: Requires an SP-API MCP server exposing Fulfillment Inbound v2024-03-20 operations, plus the v0 getLabels and getBillOfLading operations for shipment labels. On the KuudoAI Amazon SP MCP, enable the fulfillment-inbound and fulfillment-inbound-v0 packages. Without a server the skill can only explain the process.
+compatibility: Requires an SP-API MCP server exposing Fulfillment Inbound v2024-03-20 operations, plus the v0 getLabels and getBillOfLading operations for shipment labels. Without a server the skill can only explain the process.
 metadata:
   version: "0.1.0"
 ---
@@ -42,7 +42,7 @@ This skill names operations by their Amazon `operationId`, for example
 `createInboundPlan`. The MCP server exposes each operation under its own tool
 name. Resolve the name once per session and reuse it:
 
-- **KuudoAI Amazon SP MCP.** The top-level tools are `search`,
+- **Code-mode SP-API MCP servers.** The top-level tools are `search`,
   `get_schema`, and `execute`.
   - Run `search` with the operationId.
   - Inbound tools are named `fba-inbound_<operationId>`, for example
@@ -52,14 +52,14 @@ name. Resolve the name once per session and reuse it:
   - Call them inside `execute` with `await call_tool(name, params)`. Body
     fields are top-level arguments.
   - Names must match exactly. There is no fuzzy matching.
-- **Other servers** use other prefixes; Amazon's hosted server, for example,
-  uses `fbaInbound_*`. Use whatever that server's discovery returns.
+- **Other servers** use other prefixes, such as `fbaInbound_*`. Use
+  whatever that server's discovery returns.
 
 Read the schema for each write tool before its first call. Use
 `get_schema(tools=[…], detail="full")`: the default detail hides nested body
 fields. One call can take every tool for the stage ahead. The schema is the
 authority. [references/tool-access.md](references/tool-access.md) has the
-KuudoAI server specifics:
+code-mode specifics:
 
 - batching and summarizing inside `execute`
 - error strings
@@ -67,10 +67,9 @@ KuudoAI server specifics:
 - 403 and AWD cases
 
 **If search finds no inbound tools** for the operationId or for
-`fba inbound`, the package is not loaded; stop there. Tell the user to enable
-`fulfillment-inbound` (and `fulfillment-inbound-v0` for labels and bills of
-lading) in the server's package setting (`SP_API_PACKAGES` or
-`AMAZON_SP_PACKAGES`), then restart the server. Do not substitute other tools
+`fba inbound`, the server doesn't expose Fulfillment Inbound; stop there. Tell the user to
+enable the Fulfillment Inbound operations (and the v0 ones, for labels and
+bills of lading) in their server's configuration. Do not substitute other tools
 and do not invent results.
 
 **Account context. Nothing works until an identity is selected.**
@@ -162,7 +161,7 @@ case-sensitive, so copy them.
 
    If an item is new to FBA, or the plan fails on an item, check it with
    `getItemEligibilityPreview(asin, program="INBOUND",
-   marketplaceIds=[…])`. On the KuudoAI server that tool is
+   marketplaceIds=[…])`. On a code-mode server that tool is
    `fba-inbound-eligibility_getItemEligibilityPreview`. It takes an ASIN,
    not an MSKU.
 2. **Packing options.** `generatePackingOptions`, then `listPackingOptions`
@@ -417,7 +416,7 @@ way to keep some shipments is not to cancel.
 
 ## References
 
-- [tool-access.md](references/tool-access.md): KuudoAI SP MCP code mode,
+- [tool-access.md](references/tool-access.md): code-mode tool names,
   `execute` patterns, errors, identity and region, and label downloads.
 - [request-shapes.md](references/request-shapes.md): exact bodies for every
   write.

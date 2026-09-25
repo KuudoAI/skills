@@ -9,7 +9,7 @@ Load this when constructing a `listings_patchListingsItem` body, especially for 
 `listings_patchListingsItem` corresponds to SP-API `PATCH /listings/2021-08-01/items/{sellerId}/{sku}`.
 
 **Required parameters:**
-- `sellerId` — the active seller account ID (e.g., `A3433YFPRAEA9F`)
+- `sellerId` — the seller's merchant ID (e.g., `A3433YFPRAEA9F`); on a server with identity selection, this is the selected identity's `label`
 - `sku` — the SKU to patch
 - `marketplaceIds` — array containing the marketplace ID (e.g., `['ATVPDKIKX0DER']`)
 - `productType` — the product type from `listings_getListingsItem` summaries (e.g., `APRON`, `BOOK_DOCUMENT_STAND`, `TABLE_RUNNER`)
@@ -17,7 +17,7 @@ Load this when constructing a `listings_patchListingsItem` body, especially for 
 
 **Optional parameters:**
 - `issueLocale` — for localized error messages
-- `mode` — `VALIDATION_PREVIEW` for dry-run (varies by wrapper; some wrappers use `confirm=false`)
+- `mode` — `VALIDATION_PREVIEW` for a dry-run that persists nothing (other wrappers may use `confirm=false`)
 
 ---
 
@@ -182,33 +182,36 @@ These are the most common attributes you'll patch. Names can vary by product typ
 
 ---
 
+## Complex attributes and conditional groups
+
+Not every fix is a single simple `replace`.
+
+**`purchasable_offer` (and similar nested attributes) don't replace cleanly.** The offer holds sub-structures — `our_price` schedules, `minimum_seller_allowed_price` / `maximum_seller_allowed_price`, discounted prices, B2B quantity tiers, audience (`ALL` vs `B2B`), `currency`. A blind top-level `replace` on `/attributes/purchasable_offer` can drop the ones you didn't resend. Follow Amazon's supported operations for this attribute ([Manage purchasable offers](https://developer-docs.amazon.com/sp-api/docs/manage-purchasable-offer#supported-operations-for-purchasable_offer)): read the current offer first, change only what the user asked for, and target the precise sub-path where the guide allows it. Use exactly the price the user gives — never propose one.
+
+**One issue can need several attributes.** Product-type schemas carry conditional (`allOf`) rules: setting attribute A can make B and C required (error `99010` is the symptom). Patch the whole group in **one** patch body, and use the preview to confirm no *new* required-attribute error appeared — don't trade one error for another across two submissions.
+
+Respect `"editable": false` in the product-type definition — those attributes can't be changed by patch.
+
+---
+
 ## Validation preview ("preview" / dry-run)
 
-For agentto: `update_listing` with `confirm=false`.
+On the SP-API, pass `mode: "VALIDATION_PREVIEW"` to `patchListingsItem`. It runs Amazon's full validation and **persists nothing**. Check the schema with `get_schema` (`detail="full"`) before the first patch in a session. Hosts that wrap the operation may use their own dry-run flag instead, such as `confirm=false`.
 
-For raw `listings_patchListingsItem` via amazon_sp: this wrapper may use a `mode` parameter or accept a dry-run flag. Check the schema with `amazon_sp:get_schema` before the first patch in a session.
-
-In either case, the preview returns:
+The preview returns:
 - `status` — `VALID` or `INVALID`
-- `issues[]` — any validation problems
+- `issues[]` — any validation problems, including ones your change would *introduce*
 - Confirmation of which fields would change
 
-Always preview first. Even for "obvious" fixes.
+Always preview first. Even for "obvious" fixes. If the preview reports issues, fix the patch and preview again; never carry an invalid patch forward.
 
 ---
 
 ## Confirmation
 
-Submit with:
-- `confirm=true` (or whatever the wrapper requires to actually fire the PATCH)
-- `idempotency_key` — a fresh, unique string. Once consumed, that key is bound to that patch outcome and can't be reused.
+After the user's explicit confirmation in chat, submit the **same** call without `mode`, in a new `execute` block that calls `set_active_identity` first (see `11-tool-access.md`).
 
-**Good idempotency key format:** `<sku>-<field>-<YYYYMMDD>-<short-desc>`
-- `mc-bs-01-bullets-20260512-iron-fix`
-- `ap-003-xo-variation-bullets-20260512-typo-cleanup`
-- `pillow-cc-001-title-20260512-thread-count-add`
-
-Descriptive keys are easier to trace in submission logs.
+Wrappers that use `confirm=true` also take an `idempotency_key` — a fresh, unique string bound to that patch outcome once consumed. A descriptive format is easiest to trace: `<sku>-<field>-<YYYYMMDD>-<short-desc>` (e.g. `mc-bs-01-bullets-20260512-iron-fix`).
 
 ---
 
@@ -233,7 +236,7 @@ A successful submission returns:
 | `EXCEEDED_LIMIT` / `90225` (length) | Title >200 chars (the field cap — note the **policy** limit is 75), item highlights >125 chars, bullet >255 chars, description >2000 chars, `generic_keyword` over the byte limit (`97779`) | Trim to spec. A title between 76 and 200 will **not** raise this error but is still non-compliant — relocate the surplus to item highlights |
 | `PROHIBITED_VALUE` | Used a banned phrase ("free shipping", competitor name, etc.) | Rewrite |
 | `IMAGE_NOT_ACCESSIBLE` | Image URL returns 403/404 or isn't reachable from Amazon | Host on a public-accessible URL |
-| 404 on the SKU itself | Wrong identity in `amazon_sp` | Confirm `get_active_identity` returns a seller that owns the SKU |
+| 404 on the SKU itself | Wrong identity selected, or the SKU belongs to another seller on the ASIN | Re-run `set_active_identity` in the same block, then `searchListingsItems` filtered by ASIN to see who owns which SKU |
 
 When a patch fails, the response will include `issues[]` with codes and messages. Surface these to the user verbatim — don't paraphrase Amazon's error.
 
@@ -248,7 +251,7 @@ For applying the same fix across many SKUs:
 3. Build a list of preview patches.
 4. **Show the user the full list before any submission.** Bulk preview means bulk diff — make it skimmable (a table is good).
 5. Get one explicit "confirm bulk submit" — not one per SKU.
-6. Submit in sequence with unique idempotency keys (`<sku>-<batch-id>-<short-desc>`).
+6. Submit in sequence, setting the identity at the top of each write block (and, on hosts that take them, unique idempotency keys like `<sku>-<batch-id>-<short-desc>`). Stay inside the sandbox limits — about 20 SKUs per `execute` block.
 7. Report results in a table: SKU, status, submission ID. Surface any failures separately.
 
 Don't parallelize patches without an explicit rate-limit confirmation. SP-API `listings_patchListingsItem` is typically 5 req/sec sustained but burst limits vary.

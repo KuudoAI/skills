@@ -4,8 +4,7 @@ Load this when working on apparel, shoes, or any sized product — especially wh
 listing has size-related returns, missing size guidance, or a variation family whose
 children differ by size.
 
-Source: Seller Central "Create a Size Chart for Your Products" (preserved in
-`00-source-size-charts.txt`).
+Source: Seller Central "Create a Size Chart for Your Products".
 
 ---
 

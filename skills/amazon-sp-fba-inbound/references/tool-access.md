@@ -1,7 +1,6 @@
-# Tool access on the KuudoAI Amazon SP MCP
+# Tool access on a code-mode SP-API MCP server
 
-These notes were checked against a live server (`amazon-sp-mcp` 4.0.3,
-Openbridge auth, all packages loaded) on 2026-09-24. The server's own tool
+These notes were verified live, read-only, on 2026-09-24. The server's own tool
 descriptions and `get_schema` output are the authority. If they disagree
 with this file, follow them.
 
@@ -105,7 +104,7 @@ With no identity selected, SP-API calls fail with
    lacks the Amazon Fulfillment role. Don't retry. Tell the seller to
    re-authorize the app in Seller Central (Manage Your Apps) with the
    Amazon Fulfillment role, or to reconnect the account through the
-   provider (Openbridge or the agency), then ask again.
+   provider that manages their connection, then ask again.
 
 Don't pass `entityId`, a merchant ID, or tokens in operation params. They
 aren't in the schema, and the server may accept and silently ignore them, so
@@ -337,7 +336,7 @@ string, not JSON. Catch it with `except Exception as e` and read `str(e)`:
 |---|---|---|
 | `Unknown tool: <name>` | Wrong name, or package not loaded | `search`; check packages |
 | `Provider identity selection is required.` | No identity selected | `list_identities`, ask which seller, `set_active_identity` |
-| `Openbridge service is unavailable.` for one seller while others work | The provider can't mint an Amazon token for that seller's connection (upstream 500 on its token exchange) | Report a broken connection for that seller, not an outage. Retry at most once; the connection needs re-authorization in Openbridge |
+| `<provider> service is unavailable.` for one seller while others work | The connection provider can't mint an Amazon token for that seller (upstream 500 on its token exchange) | Report a broken connection for that seller, not an outage. Retry at most once; the connection needs re-authorization with its provider |
 | `…HTTP error 403: … 'code': 'Unauthorized'…` | The seller's app authorization is inactive or lacks the Amazon Fulfillment role | Don't retry. Tell the seller to re-authorize (Seller Central, Manage Your Apps) or reconnect through the provider |
 | `…HTTP error 400: … {'errors': [{'code', 'message', 'details'}]}` | Amazon rejected the request | Read `message`; fix the input |
 | `…HTTP error 400: … not supported for Amazon Warehousing and Distribution inbound plans` | An AWD plan appeared in `listInboundPlans` | Label it AWD and skip; this skill doesn't manage AWD |

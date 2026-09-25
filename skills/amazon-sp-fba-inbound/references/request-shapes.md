@@ -2,7 +2,7 @@
 
 These are the bodies for every Fulfillment Inbound v2024-03-20 write.
 
-They are taken from the v2024-03-20 OpenAPI model. On the KuudoAI SP MCP,
+They are taken from the v2024-03-20 OpenAPI model. On code-mode SP-API servers,
 body fields are flattened into top-level tool arguments next to the path
 parameters. For example, `createInboundPlan` takes
 `{destinationMarketplaces, items, sourceAddress, name}` directly, not

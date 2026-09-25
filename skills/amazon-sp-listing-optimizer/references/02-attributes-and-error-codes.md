@@ -4,7 +4,7 @@ Load this when a listing is missing structured data, when a submission or flat-f
 upload fails with a numeric error code, or when the user asks why their product
 isn't showing up in filters/refinements.
 
-Source: Seller Central "Attributes guide" (preserved in `00-source-amazon-seller-central.txt`).
+Source: Seller Central "Attributes guide" and the error-code resolution pages (realigned 2026-07-25).
 
 ---
 
@@ -48,10 +48,15 @@ tracks upcoming requirements.
 Do **not** rely on memory or on the category lists in `01-policy-rules.md` § 9 for
 which attributes a specific product type requires. Those are a fallback.
 
-Ground truth is the **Product Type Definitions API** — `getDefinitionsProductType`
-for the listing's `productType` (confirm the exact tool name with `amazon_sp:search`).
-It returns the current required, conditionally required, and optional attributes with
+Ground truth is the **Product Type Definitions API**: `getDefinitionsProductType`
+for the listing's `productType`, live name `type_getDefinitionsProductType`. It
+defines the current required, conditionally required, and optional attributes with
 their valid values, and it stays in sync with Amazon's schema.
+
+Those rules sit in a JSON schema behind `schema.link`, which the host must
+fetch; the MCP sandbox can't. Only `propertyGroups` come back inline. If the
+schema can't be fetched, validate a concrete patch with `VALIDATION_PREVIEW`
+and read its `issues[]` (see `11-tool-access.md`).
 
 The second source is the listing itself: `listings_getListingsItem` `attributes` shows
 the exact attribute names in use for that SKU and marketplace, which is what a patch

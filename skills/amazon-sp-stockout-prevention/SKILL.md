@@ -36,7 +36,7 @@ action it recommends goes to the skill that owns it.
 Operations are named by Amazon `operationId`. Resolve each tool name through
 the server's discovery.
 
-On the KuudoAI Amazon SP MCP:
+On a code-mode SP-API MCP server:
 
 - The top-level tools are `search`, `get_schema`, and `execute`. Call tools
   inside `execute` with `await call_tool(name, params)`.
@@ -47,7 +47,7 @@ On the KuudoAI Amazon SP MCP:
 **Seller.**
 
 - **Call `set_active_identity` at the top of every `execute` block that
-  touches seller data.** On this server the selection is shared across
+  touches seller data.** The selection can be shared across
   sessions, so re-selecting pins each call.
 - Find the identity once. Filter `list_identities` inside the sandbox; it
   returns `{"result": [{id, label, attributes: {account_id,
@@ -60,8 +60,8 @@ On the KuudoAI Amazon SP MCP:
   the list. Never use whichever seller happens to be active.
 - A 403 `Unauthorized` means the seller's app authorization is inactive.
   Report it; don't retry.
-- "Openbridge service is unavailable" for one seller while others respond
-  means that seller's connection can't get an Amazon token. Report a broken
+- A provider "service is unavailable" error for one seller while others
+  respond means that seller's connection can't get an Amazon token. Report a broken
   connection, not an outage; retry at most once.
 
 **Parameters.**

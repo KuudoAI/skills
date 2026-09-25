@@ -10,7 +10,7 @@ Load this whenever doing any A+ work — drafting, auditing, suggesting modules,
 
 - **Brand Registry required** for all A+ Content and Brand Story.
 - **Basic A+ Content** — any Professional seller enrolled in Brand Registry, or vendor with approved vendor account, or Emerging Brand owner with registered trademark.
-- **Premium A+ Content** — registered brand that meets the higher threshold (typically: brand with approved A+ Content on 5+ ASINs). Check eligibility in A+ Content Manager.
+- **Premium A+ Content** — the same Brand Registry requirement as Basic. Amazon states there is **no additional eligibility criteria** for Premium, and both tiers are free. Don't tell a brand-registered seller they have to earn Premium first.
 
 If the seller isn't Brand Registry enrolled, A+ Content isn't available. Don't promise delivery; explain the requirement and point to brand registry enrollment.
 
@@ -119,7 +119,7 @@ Save work frequently as drafts — progress is lost otherwise. Keep copies of al
 
 ---
 
-## API tools (in `amazon_sp`)
+## API tools
 
 | Tool | Purpose |
 |---|---|
@@ -127,14 +127,44 @@ Save work frequently as drafts — progress is lost otherwise. Keep copies of al
 | `aplus_getContentDocument` | Get full body of a specific A+ doc |
 | `aplus_createContentDocument` | Create a new A+ document |
 | `aplus_updateContentDocument` | Update an existing draft A+ document |
-| `aplus_validateContentDocumentAsinRelations` | Pre-check if an A+ document is valid for a set of ASINs |
+| `aplus_validateContentDocumentAsinRelations` | Validate a full `contentDocument` for a set of ASINs **without saving anything**. This is the A+ dry run |
 | `aplus_postContentDocumentAsinRelations` | Replace the full set of ASINs linked to an A+ document (add/remove) |
 | `aplus_listContentDocumentAsinRelations` | List ASINs linked to a doc |
 | `aplus_postContentDocumentApprovalSubmission` | Submit a doc for review/approval/publishing |
 | `aplus_postContentDocumentSuspendSubmission` | Suspend visible A+ Content without deleting |
 | `aplus_searchContentPublishRecords` | Search publishing history |
 
-The same preview → confirm → submit discipline applies. For `aplus_postContentDocumentApprovalSubmission`, the act of submitting triggers Amazon's 7-business-day review — surface this to the user before they confirm.
+### A+ writes have no preview mode
+
+The A+ write operations take no `mode` or dry-run flag, so the Listings
+`VALIDATION_PREVIEW` step doesn't transfer. Every call below persists
+immediately:
+
+- `createContentDocument` and `updateContentDocument` save a **draft** on
+  the seller's account. It's not public, but it's saved.
+- `postContentDocumentAsinRelations` **replaces the whole ASIN set**. Any
+  ASIN left out is unlinked.
+- `postContentDocumentApprovalSubmission` sends the document to Amazon's
+  review (up to 7 business days). It publishes within 24 hours of approval
+  and counts toward the 20-pending limit.
+
+So run A+ writes like this:
+
+1. **Show the draft.** Present the full proposed document module by module,
+   after the violation checklist.
+2. **Dry run.** Call `validateContentDocumentAsinRelations` with
+   `marketplaceId`, the full `contentDocument`, and the target `asinSet`.
+   Nothing is saved. Show any errors and fix the draft until it passes.
+3. **Confirm the save.** Wait for explicit approval in the user's next
+   message, then `createContentDocument` (or `updateContentDocument`). Say
+   that this saves a draft, not a published page.
+4. **ASIN relations.** For an existing document, read the current set with
+   `listContentDocumentAsinRelations` first. Show exactly which ASINs are
+   added and which removed, and get confirmation before
+   `postContentDocumentAsinRelations`.
+5. **Confirm the submission separately.** Approval submission is what makes
+   the content public, so it needs its own explicit confirmation, with the
+   review time stated. A confirmation for the save doesn't cover it.
 
 ---
 
@@ -331,19 +361,27 @@ When auditing existing A+ Content for a brand:
 When drafting new A+ Content:
 
 1. **Confirm Brand Registry status** with the user before drafting.
-2. **Confirm Basic vs Premium eligibility.**
+2. **Choose Basic or Premium.** Any brand-registered seller can use either; Premium adds video, hotspots, carousels, Q&A, and larger images.
 3. **Map the product story** — what problem, what solution, what proof, what's the brand promise.
 4. **Draft module-by-module:**
    - Each module has its own purpose; don't repeat content.
    - One clear theme/message per module.
    - Pair text with image-aligned imagery.
 5. **Run the violation checklist before submission.**
-6. **Preview the body** (don't submit yet) — show the user the module-by-module layout.
-7. **Confirm.**
-8. **`aplus_createContentDocument`** to save the draft.
-9. **`aplus_validateContentDocumentAsinRelations`** with the target ASINs.
-10. **`aplus_postContentDocumentApprovalSubmission`** to submit for review — note this triggers ~7 business days.
-11. **`aplus_postContentDocumentAsinRelations`** to publish to ASINs after approval.
+6. **Show the draft** module by module, then **dry-run it** with
+   `aplus_validateContentDocumentAsinRelations` (full `contentDocument` plus
+   the target ASINs; nothing is saved). Fix the draft until it passes.
+7. **Confirm, then save** with `aplus_createContentDocument`, which creates
+   a draft and returns a `contentReferenceKey`.
+8. **Link the ASINs** with `aplus_postContentDocumentAsinRelations`. It
+   replaces the whole set, so list the ASINs being linked.
+9. **Confirm separately, then submit** with
+   `aplus_postContentDocumentApprovalSubmission`. Review takes up to 7
+   business days, and the content publishes within 24 hours of approval.
+
+Updating an existing document follows the same steps, with
+`aplus_updateContentDocument` in step 7. Show the current ASIN set from
+`aplus_listContentDocumentAsinRelations` before changing it.
 
 ---
 

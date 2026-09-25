@@ -2,7 +2,7 @@
 
 ## All v2024-03-20 operations (45)
 
-Tool name on the KuudoAI server: `fba-inbound_<operationId>`.
+Tool name on a code-mode server: `fba-inbound_<operationId>`.
 
 - **Async** means the operation returns an `operationId`; poll
   `getInboundOperationStatus`.
@@ -51,14 +51,14 @@ Tool name on the KuudoAI server: `fba-inbound_<operationId>`.
 | Status | `getInboundOperationStatus` | | 5/6 |
 
 Also useful: `getItemEligibilityPreview` from the FBA Inbound Eligibility
-API. It checks whether an ASIN can be inbounded to a marketplace. On the
-KuudoAI server the tool is
+API. It checks whether an ASIN can be inbounded to a marketplace. On a
+code-mode server the tool is
 `fba-inbound-eligibility_getItemEligibilityPreview`.
 
 The v0 operations that remain supported are `getLabels`, `getBillOfLading`,
 `getShipments`, `getShipmentItems`, `getShipmentItemsByShipmentId`, and
 `getPrepInstructions`, all at about 2/30. The other v0 inbound operations were
-removed on 2025-01-21. On the KuudoAI server their tool names are
+removed on 2025-01-21. On a code-mode server their tool names are
 `fulfillment-inbound-v0_<operationId>`.
 
 ## Identifiers
