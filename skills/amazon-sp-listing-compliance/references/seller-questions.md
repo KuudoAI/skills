@@ -14,7 +14,7 @@ Ask **once**, grouped, and include only the blocks that the Step 1 classificatio
 ## Ask when the product is ingestible, applied to the body, or a device (FDA)
 
 5. Full ingredient or material list?
-6. Which FDA registrations or clearances do you hold: facility registration and product listing (cosmetics), 510(k) or PMA (devices), NDC (OTC drugs)?
+6. Which FDA registrations or clearances apply and do you hold: facility registration and product listing (cosmetics); for devices, the product code and classification, then the 510(k), PMA, or the 510(k) exemption that applies; for infant formula, the manufacturer's FDA registration and new-formula notification; NDC (OTC drugs)?
 7. Do you have GMP documentation and, for OTC drugs, API / heavy-metal / microbial test reports?
 8. Does the packaging or listing make any "FDA approved" or health claim?
 

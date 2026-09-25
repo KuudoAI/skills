@@ -17,7 +17,7 @@ by the client for the active deployment.
 
 ## Connecting and discovering
 
-`amazon_atlas` uses a **meta-tool surface** like `amazon_sp`:
+`amazon_atlas` uses a **meta-tool surface** like a code-mode SP-API server:
 
 - `amazon_atlas:search` — find concrete tools by query.
 - `amazon_atlas:get_schema` — get exact parameters before calling.

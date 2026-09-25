@@ -48,6 +48,17 @@ match `metadata.version` in SKILL.md.
 - **Evals.** Ported with tool output inline. The OTC case now checks source
   honesty (map vs. live) rather than requiring Seller Assistant calls.
 
+### Fixed (PR review)
+
+- **Infant formula.** The map no longer asks for "FDA premarket approval",
+  which doesn't exist for infant formula. It asks for the manufacturer's FDA
+  registration and the new-infant-formula notification (at least 90 days
+  before marketing, FD&C Act § 412, 21 CFR 106/107).
+- **Medical devices.** The map now finds the product code and
+  classification first, and asks for 510(k), De Novo, or PMA only when the
+  classification requires it. Exempt Class I and Class II devices aren't
+  held for a missing 510(k). The seller question matches.
+
 ### Verified live (2026-09-24, read-only)
 
 - **Tool and parameters.** The live name is

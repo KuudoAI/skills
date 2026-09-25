@@ -29,7 +29,7 @@ schemas; everything else in this file still applies.
 | `getDefinitionsProductType` | `type_getDefinitionsProductType` | Attribute groups inline. The required and conditional rules and valid values sit in a JSON schema behind `schema.link`, which the host must fetch. Otherwise use a `VALIDATION_PREVIEW`'s `issues[]` as the practical validator |
 | `getInventorySummaries` | `fba-inventory_getInventorySummaries` | FBA fulfillable quantity, which Listings doesn't report |
 | `getListingsRestrictions` | `restriction_getListingsRestrictions` | Gating (used by `amazon-sp-listing-compliance`) |
-| A+ Content | `aplus_searchContentDocuments`, `aplus_getContentDocument`, `aplus_createContentDocument`, `aplus_updateContentDocument`, `aplus_validateContentDocumentAsinRelations`, `aplus_postContentDocumentAsinRelations`, `aplus_listContentDocumentAsinRelations`, `aplus_postContentDocumentApprovalSubmission`, `aplus_postContentDocumentSuspendSubmission`, `aplus_searchContentPublishRecords` | A+ work. See `05-aplus-content.md` |
+| A+ Content | `aplus_searchContentDocuments`, `aplus_getContentDocument`, `aplus_createContentDocument`, `aplus_updateContentDocument`, `aplus_validateContentDocumentAsinRelations`, `aplus_postContentDocumentAsinRelations`, `aplus_listContentDocumentAsinRelations`, `aplus_postContentDocumentApprovalSubmission`, `aplus_postContentDocumentSuspendSubmission`, `aplus_searchContentPublishRecords` | A+ work. The writes take no `mode`; `aplus_validateContentDocumentAsinRelations` is the dry run. See `05-aplus-content.md` |
 
 **Use these, not the legacy duplicates.** A server can also expose older API
 versions under other prefixes (`listings-items-2020-09-01_*`,

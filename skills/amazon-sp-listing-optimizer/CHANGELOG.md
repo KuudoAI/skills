@@ -103,6 +103,20 @@ skill already handles, and they were written for a connector that lacks
     `references/12-read-patterns.md` (context budget, the one-SKU read, the
     health scan, response shapes; about 6.5 KB). The read patterns load
     only for audits and scans.
+- **A+ writes get their own flow** (PR review). The A+ write operations
+  have no `mode` flag, and each one persists. The flow is now:
+  1. Show the draft.
+  2. Dry-run it with `aplus_validateContentDocumentAsinRelations`, which
+     takes the full document and saves nothing.
+  3. Confirm, then save the draft.
+  4. Show the ASIN set before a relation change, since that call replaces
+     the whole set.
+  5. Get a separate confirmation before approval submission, which is what
+     publishes.
+
+  The creation steps in `05-aplus-content.md` were also reordered: the
+  dry run now comes before the save, and ASIN linking before submission.
+  Eval 15 covers the flow.
 - `05-aplus-content.md` no longer claims Premium A+ needs a higher
   threshold ("approved A+ on 5+ ASINs"). The Seller Central source says
   there's no additional eligibility criteria for Premium; the same file

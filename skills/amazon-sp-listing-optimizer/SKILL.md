@@ -68,8 +68,8 @@ Listings are public content, so every write takes three steps:
    submission ID and status.
 
 Never combine the steps in one turn, and never auto-submit, even an
-"obvious" fix. This covers every listing write, A+ document and approval
-submissions, and A+ ASIN relations. For a delete, which the user can't undo,
+"obvious" fix. This covers every listing write. A+ has no preview mode, so
+it uses its own dry run and two confirmations (below). For a delete, which the user can't undo,
 ask for a confirmation that names the SKU.
 
 ## Session setup
@@ -163,8 +163,13 @@ those skills are available.
 
 - **A+:** load `05-aplus-content.md` first. Brand Registry is required, with
   an exact, case-sensitive brand match. Review takes up to 7 business days.
-  No competitor comparisons, even oblique ones. It uses the same preview,
-  confirm, and submit flow.
+  No competitor comparisons, even oblique ones. **A+ writes have no preview
+  mode, and every A+ write persists.** Show the full draft, dry-run it with
+  `aplus_validateContentDocumentAsinRelations` (nothing saved), then get a
+  confirmation before saving the draft. Show the ASIN set before any
+  relation change, since that call replaces the whole set. Get a separate
+  confirmation before approval submission, which is what publishes. Details:
+  `05-aplus-content.md`.
 - **Images** take a public `media_location` URL that Amazon fetches; the
   skill hosts nothing. For AI generation, load `07-ai-image-generation.md`
   and use the user's own key and storage. If config is missing, name the
