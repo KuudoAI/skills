@@ -26,6 +26,7 @@
         "amazon-sp-fba-inbound",
         "amazon-sp-listing-compliance",
         "amazon-sp-listing-optimizer",
+        "amazon-sp-messaging-api",
         "amazon-sp-refund-return-monitor",
         "amazon-sp-repricing",
         "amazon-sp-sales-traffic-analyzer",

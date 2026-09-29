@@ -1,0 +1,22 @@
+[
+  {"query": "Order 113-4471902-5530618 won't ship until next Thursday, our supplier is late. Can you let the buyer know?", "should_trigger": true},
+  {"query": "we sell engraved jewelry on amazon and need to confirm the engraving spelling with 12 buyers before production, can you message them all", "should_trigger": true},
+  {"query": "Send the invoice PDF in ~/Downloads/INV-4410.pdf to the buyer of order 205-3344556-6677889 on amazon.ca", "should_trigger": true},
+  {"query": "How do I send a warranty card to an Amazon customer through the API? It's a 2-year warranty starting from delivery date", "should_trigger": true},
+  {"query": "A buyer bought a sofa from us (order 114-...) and the freight carrier needs a delivery appointment, can you reach out to schedule it", "should_trigger": true},
+  {"query": "the buyer's address on order 111-2223334-4455667 looks incomplete, no apartment number. ask them before we ship", "should_trigger": true},
+  {"query": "We sell software keys on Amazon. Order 112-9876543-2109876 needs its activation code sent to the customer: XK9P-22LM-QQ41", "should_trigger": true},
+  {"query": "Our DE marketplace orders from yesterday are all delayed because of the DHL strike — notify every affected buyer in German", "should_trigger": true},
+  {"query": "Which message types am I allowed to send for Amazon order 701-5566778-8899001? I want to email the customer about a damaged item we caught before shipping", "should_trigger": true},
+  {"query": "We're legally required to send a battery safety disclosure document to buyers of our e-bike in France. How do I send that through Amazon?", "should_trigger": true},
+  {"query": "Send review requests to all my Amazon orders delivered in the last 5-30 days", "should_trigger": false},
+  {"query": "Pull my unread buyer messages from Seller Central and summarize which ones need a reply today", "should_trigger": false},
+  {"query": "Draft an email newsletter to our Shopify customers announcing the fall sale", "should_trigger": false},
+  {"query": "A buyer opened an A-to-z claim on order 113-9990001-2223334 saying the item never arrived. How should I respond to Amazon?", "should_trigger": false},
+  {"query": "How many refunds and returns did we get last month on the walnut cutting boards, and what were the return reasons?", "should_trigger": false},
+  {"query": "We're a Vendor Central supplier — can we message the end customers who bought our product on Amazon?", "should_trigger": false},
+  {"query": "Create an FBA inbound shipment for 300 units of SKU WB-18 from our Dallas warehouse", "should_trigger": false},
+  {"query": "Rewrite the bullet points on my ASIN B0C12345XY so they sound less spammy", "should_trigger": false},
+  {"query": "Set up Amazon Ads so that past buyers get retargeted with a coupon", "should_trigger": false},
+  {"query": "Send a Slack message to the ops team that order 113-4471902-5530618 is late", "should_trigger": false}
+]
