@@ -113,19 +113,31 @@ means the call failed.
 | 404 | Order not found in this marketplace or region | Check the marketplace and region |
 | 413 / 415 | Payload too large, or unsupported media type | Report it; check the attachment |
 | 429 | Throttled (1 request/second, burst 5) | Back off and retry that call |
-| 500 / 503 / timeout on a **send** | Unknown whether it was delivered | Don't retry. Mark "unknown" and ask the seller to check Seller Central |
+| Any 5xx (500, 502, 503, 504, …) or a timeout on a **send** | Unknown whether it was delivered | Don't retry. Mark "unknown" and ask the seller to check Seller Central |
 
 ## Batch pacing
 
 Send sequentially in one `execute` block. Sleep about 1.1 seconds between
-sends, and return a per-order result list instead of raw payloads:
+sends, and return a per-order result list instead of raw payloads.
+
+Each approved item carries its operation's own body fields, exactly as the
+seller approved them. Text types carry `text`. File types carry
+`attachments` (plus `coverageStartDate` and `coverageEndDate` for a
+warranty). Types that take both carry both.
 
 ```python
 import asyncio
+
+def status_codes(msg):
+    # 3-digit tokens in the error text, e.g. "SP-API error 503: ..." -> {"503"}
+    cleaned = "".join(c if c.isalnum() else " " for c in msg)
+    return {t for t in cleaned.split() if len(t) == 3 and t.isdigit()}
+
 await call_tool("set_active_identity", {"id": SELLER_IDENTITY_ID})
 results = []
-for o in approved:          # exactly the orders and texts the seller approved
-    params = {"amazonOrderId": o["id"], "marketplaceIds": [o["mp"]], "text": o["text"]}
+for o in approved:          # exactly the orders and bodies the seller approved
+    # o["body"]: {"text": ...} or {"attachments": [...], "coverageStartDate": ..., ...}
+    params = {"amazonOrderId": o["id"], "marketplaceIds": [o["mp"]], **o["body"]}
     for attempt in range(3):
         try:
             await call_tool(o["tool"], params)
@@ -133,16 +145,25 @@ for o in approved:          # exactly the orders and texts the seller approved
             break
         except Exception as e:
             msg = str(e)[:200]
-            if "429" in msg and attempt < 2:      # throttled: never delivered, safe to retry
+            codes = status_codes(msg.replace(o["id"], " "))   # ignore the order ID's own digits
+            if "429" in codes and attempt < 2:    # throttled: never delivered, safe to retry
                 await asyncio.sleep(2 ** (attempt + 1))
                 continue
-            ambiguous = any(s in msg.lower() for s in ("timeout", "500", "503"))
-            results.append({"order": o["id"], "result": "unknown" if ambiguous else "failed",
+            # A 4xx means Amazon rejected it: definitely not sent. A 5xx, a timeout,
+            # or an error with no status means delivery is unknown.
+            rejected = any(c.startswith("4") for c in codes)
+            results.append({"order": o["id"], "result": "failed" if rejected else "unknown",
                             "error": msg})
             break
     await asyncio.sleep(1.1)
 return results
 ```
+
+Status codes are read as whole 3-digit tokens, after removing the order ID
+from the error text. That way an order ID (some marketplaces' IDs start
+with `503-`) can't be mistaken for a status. If the error doesn't say what
+happened, treat it as unknown rather than failed. The unknown path never
+risks a duplicate message.
 
 If `asyncio` isn't importable in the sandbox, send in smaller `execute`
 blocks (five or fewer each, which stays within the burst) and pace between
