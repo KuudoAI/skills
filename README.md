@@ -37,6 +37,7 @@ Some skills work with uploaded reports or figures you provide. Live account anal
 | Understand what drives sales and returns | [Sales and traffic analysis](skills/amazon-sp-sales-traffic-analyzer/), [refund and return monitoring](skills/amazon-sp-refund-return-monitor/) |
 | Protect your margins | [Profitability and break-even calculations](skills/amazon-profitability-calculator/), [repricing strategy](skills/amazon-sp-repricing/) |
 | Keep FBA stock flowing | [Stockout risk and restock timing](skills/amazon-sp-stockout-prevention/), [FBA inbound shipments](skills/amazon-sp-fba-inbound/) |
+| Keep buyers informed | [Buyer messaging for delays, confirmations, invoices, and warranties](skills/amazon-sp-messaging-api/) |
 
 Browse the full collection in [`skills/`](skills/). Every skill's instructions are available to read before you install it.
 

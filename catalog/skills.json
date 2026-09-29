@@ -223,6 +223,22 @@
       "governanceLicense": "PolyForm-Shield-1.0.0"
     },
     {
+      "name": "amazon-sp-messaging-api",
+      "description": "Send order-scoped messages from an Amazon seller to a buyer with the SP-API Messaging API: check which message types an order allows, pick the right one, draft the text in the buyer's language within Amazon's content rules, attach invoices, warranties, or legally required documents, and send only after the seller approves an exact preview. Handles one order or a batch. Use whenever a seller wants to contact, notify, or message a buyer about an order: a delay or unexpected problem, confirming customization, delivery scheduling, an order question before shipping, a Home Services visit, a digital access key, or sending an invoice, warranty, or legal disclosure, even if they only say \"let the customer know\" or \"email the buyer\". Do not use for requesting reviews or seller feedback (Solicitations API), reading or replying to the buyer-seller inbox, marketing or promotional messages, A-to-z claims, returns, refunds, or Vendor (1P) orders.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires an SP-API MCP server exposing the Messaging API v1 operations, plus Orders to look up orders. Attachments also need the Uploads API createUploadDestinationForResource and a host shell (curl, openssl) to upload the file to the returned URL. The seller's app needs the Buyer Communication role. Without a server the skill can only draft and explain.",
+      "metadata": {
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
       "name": "amazon-sp-refund-return-monitor",
       "description": "Analyze Amazon FBA customer returns and seller-fulfilled return requests from Seller Central or SP-API exports. Use for return volume, high-return ASINs or SKUs, return-rate calculations, reason and disposition analysis, customer-comment themes, prior-period comparisons, damaged-versus-reimbursed review candidates, or client-ready Amazon returns reporting. Do not use for general Amazon Ads reporting, listing optimization without returns evidence, or financial refund totals without transaction data.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
