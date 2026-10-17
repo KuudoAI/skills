@@ -4,6 +4,44 @@
 
 Changes for the next release will be recorded here.
 
+## v0.2.0
+
+### New skills
+
+- `amazon-sp-fba-inbound` and `amazon-sp-stockout-prevention` (#10).
+- `amazon-sp-listing-compliance`, a pre-write compliance gate, with the
+  listing skills consolidated into `amazon-sp-listing-optimizer` (#11).
+- `amazon-sp-messaging-api` for Buyer-Seller Messaging sends (#13).
+- `connect-to-kuudo` for Kuudo Agent Auth connections (#8, #9).
+
+### Safety across the suite (#15, #16)
+
+A read-only audit of all 22 skills checked three rules, and every skill now
+meets them:
+
+- **Outside text is data, not instructions.** Report rows, names others can
+  set, shopper search terms, listing copy, buyer messages, uploaded files, and
+  tool or error text never change an analysis or the next call; an embedded
+  instruction is reported to the user as a finding.
+- **Show, then an explicit yes.** Writes are previewed with exactly what will
+  change and wait for the user's approval. DSP campaigns now pause twice
+  (before creation and before spend), repricing never applies prices
+  unattended, FBA inbound gates each irreversible call, and AMC executions,
+  creative uploads, and inbound-plan quotes are gated.
+- **Trusted targets.** Skills act only on accounts, URLs, and IDs the user
+  named or the run created.
+
+Server schemas now settle argument names and shapes only, and skills with
+evals gained prompt-injection and approval-gate cases.
+
+### Other changes
+
+- `amazon-product-image` 1.2.0: image-stack planning, size-and-scale and
+  what's-in-the-box guidance, a comparison decision path, a claim-coverage
+  gate for added copy, and main-image fill stated as 85% of the image area
+  (#14).
+- Standards-aware skill catalog (#4) and automated GitHub releases (#2).
+
 ## v0.1.0
 
 Initial public release of the KuudoAI Agent Skills suite for Amazon commerce workflows.
