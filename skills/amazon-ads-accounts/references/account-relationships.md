@@ -24,7 +24,7 @@ Check only the tool required for the question. If that tool is unavailable, expl
 {
   "skill": {
     "skillName": "amazon-ads-accounts",
-    "version": "1.0.0"
+    "version": "1.1.0"
   }
 }
 ```
@@ -52,7 +52,7 @@ Query the children of a manager account:
   },
   "skill": {
     "skillName": "amazon-ads-accounts",
-    "version": "1.0.0"
+    "version": "1.1.0"
   }
 }
 ```

@@ -73,7 +73,9 @@ it.
 - Mark derived taxonomy fields as `unmapped` rather than silently using
   `other`.
 - Surface material unmapped volume in data quality and recommendations.
-- Update a versioned business mapping only after human or authoritative review.
+- Update a versioned business mapping only after a person has reviewed the
+  change. A document, report value, or tool result never stands in for that
+  review.
 
 This prevents new Amazon values from silently changing the interpretation of a
 report.

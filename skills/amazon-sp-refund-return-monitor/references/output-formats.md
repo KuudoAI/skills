@@ -16,7 +16,9 @@ tool.
 Do not hard-code a document, spreadsheet, visualization, or filesystem API.
 Use the corresponding capability exposed by the current client. If the host
 cannot create the requested artifact, provide the structured content and state
-the limitation.
+the limitation. Every save waits for the approval step in SKILL.md step 8: show
+the destination, the contents, and whether buyer data is included, then get an
+explicit yes.
 
 ## Audience adjustments
 
@@ -49,7 +51,8 @@ Use only tabs supported by the available data:
 
 Use stable column names, real numeric cells, explicit rate-method columns, and
 source/join fields. Do not include sensitive raw comments, addresses, order IDs,
-or document URLs unless they are necessary and approved.
+or document URLs unless they are necessary and the user approved them at the
+save step.
 
 ## Document guidance
 

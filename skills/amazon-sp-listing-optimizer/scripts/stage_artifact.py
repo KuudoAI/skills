@@ -33,6 +33,10 @@ ARTIFACT_URL_TTL (seconds, default 86400) sets the presigned-URL lifetime for
 S3/GCS. It MUST comfortably outlast Amazon's ingestion fetch, which can lag —
 err long. Cloudinary URLs are public and effectively permanent.
 
+Running this publishes the file. Run it only after the user has approved the
+image and given an explicit yes that names this store and bucket or folder
+(`references/07-ai-image-generation.md`, End-to-end workflow, step 6).
+
 Usage:
     python stage_artifact.py candidate.png
     python stage_artifact.py candidate.png --store s3 --ttl 86400 --json

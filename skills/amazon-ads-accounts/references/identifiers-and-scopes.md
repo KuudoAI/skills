@@ -40,7 +40,7 @@ To show all account types, make one global query and one non-global query, pagin
   },
   "skill": {
     "skillName": "amazon-ads-accounts",
-    "version": "1.0.0"
+    "version": "1.1.0"
   }
 }
 ```

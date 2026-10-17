@@ -85,8 +85,11 @@ requires renewed authorization against that state.
 Scheduled execution may collect data, assemble a bundle, run `allocate.py`, run
 `report.py`, and deliver the proposal. It does not imply permission to write.
 Unattended live mutation requires a separately defined policy covering account
-scope, allowed change bounds, expiration, failure behavior, notification, and
-revocation.
+scope, campaigns in scope, allowed operations, change bounds, expiration,
+failure behavior, notification, and revocation. The user approves that policy
+with an explicit yes after seeing it in full; the SKILL.md Scheduling section
+sets what an unattended run may and may not do. Disabling budget rules and
+retrying failed writes are never unattended.
 
 ## Authoritative Amazon references
 
