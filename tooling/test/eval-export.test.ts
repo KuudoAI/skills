@@ -156,3 +156,19 @@ test("validates every selected case before writing, so a failed export leaves th
   await assert.rejects(exportTesslScenarios(root, missingOut), /amazon-sp-messaging-api-2: file files\/missing\.pdf does not exist\./);
   assert.deepEqual(await readdir(missingOut), []);
 });
+
+test("rejects input files that would collide with answer.md or cannot be included as a directory", async () => {
+  for (const [file, message] of [
+    ["answer.md", /answer-check-1: file answer\.md uses answer\.md, which is reserved for the agent's answer\./],
+    ["answer.md/notes.txt", /uses answer\.md, which is reserved/],
+    ["INV-1.pdf", /answer-check-1: file INV-1\.pdf must sit in a subdirectory of evals\//],
+  ] as const) {
+    const root = await createRepository({ "skills/answer-check/SKILL.md": "---\nname: answer-check\n---\n" });
+    await writeJson(root, "skills/answer-check/evals/evals.json", {
+      evals: [{ id: 1, prompt: "Use the input.", files: [file], assertions: [{ name: "a", condition: "Uses it" }] }],
+    });
+    const out = await outDirectory();
+    await assert.rejects(exportTesslScenarios(root, out), message);
+    assert.deepEqual(await readdir(out), []);
+  }
+});

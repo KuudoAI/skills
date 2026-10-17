@@ -44,7 +44,8 @@ export interface TesslExportResult {
 }
 
 /** Tessl's judge grades the files a solution leaves behind, not the chat, so every task asks for an answer file. */
-export const ANSWER_INSTRUCTION = "Write your complete final answer to `answer.md` in the working directory.";
+export const ANSWER_FILE = "answer.md";
+export const ANSWER_INSTRUCTION = `Write your complete final answer to \`${ANSWER_FILE}\` in the working directory.`;
 
 const MUST_NOT = /^(?:output\s+)?(?:does not|doesn't|do not|never|must not|no\s|avoids?\b)/i;
 
@@ -116,6 +117,10 @@ async function resolveInputFiles(evalDirectory: string, scenario: string, files:
     if (isAbsolute(relative) || relative === ".." || relative.startsWith(`..${sep}`)) {
       throw new Error(`${scenario}: file ${file} is outside evals/.`);
     }
+    // Tessl copies each included directory into the working directory, where the agent writes its answer.
+    const [top, ...rest] = relative.split(sep);
+    if (top === ANSWER_FILE) throw new Error(`${scenario}: file ${file} uses ${ANSWER_FILE}, which is reserved for the agent's answer.`);
+    if (rest.length === 0) throw new Error(`${scenario}: file ${file} must sit in a subdirectory of evals/, such as files/, because Tessl includes directories.`);
     const source = await realpath(join(evalDirectory, relative)).catch(() => {
       throw new Error(`${scenario}: file ${file} does not exist.`);
     });
