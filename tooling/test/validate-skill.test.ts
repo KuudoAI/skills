@@ -4,7 +4,7 @@ import test from "node:test";
 import { join } from "node:path";
 import { collectMarkdownReferences } from "../src/markdown.js";
 import { discoverSkillDirectories, validateSkillDirectory } from "../src/validate.js";
-import { createRepository, validSkillContent } from "./helpers.js";
+import { createRepository, validSkillContent, versionedSkillContent } from "./helpers.js";
 
 test("accepts a minimal standards-compliant skill", async () => {
   const root = await createRepository({
@@ -204,6 +204,122 @@ test("collects local links and images while ignoring external destinations", () 
     { url: "guide.md", sourcePath },
     { url: "assets/example.png", sourcePath },
   ]);
+});
+
+test("accepts a version that matches the top CHANGELOG entry and the eval version", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "0.4.0"),
+    "skills/example/CHANGELOG.md": "# Changelog\n\n## [0.4.0] - 2026-10-17\n\n- Added.\n\n## [0.3.0] - 2026-09-01\n\n- Earlier.\n",
+    "skills/example/evals/evals.json": `${JSON.stringify({ skill_name: "example", skill_version: "0.4.0", evals: [] })}\n`,
+  });
+
+  assert.deepEqual(await validateSkillDirectory(root, "skills/example"), []);
+});
+
+test("reports a top CHANGELOG entry that does not match metadata.version", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "0.4.0"),
+    "skills/example/CHANGELOG.md": "# Changelog\n\n## [0.3.0] - 2026-09-01\n\n- Earlier.\n",
+  });
+
+  assert.equal(
+    format(await validateSkillDirectory(root, "skills/example")),
+    "skills/example/SKILL.md: CHANGELOG.md top entry 0.3.0 does not match metadata.version 0.4.0.",
+  );
+});
+
+test("compares the first versioned CHANGELOG heading, skipping an Unreleased section", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "1.0.0-beta.1"),
+    "skills/example/CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n- Pending.\n\n## [1.0.0-beta.1] - 2026-10-17\n\n- Preview.\n",
+  });
+
+  assert.deepEqual(await validateSkillDirectory(root, "skills/example"), []);
+});
+
+test("reports a CHANGELOG without a versioned entry", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "0.4.0"),
+    "skills/example/CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n- Pending.\n",
+  });
+
+  assert.equal(
+    format(await validateSkillDirectory(root, "skills/example")),
+    "skills/example/SKILL.md: CHANGELOG.md has no \"## [X.Y.Z]\" entry to match metadata.version 0.4.0.",
+  );
+});
+
+test("requires metadata.version when a skill has a CHANGELOG", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": validSkillContent("example"),
+    "skills/example/CHANGELOG.md": "# Changelog\n\n## [0.1.0] - 2026-09-01\n\n- Initial.\n",
+  });
+
+  assert.equal(
+    format(await validateSkillDirectory(root, "skills/example")),
+    "skills/example/SKILL.md: metadata.version is required when CHANGELOG.md exists.",
+  );
+});
+
+test("reports an eval skill_version that does not match metadata.version", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "0.4.0"),
+    "skills/example/evals/evals.json": `${JSON.stringify({ skill_name: "example", skill_version: "0.3.0", evals: [] })}\n`,
+  });
+
+  assert.equal(
+    format(await validateSkillDirectory(root, "skills/example")),
+    "skills/example/SKILL.md: evals/evals.json skill_version 0.3.0 does not match metadata.version 0.4.0.",
+  );
+});
+
+test("accepts semantic versions with prerelease identifiers", async () => {
+  for (const version of ["0.0.0", "1.2.3", "10.20.30", "1.0.0-alpha", "1.0.0-rc.1", "1.0.0-0.3.7", "1.0.0-x-y.7.z.92"]) {
+    const root = await createRepository({ "skills/example/SKILL.md": versionedSkillContent("example", version) });
+    assert.deepEqual(await validateSkillDirectory(root, "skills/example"), [], version);
+  }
+});
+
+test("rejects a metadata.version that is not a semantic version", async () => {
+  for (const version of ["1.0", "v1.0.0", "01.0.0", "1.0.0-", "1.0.0-01", "1.0.0+build.1", ""]) {
+    const root = await createRepository({ "skills/example/SKILL.md": versionedSkillContent("example", version) });
+    assert.equal(
+      format(await validateSkillDirectory(root, "skills/example")),
+      `skills/example/SKILL.md: metadata.version "${version}" must be a semantic version (MAJOR.MINOR.PATCH with an optional -prerelease).`,
+      version,
+    );
+  }
+});
+
+test("leaves an imported skill without a version or CHANGELOG untouched", async () => {
+  const root = await createRepository({
+    "skills/imported/SKILL.md": validSkillContent("imported"),
+    "skills/imported/evals/evals.json": `${JSON.stringify({ skill_name: "imported", skill_version: "9.9.9", evals: [] })}\n`,
+  });
+
+  assert.deepEqual(await validateSkillDirectory(root, "skills/imported"), []);
+});
+
+test("accepts a versioned skill that deliberately has no CHANGELOG", async () => {
+  const root = await createRepository({
+    "skills/amazon-ads-reporting/SKILL.md": versionedSkillContent("amazon-ads-reporting", "0.4.0"),
+    "skills/amazon-ads-reporting/evals/evals.json": `${JSON.stringify({ skill_name: "amazon-ads-reporting", skill_version: "0.4.0", evals: [] })}\n`,
+  });
+
+  assert.deepEqual(await validateSkillDirectory(root, "skills/amazon-ads-reporting"), []);
+});
+
+test("rejects a symbolic-link CHANGELOG", async () => {
+  const root = await createRepository({
+    "skills/example/SKILL.md": versionedSkillContent("example", "0.4.0"),
+    "skills/example/references/history.md": "## [0.4.0] - 2026-10-17\n",
+  });
+  await symlink(join("references", "history.md"), join(root, "skills", "example", "CHANGELOG.md"));
+
+  assert.equal(
+    format(await validateSkillDirectory(root, "skills/example")),
+    "skills/example/CHANGELOG.md: CHANGELOG.md must be a regular file and not a symbolic link.",
+  );
 });
 
 function format(issues: Awaited<ReturnType<typeof validateSkillDirectory>>): string {

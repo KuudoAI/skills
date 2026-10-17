@@ -161,7 +161,7 @@ Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
 
 ## Releases
 
-Kuudo uses versioned GitHub releases such as `v0.2.0`. Maintainers prepare a release pull request with synchronized package and plugin versions, update [RELEASE-NOTES.md](RELEASE-NOTES.md), and merge it after the normal validation checks pass. Once it reaches `main`, GitHub creates the tag and release automatically. See the [release process](CONTRIBUTING.md#releases) for the maintainer commands.
+Kuudo uses versioned GitHub releases such as `v0.2.0`. Releases are automated with release-please: Conventional Commit messages on `main` drive a release pull request that bumps the synchronized package and plugin versions and writes [RELEASE-NOTES.md](RELEASE-NOTES.md), and merging it tags and publishes the release. Each skill also carries its own version, which pull requests must bump when they change the skill. See the [release process](CONTRIBUTING.md#releases) for details.
 
 ## License and acknowledgments
 

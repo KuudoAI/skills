@@ -10,7 +10,12 @@ npm run validate
 npm run catalog:build
 npm run catalog:check
 npm run test:unit
+npm run version:check
+npm run skills:version-check -- --base origin/main
+npm run commits:check -- --base origin/main
 ```
+
+Write commits as Conventional Commits; release notes and the plugin version are generated from them by release-please. Every pull request that changes a skill must bump that skill's `metadata.version` and add the matching CHANGELOG entry (see CONTRIBUTING.md, Releases).
 
 ## Boundaries and standards
 
