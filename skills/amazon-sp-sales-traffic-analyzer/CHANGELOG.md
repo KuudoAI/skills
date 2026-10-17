@@ -7,7 +7,7 @@ must match `metadata.version` in SKILL.md.
 ## [0.5.1] - 2026-10-17
 
 ### Changed
-- Core metrics: the Conversion row now states that a portfolio unit session % is session-weighted (Σ units ÷ Σ sessions), never an average of per-ASIN percentages, matching the Buy Box row's page-view weighting. The rule was previously only an anti-pattern in `references/agent-codegen-patterns.md`.
+- Core metrics: the Conversion row now states that a portfolio unit session % is session-weighted (Σ units ÷ Σ sessions × 100), never an average of per-ASIN percentages, matching the Buy Box row's page-view weighting. The rule was previously only an anti-pattern in `references/agent-codegen-patterns.md`.
 
 ## [0.5.0] - 2026-10-17
 

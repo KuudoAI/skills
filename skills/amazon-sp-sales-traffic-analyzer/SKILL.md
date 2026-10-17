@@ -119,7 +119,7 @@ Before final response, verify `sales_traffic_analysis.md` includes:
 | Area | Typical metrics | Notes |
 |------|-----------------|--------|
 | Traffic | Sessions, page views | May be one or both |
-| Conversion | Unit session %, orders / sessions | Use file column if present; else derive with care. Weight portfolio values by sessions (Σ units ÷ Σ sessions), never average per-ASIN percentages, and state the method |
+| Conversion | Unit session %, orders / sessions | Use file column if present; else derive with care. Weight portfolio values by sessions (Σ units ÷ Σ sessions × 100), never average per-ASIN percentages, and state the method |
 | Sales | Ordered product sales, units, orders | Match currency |
 | Buy Box | Buy Box % | Weight portfolio values by page views and state the method |
 | B2B (if present) | B2B sales, B2B units, B2B share of revenue | Optional section |
