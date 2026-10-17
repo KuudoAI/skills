@@ -35,8 +35,12 @@ Every bump also updates `evals/evals.json` `skill_version`.
   feed submission, and an automated-pricing-rules change. Each change-set row
   shows SKU, marketplace, current price, new price, floor and ceiling, rule,
   preview result, and write path. Any change after the yes, including a retry
-  with a different payload, needs a fresh preview and a fresh yes, and
-  deleting or disabling a pricing rule gets its own ask.
+  with a different payload, needs a fresh yes (after a fresh preview for
+  listing rows), and deleting or disabling a pricing rule gets its own ask.
+- `VALIDATION_PREVIEW` is scoped to listing-price rows, single or feed-bound,
+  because it validates Listings Items changes only. An automated-pricing-rule
+  change is shown with its rule, SKUs, marketplaces, and min and max, and
+  labeled unvalidated rather than run through a stand-in listing patch.
 - `references/01-sp-api-surfaces.md`: the live schema now wins only on
   operation names, argument names, types, and shapes; it never overrides the
   approval gate or the data rule.

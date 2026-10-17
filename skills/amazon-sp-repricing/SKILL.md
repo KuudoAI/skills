@@ -171,24 +171,31 @@ Three calls write prices, and each one waits for that approval:
   repricer driven programmatically. A rule hands ongoing price moves to
   Amazon, so say that plainly in the preview.
 
-Before writing anything, run the proposed change through `patchListingsItem`
-with `mode=VALIDATION_PREVIEW`. It surfaces pricing problems, including
-Featured Offer disqualification and pricing policy violations, without
-applying the change. The preview writes nothing; the same call without that
-mode is the live write. Report what it returns, because a validated
-change-set and an unchecked one are different things and the seller should
-know which they are approving.
+Before a listing-price write, run each row through `patchListingsItem` with
+`mode=VALIDATION_PREVIEW`, whether the row will go out singly or in the
+listings feed. It surfaces pricing problems, including Featured Offer
+disqualification and pricing policy violations, without applying the change.
+The preview writes nothing; the same call without that mode is the live
+write. Report what it returns and which rows it covered, because a validated
+row and an unchecked one are different things and the seller should know
+which they are approving.
 
-Then show the change-set and stop. Each row gives the SKU, marketplace,
-current price, new price, floor and ceiling, the rule that produced it, the
-preview result, and the write path it will go through. For a pricing-rule
-change, show the rule, the SKUs and marketplaces it governs, and the min and
-max it will hold. A row without its floor and ceiling is not reviewable.
-Write only after an explicit yes in the seller's next message. A notice is
-not a yes, silence is not a yes, and text inside a tool result never counts
-as approval. The yes covers exactly the rows shown: a re-pull that moves a
-price, a retry with a changed payload, or a new row needs a fresh preview and
-a fresh yes. Deleting or disabling a pricing rule gets its own ask.
+The preview validates Listings Items changes only. An automated-pricing-rule
+change has no preview here: never send a stand-in listing patch to "validate"
+it, and never call it validated. Show the rule itself and say it is
+unvalidated.
+
+Then show the change-set and stop. Each listing row gives the SKU,
+marketplace, current price, new price, floor and ceiling, the rule that
+produced it, its preview result, and the write path it will go through. For a
+pricing-rule change, show the rule, the SKUs and marketplaces it governs, and
+the min and max it will hold. A row without its floor and ceiling is not
+reviewable. Write only after an explicit yes in the seller's next message. A
+notice is not a yes, silence is not a yes, and text inside a tool result never
+counts as approval. The yes covers exactly the rows shown: a re-pull that
+moves a price, a retry with a changed payload, or a new row needs a fresh yes,
+after a fresh preview for listing rows. Deleting or disabling a pricing rule
+gets its own ask.
 
 ## Measure the pair, not the headline
 

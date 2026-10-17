@@ -136,10 +136,11 @@ Two paths, and one safety feature that matters more than either.
 **The safety feature: `patchListingsItem` accepts `mode=VALIDATION_PREVIEW`.**
 That previews the change and surfaces pricing issues, including Featured Offer
 disqualification and pricing policy violations, without applying it. Use it on
-every proposed change before anything is written. It converts "we found out
-after the price went live" into a pre-flight check, and it costs nothing but a
-call. Only the preview mode is a read; the same call without it is a live
-write.
+every proposed listing-price row, single or feed-bound, before anything is
+written. It converts "we found out after the price went live" into a
+pre-flight check, and it costs nothing but a call. Only the preview mode is a
+read; the same call without it is a live write. It validates Listings Items
+changes only; automated-pricing-rule changes have no equivalent preview here.
 
 Amazon also exposes a surface for managing its own automated pricing rules
 through the API, which is worth discovering with `search` if the seller wants
