@@ -43,11 +43,15 @@ export interface TesslExportResult {
   skipped: string[];
 }
 
+/** Tessl's judge grades the files a solution leaves behind, not the chat, so every task asks for an answer file. */
+export const ANSWER_FILE = "answer.md";
+export const ANSWER_INSTRUCTION = `Write your complete final answer to \`${ANSWER_FILE}\` in the working directory.`;
+
 const MUST_NOT = /^(?:output\s+)?(?:does not|doesn't|do not|never|must not|no\s|avoids?\b)/i;
 
 /**
- * Write each skill eval case as a Tessl scenario: task.md holds only the prompt, so the agent never
- * sees the expected answer; criteria.json turns the assertions into a weighted checklist for the judge.
+ * Write each skill eval case as a Tessl scenario: task.md holds the prompt and asks for the answer in a
+ * file, never the expected answer; criteria.json turns the assertions into a weighted checklist for the judge.
  * Every selected case and input file is validated before anything is written, so a failed export
  * leaves the output directory empty.
  */
@@ -113,6 +117,10 @@ async function resolveInputFiles(evalDirectory: string, scenario: string, files:
     if (isAbsolute(relative) || relative === ".." || relative.startsWith(`..${sep}`)) {
       throw new Error(`${scenario}: file ${file} is outside evals/.`);
     }
+    // Tessl copies each included directory into the working directory, where the agent writes its answer.
+    const [top, ...rest] = relative.split(sep);
+    if (top === ANSWER_FILE) throw new Error(`${scenario}: file ${file} uses ${ANSWER_FILE}, which is reserved for the agent's answer.`);
+    if (rest.length === 0) throw new Error(`${scenario}: file ${file} must sit in a subdirectory of evals/, such as files/, because Tessl includes directories.`);
     const source = await realpath(join(evalDirectory, relative)).catch(() => {
       throw new Error(`${scenario}: file ${file} does not exist.`);
     });
@@ -143,7 +151,7 @@ async function skillsWithEvals(root: string): Promise<string[]> {
 
 async function writeScenario(directory: string, { skill, evalCase, files }: PlannedScenario): Promise<void> {
   await mkdir(directory, { recursive: true });
-  await writeFile(join(directory, "task.md"), `${evalCase.prompt.trim()}\n`);
+  await writeFile(join(directory, "task.md"), `${evalCase.prompt.trim()}\n\n${ANSWER_INSTRUCTION}\n`);
   const criteria = {
     context: evalCase.expected_output?.trim() || `Evaluates the ${skill} skill.`,
     type: "weighted_checklist",

@@ -3,7 +3,7 @@ import { mkdtemp, readdir, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { exportTesslScenarios } from "../src/eval-export.js";
+import { ANSWER_INSTRUCTION, exportTesslScenarios } from "../src/eval-export.js";
 import { createRepository, read, writeJson } from "./helpers.js";
 
 const outDirectory = (): Promise<string> => mkdtemp(join(tmpdir(), "tessl-scenarios-"));
@@ -40,13 +40,14 @@ async function repositoryWithEvals(): Promise<string> {
   return root;
 }
 
-test("exports each eval as a Tessl scenario whose task holds only the prompt", async () => {
+test("exports each eval as a Tessl scenario whose task holds the prompt and asks for an answer file", async () => {
   const root = await repositoryWithEvals();
   const out = await outDirectory();
   const result = await exportTesslScenarios(root, out);
 
   assert.deepEqual(result.scenarios, ["amazon-sp-messaging-api-1", "amazon-sp-messaging-api-2"]);
-  assert.equal(await read(out, "amazon-sp-messaging-api-1/task.md"), "Tell the buyer their order is delayed.\n");
+  assert.equal(await read(out, "amazon-sp-messaging-api-1/task.md"), `Tell the buyer their order is delayed.\n\n${ANSWER_INSTRUCTION}\n`);
+  assert.match(ANSWER_INSTRUCTION, /answer\.md/);
   assert.deepEqual(JSON.parse(await read(out, "amazon-sp-messaging-api-1/criteria.json")), {
     context: "Previews the exact message and waits for approval.",
     type: "weighted_checklist",
@@ -154,4 +155,20 @@ test("validates every selected case before writing, so a failed export leaves th
   const missingOut = await outDirectory();
   await assert.rejects(exportTesslScenarios(root, missingOut), /amazon-sp-messaging-api-2: file files\/missing\.pdf does not exist\./);
   assert.deepEqual(await readdir(missingOut), []);
+});
+
+test("rejects input files that would collide with answer.md or cannot be included as a directory", async () => {
+  for (const [file, message] of [
+    ["answer.md", /answer-check-1: file answer\.md uses answer\.md, which is reserved for the agent's answer\./],
+    ["answer.md/notes.txt", /uses answer\.md, which is reserved/],
+    ["INV-1.pdf", /answer-check-1: file INV-1\.pdf must sit in a subdirectory of evals\//],
+  ] as const) {
+    const root = await createRepository({ "skills/answer-check/SKILL.md": "---\nname: answer-check\n---\n" });
+    await writeJson(root, "skills/answer-check/evals/evals.json", {
+      evals: [{ id: 1, prompt: "Use the input.", files: [file], assertions: [{ name: "a", condition: "Uses it" }] }],
+    });
+    const out = await outDirectory();
+    await assert.rejects(exportTesslScenarios(root, out), message);
+    assert.deepEqual(await readdir(out), []);
+  }
 });
