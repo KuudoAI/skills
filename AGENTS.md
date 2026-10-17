@@ -15,7 +15,13 @@ npm run skills:version-check -- --base origin/main
 npm run commits:check -- --base origin/main
 ```
 
-Write commits as Conventional Commits; release notes and the plugin version are generated from them by release-please. Every pull request that changes a skill must bump that skill's `metadata.version` and add the matching CHANGELOG entry (see CONTRIBUTING.md, Releases).
+## Commits, versions, and releases
+
+1. Write commit messages as `feat: …`, `fix: …`, `docs: …`, `chore: …`. CI now rejects anything else.
+2. When you change a skill, bump its `metadata.version` and add a changelog entry in the same PR. CI blocks it otherwise.
+3. When you're ready to ship, merge the open `chore: release X.Y.Z` PR. That's the whole release.
+
+Release notes and the plugin version are generated from commit messages by release-please. `main` accepts changes only through pull requests with a passing `validate` check. Details are in CONTRIBUTING.md, Releases.
 
 ## Boundaries and standards
 
