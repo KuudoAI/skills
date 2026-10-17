@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readdir, writeFile } from "node:fs/promises";
+import { mkdtemp, readdir, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -116,4 +116,42 @@ test("exports only named scenarios and rejects names that do not exist", async (
     exportTesslScenarios(root, await outDirectory(), { scenarios: ["amazon-sp-messaging-api-2", "amazon-sp-messaging-api-99"] }),
     /Unknown scenarios: amazon-sp-messaging-api-99\./,
   );
+});
+
+test("rejects a symlinked input file that resolves outside evals/ and writes nothing", async () => {
+  const root = await createRepository({
+    "secret.txt": "do not package\n",
+    "skills/demo/SKILL.md": "---\nname: demo\n---\n",
+    "skills/demo/evals/files/.keep": "",
+  });
+  await symlink(join(root, "secret.txt"), join(root, "skills/demo/evals/files/input.txt"));
+  await writeJson(root, "skills/demo/evals/evals.json", {
+    evals: [
+      { id: 1, prompt: "Plain case.", assertions: [{ name: "a", condition: "Answers" }] },
+      { id: 2, prompt: "Read files/input.txt.", files: ["files/input.txt"], assertions: [{ name: "b", condition: "Reads it" }] },
+    ],
+  });
+  const out = await outDirectory();
+  await assert.rejects(exportTesslScenarios(root, out), /demo-2: file files\/input\.txt is outside evals\//);
+  assert.deepEqual(await readdir(out), []);
+});
+
+test("validates every selected case before writing, so a failed export leaves the output empty", async () => {
+  const root = await repositoryWithEvals();
+  const unknownOut = await outDirectory();
+  await assert.rejects(
+    exportTesslScenarios(root, unknownOut, { scenarios: ["amazon-sp-messaging-api-1", "amazon-sp-messaging-api-99"] }),
+    /Unknown scenarios: amazon-sp-messaging-api-99\./,
+  );
+  assert.deepEqual(await readdir(unknownOut), []);
+
+  await writeJson(root, "skills/amazon-sp-messaging-api/evals/evals.json", {
+    evals: [
+      { id: 1, prompt: "Fine.", assertions: [{ name: "a", condition: "Answers" }] },
+      { id: 2, prompt: "Attach it.", files: ["files/missing.pdf"], assertions: [{ name: "b", condition: "Attaches it" }] },
+    ],
+  });
+  const missingOut = await outDirectory();
+  await assert.rejects(exportTesslScenarios(root, missingOut), /amazon-sp-messaging-api-2: file files\/missing\.pdf does not exist\./);
+  assert.deepEqual(await readdir(missingOut), []);
 });
