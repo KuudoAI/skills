@@ -43,7 +43,7 @@ For a general product main image, verify:
 
 - a pure white open background, specified as RGB `255,255,255`;
 - the complete product is visible and not cropped;
-- the product occupies about 85 percent of the frame without touching the edge;
+- the product covers about 85 percent of the image area without touching the edge (Amazon states fill as area, so never substitute coverage along one dimension; a long or thin product that cannot cover 85 percent of a square needs a canvas closer to its own proportions);
 - one clear product view is shown;
 - only the item and contents included with purchase appear;
 - quantity, scale, color, and configuration match the listing; and
