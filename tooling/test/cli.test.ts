@@ -21,7 +21,7 @@ import {
 isolateGitEnvironment();
 
 const execute = promisify(execFile);
-const usage = "Usage: skill:new <name> | validate | catalog <build|check> | version-check --base <ref> | commit-check --base <ref>";
+const usage = "Usage: skill:new <name> | validate | catalog <build|check> | version-check --base <ref> | commit-check --base <ref> | evals export tessl --out <dir> [--skill <name>]... [--scenario <skill>-<id>]... [--limit <n>] [--include-live]";
 const cli = new URL("../src/cli.ts", import.meta.url).pathname;
 const tsx = new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url).pathname;
 
@@ -98,7 +98,7 @@ test("catalog build refuses invalid repository state without changing artifacts"
 test("unknown and incomplete commands print usage without stack traces", async () => {
   const root = await createEmptyRepository();
 
-  for (const arguments_ of [["new"], ["catalog"], ["unknown"]]) {
+  for (const arguments_ of [["new"], ["catalog"], ["unknown"], ["evals", "export", "tessl"], ["evals", "export", "tessl", "--out", "x", "--limit", "0"]]) {
     const result = await runCli(root, ...arguments_);
     assert.equal(result.code, 2);
     assert.equal(result.stderr, `${usage}\n`);
