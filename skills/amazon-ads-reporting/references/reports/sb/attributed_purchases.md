@@ -22,7 +22,7 @@ In v3, 'Attribution type' is a column with values like 'Total' (all-attribution 
 
 In v1 the same data is one wider row per (date, campaign, ASIN) with both metric.sales (total) and metric.salesFromClicks (click-only) populated together. This is the same shape v3 reports like SB Keyword and SB Search Term use for their click-only variants. It is generally cleaner for downstream warehouses — joins and pivots get simpler when click-vs-view is on the same row.
 
-If your downstream consumers absolutely require the v3 long-format shape, UNION the rows in the warehouse: SELECT ..., 'Total' as attribution_type, sales as col_value FROM v1 UNION ALL SELECT ..., 'Click' as attribution_type, salesFromClicks as col_value FROM v1. Same for purchases and unitsSold.
+If your downstream consumers absolutely require the v3 long-format shape, rebuild it in the warehouse: take the v1 rows once with `attribution_type` 'Total' and `col_value` from `sales`, append them (UNION ALL) to the same rows with `attribution_type` 'Click' and `col_value` from `salesFromClicks`. Same for purchases and unitsSold.
 
 ## Field list (grouped by role)
 
