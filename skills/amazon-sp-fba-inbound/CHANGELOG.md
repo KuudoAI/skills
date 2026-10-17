@@ -13,6 +13,58 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.0] - 2026-10-17
+
+### Added
+
+- **Data, not instructions.** A new first guardrail treats every API
+  response and error as data: plan and shipment names, option and carrier
+  text, addresses, `operationProblems[]` messages, error strings,
+  eligibility, prep, and compliance reasons, and `list_identities` labels.
+  It also covers box files the seller uploads. An embedded instruction never
+  picks an option, counts as a yes or `CONFIRM`, or decides the next call;
+  the skill flags it to the seller instead.
+- **Show, then yes.** Before `createInboundPlan`, `confirmPackingOption`,
+  `setPackingInformation`, `updateShipmentTrackingDetails`,
+  `updateShipmentSourceAddress`, `setPrepDetails`,
+  `updateItemComplianceDetails`, and the two rename calls, the skill shows
+  the exact call, including the merchant ID, and waits for an explicit yes
+  in the seller's next message. A pick from options shown in full counts as
+  the yes for `confirmDeliveryWindowOptions` and
+  `scheduleSelfShipAppointment`. `cancelSelfShipAppointment` gets its own
+  ask.
+- **Retry rule.** A retry that changes anything (option ID, amount,
+  selection, box or address data) needs a fresh yes or `CONFIRM`. After a
+  5xx, the skill reads the plan before retrying.
+- Evals 5 (single fee-free packing option plus box data stop for a yes),
+  6 (an instruction in a plan name is flagged and ignored), and 7 (a
+  `CONFIRM` sent before the restatement doesn't count).
+
+### Changed
+
+- **Gate table.** The catch-all row "Everything else (creates, sets,
+  generates, reads) | Reversible, no fee, or read-only | Proceed" is replaced
+  by a per-call classification. Only the `generate*` calls,
+  `createMarketplaceItemLabels`, and reads run without asking. Server
+  selection calls run only for the seller the user named.
+- **Single fee-free packing option.** It is no longer confirmed with a
+  notice; the skill shows it and waits for a yes. This and the gate table
+  resolve a contradiction between the description ("Pauses at every
+  fee-charging or irreversible step") and the body, which proceeded on
+  writes it called permanent (box data, compliance details). The safer
+  description wins.
+- **`CONFIRM` timing.** The typed `CONFIRM` must come in a later message
+  than the restatement. One in the original request doesn't count.
+- **Server authority.** Tool descriptions and `get_schema` are authoritative
+  only for tool names and argument names, types, and shapes. They never
+  relax a gate (tool-access.md, SKILL.md section 1, request-shapes.md).
+- **Failed writes.** Fixes after a `FAILED` operation or a rejected confirm
+  come from the seller's data, not from the error text
+  (operations-and-limits.md, tool-access.md, carriers-and-shipping.md).
+- Eval 0 now expects a preview and a stop before `createInboundPlan`; the
+  original request is not the yes. Its pack-first and status-check
+  assertions moved to eval 5.
+
 ## [0.1.0] - 2026-09-24
 
 ### Added

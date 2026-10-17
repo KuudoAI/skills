@@ -19,7 +19,7 @@ Links an ad (from Step 6a or user-provided) to an ad group (from Step 5). Withou
 |---|---|---|
 | `adId` | Step 6a (or user) | `adId` |
 | `adGroupId` | Step 5 | `adGroupId` |
-| `state` | FIXED | `"ENABLED"` |
+| `state` | FIXED | `"PAUSED"` (Step 7 enables it after the Gate 2 yes) |
 
 ## Payload
 
@@ -30,7 +30,7 @@ Links an ad (from Step 6a or user-provided) to an ad group (from Step 5). Withou
     {
       "adId": "<adId>",
       "adGroupId": "<adGroupId>",
-      "state": "ENABLED"
+      "state": "PAUSED"
     }
   ]
 }
@@ -38,7 +38,7 @@ Links an ad (from Step 6a or user-provided) to an ad group (from Step 5). Withou
 
 ## Response → extract
 
-- `adAssociationId` — surface in the Step 8 summary; not required for activation (activating the campaign + ad group is what makes the association deliver).
+- `adAssociationId` — needed in Step 7 to enable the association with `allv1_UpdateAdAssociation`; also shown in the Gate 2 preview and the Step 8 summary.
 
 ## Verification (read-after-write)
 

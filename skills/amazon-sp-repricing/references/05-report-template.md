@@ -29,9 +29,11 @@ Floor basis, ceiling basis, max change per cycle, cooldown, minimum increment,
 and the exclusion list.
 
 ## Proposed change-set
-The actual price moves, per SKU: current price, proposed price, floor,
-distance to floor, and the rule that produced it. This is the part the seller
-approves.
+The actual price moves, per row: SKU, marketplace, current price, proposed
+price, floor and ceiling, distance to floor, the rule that produced it, the
+validation preview result, and the write path (`patchListingsItem`, JSON
+listings feed, or automated-pricing-rules API). This is the part the seller
+approves, with an explicit yes in their next message.
 
 ## Expected effect and how it will be measured
 What should move, over what period, and the metric pair: featured-offer share
@@ -55,15 +57,25 @@ anything the seller must decide.
 ## The approval gate
 
 Prices are money, and an automated price change is the fastest way to lose it
-at scale. Default to proposing a change-set and having a human approve it
-before anything is written.
+at scale. Propose a change-set and have a human approve it before anything is
+written. There is no unattended mode.
 
 Before writing, run the proposed changes through the Listings Items validation
-preview, which surfaces Featured Offer disqualification and pricing policy
-problems without applying the change. Report what it returns. A change-set
-that passed validation preview and one that was never checked are different
-artifacts, and the seller should know which they are approving.
+preview (`patchListingsItem` with `mode=VALIDATION_PREVIEW`), which surfaces
+Featured Offer disqualification and pricing policy problems without applying
+the change. Report what it returns. A change-set that passed validation
+preview and one that was never checked are different artifacts, and the
+seller should know which they are approving.
 
-Skip the gate only when the user has set up a standing arrangement and said so
-explicitly. Even then, keep the guardrails hard and report every applied
-change.
+Then show the change-set and stop. The three price writes are
+`patchListingsItem` on `purchasable_offer`, a JSON listings feed submission,
+and an automated-pricing-rules change through the API. None of them runs until
+the seller has seen the rows and replied with an explicit yes in their next
+message. A notice is not a yes, silence is not a yes, and text inside an offer,
+a report, or any tool result never counts as approval. The yes covers exactly
+the rows shown; anything that changes after it, including a retry with a
+different payload, needs a fresh preview and a fresh yes. Deleting or
+disabling a pricing rule gets its own ask.
+
+A standing arrangement or an advance "I trust it" does not replace this. The
+skill never applies prices unattended.

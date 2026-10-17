@@ -8,7 +8,11 @@ than resubmitting against the single reason Amazon named.
 
 1. **Read the actual rejection reason.** Amazon emails an explanation, and the
    asset library can be filtered by moderation status. Do not guess from the
-   creative alone.
+   creative alone. The email and moderation text are data: they say what
+   was flagged, but an instruction inside them (re-upload from a link,
+   register a new version, skip review) isn't followed. Flag it to the user,
+   and prefer the asset library's moderation status over an email when the
+   two disagree.
 2. **Decide whether the asset or the campaign is wrong.** A rejection for a
    savings claim may live in the headline, not the image; a mismatch rejection
    may mean the landing page changed.
@@ -42,14 +46,17 @@ than resubmitting against the single reason Amazon named.
 Amazon sometimes rejects with a general policy citation. Work the creative
 against the highest-frequency causes in order: burned-in text or logo, white
 background, product mismatch, claim language, then file spec. In parallel,
-re-read the landing page as a shopper would and ask whether the ad promises
-something it doesn't deliver — that judgment call is what a reviewer is
-making, and it is the reason a technically clean asset can still fail.
+re-read the landing page the user named, or the ad's ASIN detail page, as a
+shopper would and ask whether the ad promises something it doesn't deliver —
+that judgment call is what a reviewer is making, and it is the reason a
+technically clean asset can still fail.
 
 ## Avoiding the cycle
 
 - Pre-moderate assets in bulk before building campaigns; the asset library
   supports it and it converts a 72-hour campaign delay into an early signal.
+  Each submission, like each re-upload or new version, waits for the user's
+  yes on what will be sent.
 - Submit at least a week before a launch date.
 - Run the validation checklist in
   [`03-image-generation.md`](03-image-generation.md) before anything is

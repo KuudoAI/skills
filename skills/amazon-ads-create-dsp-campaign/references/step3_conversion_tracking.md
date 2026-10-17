@@ -6,6 +6,8 @@ Adds products (ASINs) to a DSP campaign to enable product-related conversion met
 
 This step is what unlocks P+ eligible tactics in Step 4. The campaign's `eligibleAutomatedTargetingTactics[]` is computed asynchronously based on the products attached here — without conversion tracking products, most P+ tactics will come back as ineligible with `reasonCode: EMPTY_INPUT`.
 
+This POST is a write, covered by the user's Gate 1 yes: post exactly the ASINs, `domain`, and `productAssociation` shown in that plan. Adding ASINs that weren't in it (variations, halo ASINs) needs a fresh yes.
+
 ## Required tool arguments
 
 | Argument | Where | Source | Value |
@@ -89,7 +91,7 @@ If the list is paginated (`nextToken` present), continue paging until you've ver
 
 ## On failure
 
-- **Total batch failure** (e.g., 4xx response): stop and report. The campaign exists but has no conversion tracking — Step 4 will return zero eligible P+ tactics. Suggest the user re-run with a corrected payload (most common cause: invalid `domain` for the marketplace, or a non-ASIN `productId`).
+- **Total batch failure** (e.g., 4xx response): stop and report. The campaign exists but has no conversion tracking — Step 4 will return zero eligible P+ tactics. Suggest the user re-run with a corrected payload (most common cause: invalid `domain` for the marketplace, or a non-ASIN `productId`); show the corrected list and get a fresh yes before posting it.
 - **Partial verification failure** (some ASINs missing after retries): report which ASINs didn't land. Let the user decide whether to proceed with the partial list or stop and re-attempt the missing ones.
 - **Throttling** (`429 / THROTTLED`): back off with exponential delay (start at 2s, double up to 30s) and retry the same batch. The endpoint has per-account rate limits.
 
@@ -97,4 +99,4 @@ If the list is paginated (`nextToken` present), continue paging until you've ver
 
 Each POST appends to the campaign's existing tracking list. Re-running this step with the same ASINs creates duplicate entries — not necessarily an error, but it can waste a slot in the 500k cap. If you suspect tracking is partially configured, call the GET first to see what's already there before deciding whether to POST again.
 
-For deleting products, use `campconv_DspDeleteProductConversionTrackingV1` (POST to `.../products/delete`) with the same `productTrackingList` shape — but this skill's workflow doesn't use it.
+For deleting products, use `campconv_DspDeleteProductConversionTrackingV1` (POST to `.../products/delete`) with the same `productTrackingList` shape — but this skill's workflow doesn't use it. If the user asks to remove products, show the exact list and get its own yes first.

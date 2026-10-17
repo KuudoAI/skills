@@ -7,6 +7,8 @@ This step is optional. There are three paths:
 2. **User provides an existing `adId`** → skip this step, use the provided `adId` directly in Step 6b.
 3. **User wants to defer creatives** → skip both Step 6a and 6b, proceed to Step 7.
 
+Create ads only from an approved plan: either the Gate 1 plan included these creative details, or you showed them afterwards (ad type, asset ID and version, sizes, callToAction URL, target ad groups) and got a yes.
+
 ## Inputs
 
 **Collect from the user (when they opt to create ads):**
@@ -25,7 +27,7 @@ This step is optional. There are three paths:
 | `adProduct` | FIXED: `"AMAZON_DSP"` |
 | `adType` | DERIVED: `"DISPLAY"` for DISPLAY inventory, `"VIDEO"` for VIDEO_OLV / VIDEO_STV |
 | `name` | DEFAULT: `DSP\|PB\|Ad\|{adType} yyyy-MM-dd_HH-mm-ss` |
-| `state` | FIXED: `"ENABLED"` (the ad starts enabled; what controls overall delivery is the parent ad group / campaign state) |
+| `state` | FIXED: `"PAUSED"` (created paused like the campaign and ad groups, so nothing is live before Gate 2; Step 7 enables it) |
 | `marketplaces` | DERIVED: `["<marketplace>"]` from Step 0 |
 | `callToAction` / `callToActions` URL | DERIVED: `https://www.amazon.com/dp/<ASIN>` from Step 0 ASINs |
 | `deepLinkingBehavior` | FIXED: `"ENABLED"` |
@@ -49,7 +51,7 @@ This step is optional. There are three paths:
       "adProduct": "AMAZON_DSP",
       "adType": "DISPLAY",
       "name": "<ad_name>",
-      "state": "ENABLED",
+      "state": "PAUSED",
       "marketplaces": ["<marketplace>"],
       "creative": {
         "displayCreative": {
@@ -88,7 +90,7 @@ This step is optional. There are three paths:
       "adProduct": "AMAZON_DSP",
       "adType": "VIDEO",
       "name": "<ad_name>",
-      "state": "ENABLED",
+      "state": "PAUSED",
       "marketplaces": ["<marketplace>"],
       "creative": {
         "videoCreative": {
@@ -122,7 +124,7 @@ This step is optional. There are three paths:
       "adProduct": "AMAZON_DSP",
       "adType": "VIDEO",
       "name": "<ad_name>",
-      "state": "ENABLED",
+      "state": "PAUSED",
       "marketplaces": ["<marketplace>"],
       "creative": {
         "videoCreative": {

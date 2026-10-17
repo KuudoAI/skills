@@ -9,7 +9,8 @@ parameters. For example, `createInboundPlan` takes
 `{body: {...}}`.
 
 Nested keys are **not** case-normalized, so copy them exactly. `get_schema`
-wins if it disagrees with this file.
+wins if it disagrees with this file about a key or shape. Every write here
+still goes through its gate in SKILL.md section 4.
 
 Contents:
 
