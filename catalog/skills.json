@@ -144,11 +144,11 @@
     },
     {
       "name": "amazon-product-image",
-      "description": "Use when creating, editing, auditing, or troubleshooting Amazon listing images, including main images, alternate images, infographics, lifestyle imagery, fashion photography, multipacks, swatches, suppression, or image error 100239.",
+      "description": "Use when creating, editing, auditing, or troubleshooting Amazon listing images, including main images, alternate images, infographics, lifestyle imagery, size and scale, comparison, and what's-in-the-box images, fashion photography, multipacks, swatches, suppression, or image error 100239. Also use when planning which images a listing needs and in what order.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Audits require viewable source images and listing context. Generation or editing requires a client-provided image tool. Uploads and live status checks require the user's configured Amazon connection.",
       "metadata": {
-        "version": "1.1.0"
+        "version": "1.2.0"
       },
       "status": "reference",
       "origin": "first-party",

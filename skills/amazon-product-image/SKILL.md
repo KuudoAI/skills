@@ -1,10 +1,10 @@
 ---
 name: amazon-product-image
-description: Use when creating, editing, auditing, or troubleshooting Amazon listing images, including main images, alternate images, infographics, lifestyle imagery, fashion photography, multipacks, swatches, suppression, or image error 100239.
+description: Use when creating, editing, auditing, or troubleshooting Amazon listing images, including main images, alternate images, infographics, lifestyle imagery, size and scale, comparison, and what's-in-the-box images, fashion photography, multipacks, swatches, suppression, or image error 100239. Also use when planning which images a listing needs and in what order.
 compatibility: Audits require viewable source images and listing context. Generation or editing requires a client-provided image tool. Uploads and live status checks require the user's configured Amazon connection.
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Amazon product images
@@ -44,7 +44,9 @@ When sources conflict, use the higher tier and disclose the conflict. Do not sil
 2. **Inspect evidence.** For an audit, view the original-resolution image and inspect available dimensions, format, color mode, and relevant listing facts. Verify measurable properties with tools instead of judging them by eye.
 3. **Apply hard requirements first.** Check product identity, delivered quantity, technical validity, and role-specific restrictions before offering conversion improvements.
 4. **Perform the requested work.**
+   - For more than one image for the same listing, plan the stack before writing prompts: give each image one buyer question to answer, using [image stack and merchandising](references/04-image-stack-and-merchandising.md).
    - For generation or editing, read [generation, editing, and audit](references/06-generation-editing-and-audit.md), then use the client's available image tool or provide a production-ready prompt when no tool is available.
+   - For any copy added to an alternate image, apply the claim-coverage gate in [generation, editing, and audit](references/06-generation-editing-and-audit.md): source every claim, never strengthen one, and keep unconfirmed copy out of ready-to-run prompts.
    - For suppression, upload, display, or error `100239`, read [suppression and troubleshooting](references/03-suppression-and-troubleshooting.md).
    - For fashion, apparel, footwear, intimate apparel, swimwear, or beauty, read [fashion and beauty](references/05-fashion-and-beauty.md).
 5. **Validate the result.** Reinspect generated or edited output at original resolution. Separate verified findings from conditions that require Seller Central, product evidence, or human review.
@@ -57,9 +59,9 @@ When sources conflict, use the higher tier and disclose the conflict. Do not sil
 | Technical requirements, main images, universal content restrictions, badges, claims, and product identity | [references/01-policy-and-technical-requirements.md](references/01-policy-and-technical-requirements.md) |
 | Multipacks, variety packs, swatches, offer-listing photos, packaging, and other special cases | [references/02-special-cases.md](references/02-special-cases.md) |
 | Suppression, upload/display failures, duplicate submissions, variation behavior, and error `100239` | [references/03-suppression-and-troubleshooting.md](references/03-suppression-and-troubleshooting.md) |
-| Alternate-image sequencing, infographics, lifestyle imagery, and conversion guidance | [references/04-image-stack-and-merchandising.md](references/04-image-stack-and-merchandising.md) |
+| Stack order and planning; benefit infographic, lifestyle, close-up, size and scale, comparison, and what's-in-the-box guidance; cross-image consistency; mobile legibility | [references/04-image-stack-and-merchandising.md](references/04-image-stack-and-merchandising.md) |
 | Fashion, apparel, footwear, intimate apparel, swimwear, and beauty-specific guidance | [references/05-fashion-and-beauty.md](references/05-fashion-and-beauty.md) |
-| Generation/edit prompts, brand fidelity, measurable validation, and audit output | [references/06-generation-editing-and-audit.md](references/06-generation-editing-and-audit.md) |
+| Generation/edit prompts, canvas and framing, added-copy claim sourcing, brand fidelity, measurable validation, and audit output | [references/06-generation-editing-and-audit.md](references/06-generation-editing-and-audit.md) |
 
 ## Response contract
 

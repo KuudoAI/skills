@@ -43,7 +43,7 @@ For a general product main image, verify:
 
 - a pure white open background, specified as RGB `255,255,255`;
 - the complete product is visible and not cropped;
-- the product occupies about 85 percent of the frame without touching the edge;
+- the product occupies about 85 percent of the frame without touching the edge (for elongated products such as pens or bottles, measure along the longest dimension, because covering 85 percent of a square's area is not achievable);
 - one clear product view is shown;
 - only the item and contents included with purchase appear;
 - quantity, scale, color, and configuration match the listing; and
