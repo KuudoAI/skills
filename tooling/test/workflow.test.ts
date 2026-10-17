@@ -16,14 +16,23 @@ type Workflow = {
   on: { pull_request?: unknown; push?: { branches?: string[] } };
   permissions?: Record<string, string>;
   concurrency?: { group?: string; "cancel-in-progress"?: boolean };
-  jobs?: Record<string, { "runs-on"?: string; needs?: string | string[]; steps?: WorkflowStep[] }>;
+  jobs?: Record<string, {
+    "runs-on"?: string;
+    needs?: string | string[];
+    permissions?: Record<string, string>;
+    steps?: WorkflowStep[];
+  }>;
 };
 
-const CHECKOUT = "actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09";
-const SETUP_NODE = "actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444";
-const RELEASE_PLEASE = "googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071";
+// Actions are matched by name, not by commit, so Dependabot can move the pins.
+// The pinning test below checks that every pin is a full SHA with a version comment.
+const CHECKOUT = "actions/checkout@";
+const SETUP_NODE = "actions/setup-node@";
+const RELEASE_PLEASE = "googleapis/release-please-action@";
 const PULL_REQUEST_ONLY = "github.event_name == 'pull_request'";
 const BASE_REF = "origin/${{ github.base_ref }}";
+
+const usesAction = (step: WorkflowStep, action: string): boolean => step.uses?.startsWith(action) ?? false;
 
 async function readWorkflow(name: string): Promise<{ raw: string; workflow: Workflow }> {
   const raw = await readFile(`.github/workflows/${name}`, "utf8");
@@ -58,10 +67,10 @@ test("validation workflow checks the repository on pull requests and pushes to m
   assert.equal(workflow.jobs?.validate?.["runs-on"], "ubuntu-24.04");
 
   const steps = stepsOf(workflow, "validate");
-  const checkout = steps.find((step) => step.uses === CHECKOUT);
+  const checkout = steps.find((step) => usesAction(step, CHECKOUT));
   assert(checkout);
   assert.equal(checkout.with?.["fetch-depth"], 0);
-  const setupNode = steps.find((step) => step.uses === SETUP_NODE);
+  const setupNode = steps.find((step) => usesAction(step, SETUP_NODE));
   assert(setupNode);
   assert.equal(setupNode.with?.["node-version"], 22);
   assert.equal(setupNode.with?.cache, "npm");
@@ -88,20 +97,26 @@ test("release workflow validates main before release-please opens or publishes a
   const { workflow } = await readWorkflow("release.yml");
 
   assert.deepEqual(workflow.on.push?.branches, ["main"]);
-  assert.deepEqual(workflow.permissions, { contents: "write", "pull-requests": "write" });
+  // Least privilege per job: only the release job can write, and nothing that can write
+  // restores a dependency cache (cache-poisoning hardening).
+  assert.deepEqual(workflow.permissions, {});
+  assert.deepEqual(workflow.jobs?.verify?.permissions, { contents: "read" });
+  assert.deepEqual(workflow.jobs?.release?.permissions, { contents: "write", "pull-requests": "write" });
   assert.deepEqual(workflow.concurrency, { group: "release-main", "cancel-in-progress": false });
 
   const verify = stepsOf(workflow, "verify");
   assert.equal(workflow.jobs?.verify?.["runs-on"], "ubuntu-24.04");
-  assert(verify.some((step) => step.uses === CHECKOUT));
-  assert(verify.some((step) => step.uses === SETUP_NODE));
+  assert(verify.some((step) => usesAction(step, CHECKOUT)));
+  const verifyNode = verify.find((step) => usesAction(step, SETUP_NODE));
+  assert(verifyNode);
+  assert.equal(verifyNode.with?.cache, undefined);
   for (const command of ["npm ci", "npm test", "npm run version:check"]) {
     assert(verify.some((step) => step.run === command), command);
   }
 
   assert.equal(workflow.jobs?.release?.["runs-on"], "ubuntu-24.04");
   assert.equal(workflow.jobs?.release?.needs, "verify");
-  const releasePlease = stepsOf(workflow, "release").find((step) => step.uses === RELEASE_PLEASE);
+  const releasePlease = stepsOf(workflow, "release").find((step) => usesAction(step, RELEASE_PLEASE));
   assert(releasePlease);
   assert.equal(releasePlease.with?.token, "${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}");
   assert.equal(releasePlease.with?.["config-file"], "release-please-config.json");
@@ -158,4 +173,34 @@ test("dependabot keeps GitHub Actions and npm dependencies current", async () =>
   assert.equal(config.version, 2);
   const ecosystems = config.updates.map((update) => update["package-ecosystem"]).sort();
   assert.deepEqual(ecosystems, ["github-actions", "npm"]);
+});
+
+test("dependabot groups only minor and patch updates and holds Node types to the runtime major", async () => {
+  const config = parse(await readFile(".github/dependabot.yml", "utf8")) as {
+    updates: Array<{
+      "package-ecosystem": string;
+      groups?: Record<string, { "update-types"?: string[] }>;
+      ignore?: Array<{ "dependency-name": string; "update-types"?: string[] }>;
+    }>;
+  };
+  for (const update of config.updates) {
+    const groups = Object.values(update.groups ?? {});
+    assert(groups.length > 0, update["package-ecosystem"]);
+    for (const group of groups) {
+      assert.deepEqual(group["update-types"], ["minor", "patch"], update["package-ecosystem"]);
+    }
+  }
+  const npm = config.updates.find((update) => update["package-ecosystem"] === "npm");
+  assert(npm?.ignore?.some((rule) =>
+    rule["dependency-name"] === "@types/node" && rule["update-types"]?.includes("version-update:semver-major")));
+
+  const validate = parse(await readFile(".github/workflows/validate.yml", "utf8")) as Workflow;
+  const nodeVersion = stepsOf(validate, "validate").find((step) => usesAction(step, SETUP_NODE))?.with?.["node-version"];
+  const packageJson = JSON.parse(await readFile("package.json", "utf8")) as { devDependencies: Record<string, string> };
+  assert.equal(packageJson.devDependencies["@types/node"]?.match(/\d+/)?.[0], String(nodeVersion));
+});
+
+test("TypeScript loads Node's built-in types explicitly, as TypeScript 6 and later require", async () => {
+  const tsconfig = JSON.parse(await readFile("tsconfig.json", "utf8")) as { compilerOptions: { types?: string[] } };
+  assert.deepEqual(tsconfig.compilerOptions.types, ["node"]);
 });
