@@ -4,6 +4,11 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [0.5.1] - 2026-10-17
+
+### Changed
+- Core metrics: the Conversion row now states that a portfolio unit session % is session-weighted (Σ units ÷ Σ sessions), never an average of per-ASIN percentages, matching the Buy Box row's page-view weighting. The rule was previously only an anti-pattern in `references/agent-codegen-patterns.md`.
+
 ## [0.5.0] - 2026-10-17
 
 ### Added

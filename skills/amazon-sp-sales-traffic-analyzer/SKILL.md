@@ -4,7 +4,7 @@ description: Use when analyzing Amazon Seller Central Sales & Traffic Business R
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 compatibility: Requires Python 3.10+ and a writable filesystem to run the bundled analyzer and create report artifacts.
 metadata:
-  version: "0.5.0"
+  version: "0.5.1"
 ---
 
 # Sales & traffic analyzer (Amazon Business Reports)
@@ -119,7 +119,7 @@ Before final response, verify `sales_traffic_analysis.md` includes:
 | Area | Typical metrics | Notes |
 |------|-----------------|--------|
 | Traffic | Sessions, page views | May be one or both |
-| Conversion | Unit session %, orders / sessions | Use file column if present; else derive with care |
+| Conversion | Unit session %, orders / sessions | Use file column if present; else derive with care. Weight portfolio values by sessions (Σ units ÷ Σ sessions), never average per-ASIN percentages, and state the method |
 | Sales | Ordered product sales, units, orders | Match currency |
 | Buy Box | Buy Box % | Weight portfolio values by page views and state the method |
 | B2B (if present) | B2B sales, B2B units, B2B share of revenue | Optional section |
