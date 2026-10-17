@@ -21,7 +21,7 @@ npm run commits:check -- --base origin/main
 2. When you change a skill, bump its `metadata.version` and add a changelog entry in the same PR. CI blocks it otherwise.
 3. When you're ready to ship, merge the open `chore: release X.Y.Z` PR. That's the whole release.
 
-Release notes and the plugin version are generated from commit messages by release-please. `main` accepts changes only through pull requests with a passing `validate` check. Details are in CONTRIBUTING.md, Releases.
+Release notes and the plugin version are generated from commit messages by release-please. `main` accepts changes only through pull requests with a passing `validate` check, merged by squash; a pull request with several commits lands under its title, so write that title as `feat: …`, `fix: …`, and so on. Details are in CONTRIBUTING.md, Releases.
 
 ## Boundaries and standards
 
