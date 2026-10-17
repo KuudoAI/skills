@@ -61,6 +61,8 @@ test("plugin guide distinguishes suite and portable installation", async () => {
   assert.match(installation, /claude plugin install kuudo-skills@kuudo-skills-dev --scope local/);
   assert.match(installation, /codex plugin marketplace add \/absolute\/path\/to\/skills/);
   assert.match(installation, /codex plugin add kuudo-skills@kuudo-skills-dev/);
+  assert.match(installation, /gemini extensions install https:\/\/github\.com\/KuudoAI\/skills/);
+  assert.match(installation, /gemini extensions link \/absolute\/path\/to\/skills/);
   assert.match(installation, /npx skills add KuudoAI\/skills --skill <skill-name>/);
   assert.match(installation, /npx skills add .*skills\/<skill-name>/);
   assert.match(installation, /choose (?:one|either).*installation mode.*client/is);

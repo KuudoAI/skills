@@ -43,9 +43,9 @@ Browse the full collection in [`skills/`](skills/). Every skill's instructions a
 
 ## Get started
 
-Install the whole suite in **Claude Code or Codex**, or choose **one portable skill** for another compatible client. Use one installation mode per client to avoid duplicate skills.
+Install the whole suite in **Claude Code, Codex, or Gemini CLI**, or choose **one portable skill** for another compatible client. Use one installation mode per client to avoid duplicate skills.
 
-The commands below use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. To install straight from GitHub instead, see the [installation guide](docs/plugin-installation.md) for Claude Code and Codex, or install by name with the Skills CLI below.
+The commands below use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. To install straight from GitHub instead, see the [installation guide](docs/plugin-installation.md) for Claude Code, Codex, and Gemini CLI, or install by name with the Skills CLI below.
 
 ### Claude Code
 
@@ -85,6 +85,16 @@ Use using-kuudo to review this Seller Central listing.
 ```
 
 You can also name a skill directly: “Use amazon-profitability-calculator to calculate this product's break-even price.” See the [Codex installation notes](docs/plugin-installation.md#whole-suite-in-codex) for CLI version details.
+
+### Gemini CLI
+
+Link the local copy as a Gemini CLI extension:
+
+```bash
+gemini extensions link /absolute/path/to/skills
+```
+
+Start a new Gemini CLI session. Gemini CLI discovers the suite's skills and can activate them for relevant requests. As with Codex, you can start with Kuudo's guidance by asking it to use `using-kuudo`, or name a skill directly. To install from GitHub, see the [Gemini CLI installation notes](docs/plugin-installation.md#whole-suite-in-gemini-cli).
 
 ### Other Agent Skills-compatible clients
 

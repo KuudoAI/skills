@@ -36,7 +36,7 @@ Release notes and the plugin version are generated from commit messages by relea
 - Host adapters contain mechanics only: package discovery and the minimum host-specific bootstrap injection.
 - `skills/using-kuudo/SKILL.md` contains the replaceable product and routing context. Change that context only in response to observed client behavior or an explicit product requirement; do not guess future routing policy.
 - Never add synthetic MCP aliases, a capability registry, a routing runtime, or a client-config proxy.
-- Keep `package.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and `.codex-plugin/plugin.json` versions synchronized.
+- Keep `package.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.codex-plugin/plugin.json`, and `gemini-extension.json` versions synchronized.
 - Every first-party `amazon-ads-*` consumer skill must include this recovery pointer; `amazon-ads-accounts` itself and imported third-party packages are exempt:
 
   > ## Account-context recovery
