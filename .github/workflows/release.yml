@@ -1,5 +1,8 @@
 name: Release
 
+# release-please keeps a release pull request open that bumps the synchronized
+# plugin version and prepends RELEASE-NOTES.md from Conventional Commits.
+# Merging that pull request tags vX.Y.Z and publishes the GitHub release.
 on:
   push:
     branches:
@@ -7,67 +10,41 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: release-main
   cancel-in-progress: false
 
 jobs:
-  release:
+  verify:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
           cache: npm
-
-      - name: Check whether this push changes the release version
-        id: version
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-        run: |
-          current_version="$(node -p "require('./package.json').version")"
-          should_release=false
-
-          if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
-            should_release=true
-          elif git cat-file -e "${BEFORE_SHA}:package.json" 2>/dev/null; then
-            previous_version="$(git show "${BEFORE_SHA}:package.json" | node -e 'let input=""; process.stdin.on("data", chunk => input += chunk).on("end", () => process.stdout.write(JSON.parse(input).version))')"
-            if [[ "$previous_version" != "$current_version" ]]; then
-              should_release=true
-            fi
-          fi
-
-          echo "current_version=${current_version}" >> "$GITHUB_OUTPUT"
-          echo "should_release=${should_release}" >> "$GITHUB_OUTPUT"
-          echo "Version changed: ${should_release} (${current_version})"
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Validate release commit
+      - name: Validate the commit on main
         run: npm test
+      - name: Check synchronized release versions
+        run: npm run version:check
 
-      - name: Create GitHub release when version is new
-        if: steps.version.outputs.should_release == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          version="$(node -p "require('./package.json').version")"
-          tag="v${version}"
-
-          if git show-ref --tags --verify --quiet "refs/tags/${tag}"; then
-            echo "${tag} already exists; nothing to release."
-            exit 0
-          fi
-
-          gh release create "${tag}" \
-            --target "${GITHUB_SHA}" \
-            --title "${tag}" \
-            --generate-notes
+  release:
+    needs: verify
+    runs-on: ubuntu-24.04
+    steps:
+      # Pull requests opened with the default GITHUB_TOKEN do not trigger other
+      # workflows, so required checks never run on the release pull request.
+      # A RELEASE_PLEASE_TOKEN secret (fine-grained PAT or GitHub App token with
+      # contents and pull-requests write) lets the Validate workflow run there.
+      - name: Open or update the release pull request, or publish the release
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4.4.1
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

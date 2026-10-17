@@ -5,7 +5,8 @@ import { Ajv2020 } from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import type { ErrorObject, ValidateFunction } from "ajv";
 import { collectMarkdownReferences } from "./markdown.js";
-import { parseSkillDocument } from "./frontmatter.js";
+import { isRecord, parseSkillDocument } from "./frontmatter.js";
+import { isSemanticVersion } from "./semver.js";
 import { isClassification, isSkillName, maximumSkillNameLength } from "./types.js";
 import type { CatalogEntry, Classification, SkillCatalogMetadata, TriggerCase, ValidationIssue } from "./types.js";
 
@@ -13,6 +14,7 @@ const standardFrontmatterFields = new Set(["name", "description", "license", "co
 const scaffoldSentinel = "Author the skill instructions before requesting certification.";
 const unsafeContainerMessage = "Repository container must be a real directory and not a symbolic link.";
 const unsafeGovernanceRecordMessage = "Governance record must be a regular file and not a symbolic link.";
+const changelogVersionHeading = /^## \[(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\]/m;
 const amazonAdsAccountRecoveryGuidance = `## Account-context recovery
 
 If Amazon account scope, identifier type, marketplace mapping, or account relationships become unclear, consult \`amazon-ads-accounts\` when it is available. Resume this skill after resolving the ambiguity. If it is unavailable, use equivalent read-only discovery and ask the user when multiple valid choices remain. Never guess or interchange identifier types.`;
@@ -87,6 +89,7 @@ export async function validateSkillDirectory(root: string, skillDirectory: strin
 
   if (parsed.frontmatter !== null) {
     await validateReferences(root, skillPath, displayPath, parsed.body, issues);
+    await validateVersionRecords(skillPath, skillDirectory, displayPath, parsed.frontmatter, issues);
   }
 
   await validateSkillTreeSymlinks(skillPath, skillPath, skillDirectory, issues);
@@ -533,6 +536,79 @@ function validateFrontmatter(
   }
 }
 
+/**
+ * Keep metadata.version, the top CHANGELOG.md entry, and evals/evals.json skill_version in agreement.
+ * Skills that declare no version and have no CHANGELOG.md, such as imported packages, are left alone.
+ */
+async function validateVersionRecords(
+  skillPath: string,
+  skillDirectory: string,
+  displayPath: string,
+  frontmatter: Record<string, unknown>,
+  issues: ValidationIssue[],
+): Promise<void> {
+  const metadata = frontmatter.metadata;
+  const declaresVersion = isRecord(metadata) && "version" in metadata;
+  const version = isRecord(metadata) && typeof metadata.version === "string" ? metadata.version : null;
+  const changelog = await readOptionalSkillFile(skillPath, skillDirectory, "CHANGELOG.md", issues);
+  if (!declaresVersion && changelog === null) return;
+
+  if (version !== null && !isSemanticVersion(version)) {
+    issues.push({
+      path: displayPath,
+      message: `metadata.version "${version}" must be a semantic version (MAJOR.MINOR.PATCH with an optional -prerelease).`,
+    });
+  }
+
+  if (changelog !== null && !declaresVersion) {
+    issues.push({ path: displayPath, message: "metadata.version is required when CHANGELOG.md exists." });
+  } else if (changelog !== null && version !== null) {
+    const topEntry = changelogVersionHeading.exec(changelog)?.[1];
+    if (topEntry === undefined) {
+      issues.push({ path: displayPath, message: `CHANGELOG.md has no "## [X.Y.Z]" entry to match metadata.version ${version}.` });
+    } else if (topEntry !== version) {
+      issues.push({ path: displayPath, message: `CHANGELOG.md top entry ${topEntry} does not match metadata.version ${version}.` });
+    }
+  }
+
+  if (version === null) return;
+  const evaluationPath = join("evals", "evals.json");
+  const evaluationText = await readOptionalSkillFile(skillPath, skillDirectory, evaluationPath, issues);
+  if (evaluationText === null) return;
+  const evaluations = parseJson(evaluationText, join(skillDirectory, evaluationPath), issues);
+  if (isRecord(evaluations) && "skill_version" in evaluations && evaluations.skill_version !== version) {
+    issues.push({
+      path: displayPath,
+      message: `evals/evals.json skill_version ${String(evaluations.skill_version)} does not match metadata.version ${version}.`,
+    });
+  }
+}
+
+/** Read an optional regular file inside a skill, reporting it when it is a symbolic link or not a file. */
+async function readOptionalSkillFile(
+  skillPath: string,
+  skillDirectory: string,
+  relativePath: string,
+  issues: ValidationIssue[],
+): Promise<string | null> {
+  const path = join(skillPath, relativePath);
+  let stat;
+  try {
+    stat = await lstat(path);
+  } catch (error) {
+    if (isMissing(error) || isNotDirectory(error)) return null;
+    throw error;
+  }
+  if (stat.isSymbolicLink() || !stat.isFile()) {
+    issues.push({
+      path: join(skillDirectory, relativePath),
+      message: `${relativePath} must be a regular file and not a symbolic link.`,
+    });
+    return null;
+  }
+  return readFileWithoutFollowing(path);
+}
+
 function starterDescription(name: unknown): string | null {
   return typeof name === "string"
     ? `Author a precise description of what ${name} does and when it should be used.`
@@ -714,6 +790,10 @@ async function isRealDirectory(path: string): Promise<boolean> {
 
 function isMissing(error: unknown): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
+}
+
+function isNotDirectory(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "ENOTDIR";
 }
 
 function isSymlinkLoop(error: unknown): boolean {

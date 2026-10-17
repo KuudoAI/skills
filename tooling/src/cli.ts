@@ -1,8 +1,10 @@
 import { checkCatalogArtifacts, writeCatalogArtifacts } from "./catalog.js";
+import { checkCommitSubjects, checkSkillVersionBumps } from "./release-checks.js";
 import { scaffoldSkill } from "./scaffold.js";
 import { validateRepository } from "./validate.js";
 
-const usage = "Usage: skill:new <name> | validate | catalog <build|check>";
+const usage = "Usage: skill:new <name> | validate | catalog <build|check> | version-check --base <ref> | commit-check --base <ref>";
+const releaseChecks = { "version-check": checkSkillVersionBumps, "commit-check": checkCommitSubjects };
 
 async function main(arguments_: string[]): Promise<number> {
   if (arguments_.length === 2 && arguments_[0] === "new") {
@@ -31,6 +33,17 @@ async function main(arguments_: string[]): Promise<number> {
     if (issues.length === 0) return 0;
     process.stdout.write(`${issues.map(formatIssue).join("\n")}\n`);
     return 1;
+  }
+
+  const command = arguments_[0];
+  if (command === "version-check" || command === "commit-check") {
+    if (arguments_.length !== 3 || arguments_[1] !== "--base") {
+      process.stderr.write(`${command} requires --base <ref>.\n${usage}\n`);
+      return 2;
+    }
+    const result = await releaseChecks[command](process.cwd(), arguments_[2]);
+    process.stdout.write(`${[...result.problems, result.summary].join("\n")}\n`);
+    return result.problems.length === 0 ? 0 : 1;
   }
 
   process.stderr.write(`${usage}\n`);
