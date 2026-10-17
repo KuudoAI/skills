@@ -13,6 +13,12 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.1] - 2026-10-17
+
+### Changed
+
+- Replaced Unicode ellipses with ASCII `...` in SKILL.md. Security scanners normalize Unicode and read the changed text as obfuscation; wording and behavior are unchanged.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added
