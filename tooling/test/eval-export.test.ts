@@ -3,7 +3,7 @@ import { mkdtemp, readdir, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { exportTesslScenarios } from "../src/eval-export.js";
+import { ANSWER_INSTRUCTION, exportTesslScenarios } from "../src/eval-export.js";
 import { createRepository, read, writeJson } from "./helpers.js";
 
 const outDirectory = (): Promise<string> => mkdtemp(join(tmpdir(), "tessl-scenarios-"));
@@ -40,13 +40,14 @@ async function repositoryWithEvals(): Promise<string> {
   return root;
 }
 
-test("exports each eval as a Tessl scenario whose task holds only the prompt", async () => {
+test("exports each eval as a Tessl scenario whose task holds the prompt and asks for an answer file", async () => {
   const root = await repositoryWithEvals();
   const out = await outDirectory();
   const result = await exportTesslScenarios(root, out);
 
   assert.deepEqual(result.scenarios, ["amazon-sp-messaging-api-1", "amazon-sp-messaging-api-2"]);
-  assert.equal(await read(out, "amazon-sp-messaging-api-1/task.md"), "Tell the buyer their order is delayed.\n");
+  assert.equal(await read(out, "amazon-sp-messaging-api-1/task.md"), `Tell the buyer their order is delayed.\n\n${ANSWER_INSTRUCTION}\n`);
+  assert.match(ANSWER_INSTRUCTION, /answer\.md/);
   assert.deepEqual(JSON.parse(await read(out, "amazon-sp-messaging-api-1/criteria.json")), {
     context: "Previews the exact message and waits for approval.",
     type: "weighted_checklist",
