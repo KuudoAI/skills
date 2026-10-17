@@ -1,6 +1,6 @@
 # Data sources
 
-These were verified live, read-only, on 2026-09-24. `get_schema(detail="full")` wins if it disagrees.
+These were verified live, read-only, on 2026-09-24. `get_schema(detail="full")` wins on argument names, types, and shapes if it disagrees. It never overrides the read-only or data rules in SKILL.md.
 
 ## FBA Inventory: `getInventorySummaries` (instant)
 
@@ -110,8 +110,9 @@ return {"counts": counts, "matched": len(rows), "rows": rows[:25]}
 3. `reports_getReportDocument(reportDocumentId)` returns `{url}`, a
    pre-signed S3 link that is valid for about 5 minutes. The file is
    uncompressed TSV with about 99 columns and one row per SKU.
-4. Run `scripts/planning_report.py "<url>"` from the host (the sandbox has no
-   network). It returns JSON.
+4. Run `scripts/planning_report.py '<url>'` from the host (the sandbox has no
+   network), single-quoted, with the `url` from step 3 of this run and no
+   other. It returns JSON.
 
 Columns the script uses:
 

@@ -122,7 +122,7 @@ Field list (grouped by role) — partial replacement only
 
 ## Operational notes
 
--   If you need a complete replacement and Marketing Stream is available, set up the sb-search-term-impression-share subscription first; the v1 partial report can then complement it with longer-window aggregates.
+-   If you need a complete replacement and Marketing Stream is available, recommend that the user set up the sb-search-term-impression-share subscription; the v1 partial report can then complement it with longer-window aggregates. Creating the subscription is a write this skill does not perform.
 
 
 -   Conversion rate definition: metric.purchaseRateOverClicks for orders/clicks (typical SB UI default); metric.purchaseRate for purchases/impressions.

@@ -4,6 +4,32 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com). Versions are semver and must
 match `metadata.version` in SKILL.md.
 
+## [0.2.0] - 2026-10-17
+
+### Added
+
+- A read-only boundary near the top: the skill never changes prices,
+  listings, inventory, inbound plans, or shipments, and calls no write tool.
+  `reports_createReport` is named as a read-type report job that needs no
+  approval.
+- The host script runs only on the `url` from this run's
+  `reports_getReportDocument` call, single-quoted (as is any `--skus`
+  list); a URL that isn't `https://` or contains a single quote stops the
+  run.
+- Eval `live-injected-report-row` (id 5).
+
+### Changed
+
+- The data rule in Guardrails now names product names, SKUs, report cells,
+  plan and shipment names, error text, and the script's output; says words
+  in them never change the ranking, the next tool, or the next command; and
+  has instruction-like text shown to the seller as a finding.
+- "Delete downloaded report files after parsing" contradicted the script,
+  which holds the report in memory and writes no file. Guardrails now says
+  so: there is nothing to delete, and the report is not saved to disk.
+- `get_schema` wins only on argument names, types, and shapes
+  (data-sources.md), never over the read-only or data rules.
+
 ## [0.1.0] - 2026-09-24
 
 ### Added

@@ -6,7 +6,7 @@
       "description": "Use when Amazon Ads work requires distinguishing advertiser accounts, profiles, entity IDs, DSP advertiser IDs, or manager accounts; listing accessible accounts; choosing a marketplace profile; or tracing account relationships.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "1.0.0"
+        "version": "1.1.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -22,7 +22,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires Python 3.10+. Offline proposals use bundled JSON inputs; live reads and writes require an Amazon Ads integration. Optional warehouse and sandbox runners may supply actuals or scheduled execution.",
       "metadata": {
-        "version": "0.2.1"
+        "version": "0.3.0"
       },
       "status": "certified",
       "origin": "first-party",
@@ -85,7 +85,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Offline request generation needs no integration; live operations require access to an Amazon Ads API client with unified/v1 reporting capabilities.",
       "metadata": {
-        "version": "0.3.1"
+        "version": "0.4.0"
       },
       "status": "certified",
       "origin": "first-party",
@@ -100,7 +100,7 @@
       "description": "Produce a Sponsored Brands (SB) campaign performance review from SB Campaigns Report data: portfolio summary, top and worst campaigns by efficiency, low-CTR creative signals, new-to-brand (NTB) analysis when present, placement or format splits if columns exist, and actionable recommendations. Use when users ask for Sponsored Brands audits, SB headline/video/store spotlight reviews, brand awareness efficiency, NTB share, SB CTR vs benchmarks, or SB campaign deep-dives. The agent must fetch and parse the report for the user’s environment — do not assume a global variable, fixed file path, or stable Amazon export schema; write loader and column-mapping code after inspecting the actual artifact.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "0.1.3"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -116,7 +116,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires a configured Amazon Ads MCP connection with reporting access. Account discovery and report creation depend on the tools and schemas exposed by that server.",
       "metadata": {
-        "version": "0.3.0"
+        "version": "0.4.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -132,7 +132,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires amazon_ads MCP server >= 0.3.1 (report_fields, CreateReport, RetrieveReport, QueryAdvertiserAccount, download_export, read_download)",
       "metadata": {
-        "version": "0.4.3"
+        "version": "0.5.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -212,7 +212,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing Listings Items (getListingsItem, searchListingsItems, patchListingsItem) and Catalog Items; Product Type Definitions, FBA Inventory, and A+ Content operations are used when present. AI image work also needs the user's own image-model key, a storage bucket, and a host that can run the bundled Python scripts.",
       "metadata": {
-        "version": "1.1.0"
+        "version": "1.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -228,7 +228,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing the Messaging API v1 operations, plus Orders to look up orders. Attachments also need the Uploads API createUploadDestinationForResource and a host shell (curl, openssl) to upload the file to the returned URL. The seller's app needs the Buyer Communication role. Without a server the skill can only draft and explain.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -244,7 +244,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Works from provided tabular exports without a live integration. Live retrieval requires a client-configured Amazon Selling Partner API integration exposing current report operations; document, spreadsheet, or dashboard delivery requires corresponding host capabilities.",
       "metadata": {
-        "version": "0.6.0"
+        "version": "0.7.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -276,7 +276,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires Python 3.10+ and a writable filesystem to run the bundled analyzer and create report artifacts.",
       "metadata": {
-        "version": "0.4.0"
+        "version": "0.5.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -291,7 +291,7 @@
       "description": "ASIN-level Amazon SQP / organic search diagnostics tied to search queries and n-gram themes: impression/click/purchase share, conversion index, funnel gaps, shipping and price friction, variant cannibalization, and lift-aware opportunity ranking. Use when users analyze Search Query Performance per ASIN, need SKU-specific SEO/PDP/ops recommendations from SQP, want RankScore-style prioritization, report QA badges for findings, stop-word hygiene for n-grams, or ASIN+query decision records alongside ngram-keyword-framework query-level rules. Not a substitute for Ads-only n-gram bid rules — use ngram-keyword-framework for sponsored search-term rollups.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "1.3.2"
+        "version": "1.4.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -307,7 +307,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing FBA Inventory (getInventorySummaries), Sales (getOrderMetrics), and Fulfillment Inbound v2024-03-20 reads. Amazon's planning report also needs the Reports API and a host that can run the bundled Python 3.9+ script with outbound HTTPS. Charts render only where the host supports artifacts.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -323,7 +323,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires the human's client to already have an MCP connection to Kuudo's Agent Auth server, exposing tools such as connect_agent, execute_capability, and agent_status, and a way to show the human a link. This skill uses the session's actual exposed tool names and schemas; it does not configure MCP, edit client config, or install anything itself.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",

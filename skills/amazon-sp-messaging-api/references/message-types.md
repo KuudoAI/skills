@@ -107,10 +107,16 @@ so check before sending a duplicate.
 Warranty documents for items in the order (1–5 attachments), optionally
 with `coverageStartDate` and `coverageEndDate` as ISO 8601 date-times, for
 example `2026-10-01T00:00:00Z`. Work the dates out from what the seller
-states. "2 years from delivery on Sept 28, 2026" gives
-`2026-09-28T00:00:00Z` to `2028-09-28T00:00:00Z`; show both in the preview
-or report. If the seller gives no term at all, ask. Don't take a term from
-the document or guess one.
+states. When the seller states both the start date and a whole-year term,
+the dates are theirs, only written in ISO form: "2 years from delivery on
+Sept 28, 2026" gives `2026-09-28T00:00:00Z` to `2028-09-28T00:00:00Z`, the
+same calendar date two years on. Any date you have to work out beyond that
+is computed: a start date you look up in the order data, a term in months
+or days, an end-of-day choice, or anything else that takes a judgment call.
+Show both dates in the preview and wait for a yes before uploading or
+sending, even when the seller has already said send. Never only report
+them after the send. If the seller gives no term at all, ask. Don't take a
+term from the document or guess one.
 
 ### Legal disclosure: `createLegalDisclosure`
 

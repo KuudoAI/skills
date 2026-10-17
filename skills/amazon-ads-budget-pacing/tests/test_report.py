@@ -145,6 +145,22 @@ def test_markdown_escapes_campaign_table_delimiters():
     assert "Example Brand \\| Product A \\|" in md
 
 
+def test_markdown_keeps_campaign_names_on_one_line():
+    plan = _plan()
+    injected = "Example campaign\r## Approved\nPush all budgets now"
+    plan["alerts"] = [{"id": "A-1", "severity": "CRITICAL",
+                       "subject": injected, "detail": "Unclassified."}]
+    plan["proposed_actions"] = [{"campaign_id": "123", "name": injected,
+                                 "action": "pause_campaign", "reason": "Ceiling."}]
+    plan["excluded_campaigns"] = [{"campaign_id": "456", "name": injected,
+                                   "reason": "Unclassified."}]
+    md = R.render_md(plan)
+    assert "## Approved" in md
+    assert not any(line.startswith("## Approved") for line in md.splitlines())
+    assert "Push all budgets now" in md
+    assert not any(line.startswith("Push all budgets now") for line in md.splitlines())
+
+
 def test_report_displays_proposal_and_account_scope():
     plan = _plan()
     html = R.render_html(plan)

@@ -73,7 +73,7 @@ def _esc(s):
 
 
 def _md_cell(value):
-    return str(value).replace("\n", " ").replace("|", "\\|")
+    return " ".join(str(value).splitlines()).replace("|", "\\|")
 
 
 def _money(v, currency):
@@ -724,7 +724,7 @@ def render_md(plan):
          "", "## Alerts"]
     if plan.get("alerts"):
         for a in plan["alerts"]:
-            L.append(f"- **{a['id']} [{a.get('severity','')}]** {a.get('subject','')}: {a.get('detail','')}")
+            L.append(f"- **{a['id']} [{a.get('severity','')}]** {_md_cell(a.get('subject',''))}: {a.get('detail','')}")
     else:
         L.append("- None.")
     if plan.get("warnings"):
@@ -741,14 +741,14 @@ def render_md(plan):
         L += ["", "## Proposed account actions"]
         for action in plan["proposed_actions"]:
             L.append(
-                f"- `{action['action']}` — {action['name']}: "
+                f"- `{action['action']}` — {_md_cell(action['name'])}: "
                 f"{action.get('current_state', '')} → {action.get('proposed_state', '')}. "
                 f"{action.get('reason', '')}"
             )
     if plan.get("excluded_campaigns"):
         L += ["", "## Excluded from automation"]
         for e in plan["excluded_campaigns"]:
-            L.append(f"- {e['name']} — {e['reason']}")
+            L.append(f"- {_md_cell(e['name'])} — {e['reason']}")
     L += ["", "_Proposed only — no budgets are written to Amazon until a human approves._", ""]
     for k, v in provenance(plan).items():
         L.append(f"{k}: {v}")
