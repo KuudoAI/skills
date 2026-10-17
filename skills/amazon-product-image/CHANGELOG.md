@@ -34,10 +34,11 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 - Claim-coverage gate for added copy: source every claim, never strengthen
   one, treat category norms and related-spec inference as non-sources, and
   keep unconfirmed copy and placeholders out of ready-to-run prompts.
-- Main-image framing: centered with a white margin on every side, 85 percent
-  fill measured along the longest dimension for elongated products, and a
-  square canvas set through the tool's aspect-ratio or size control when
-  available.
+- Main-image framing: centered with a small white margin on every side, fill
+  stated as about 85 percent of the image area (never one dimension), and a
+  canvas the product can fill, set through the tool's aspect-ratio or size
+  control when available: square for roughly square products, closer to the
+  product's proportions for long or thin ones.
 - Stack-level checks: cross-image color and finish consistency, a phone-width
   legibility test, and a working text-size heuristic for prompts.
 - Evals for stack planning, a cluttered-infographic audit, a lineup

@@ -39,17 +39,17 @@ Create or edit an Amazon listing MAIN image for [exact product and variant].
 
 Preserve: product shape, proportions, color, material, quantity, included contents,
 and all verified physical details from the source.
-Canvas: square 1:1 unless a category guide specifies another ratio.
-Composition: one clear product view, centered; entire product visible with a clean white margin
-on every side; approximately 85% frame fill, measured along the longest dimension for
-elongated products.
+Canvas: square 1:1 when the product's proportions can fill it, unless a category guide specifies
+another ratio; for a long or thin product, a canvas closer to its own proportions.
+Composition: one clear product view, centered; entire product visible with a small clean white
+margin on every side; the product covers approximately 85% of the image area.
 Background: seamless pure white open field, RGB 255,255,255.
 Exclude: unrelated props, extra accessories, lifestyle scenery, added text, badges,
 prices, reviews, watermarks, borders, inset views, Amazon marks, and unsupported claims.
 Category constraints: [verified marketplace/category requirements].
 ```
 
-When the image tool exposes an aspect-ratio or output-size control, set the canvas there as well as in the prompt, then confirm the output's pixel dimensions. Search results and the detail-page gallery display images in a roughly square frame, so a wide or tall canvas shrinks the product in thumbnails even when the fill looks right in the file. The square canvas is a display recommendation; fill, full visibility, and the white background are the requirements.
+When the image tool exposes an aspect-ratio or output-size control, set the canvas there as well as in the prompt, then confirm the output's pixel dimensions. Fill is a share of the image area, so pick a canvas the product can fill: a square for roughly square products, and for a long or thin product (a pen, a bottle, a rod) a canvas closer to its own proportions, since it cannot cover 85% of a square. Search results and the detail-page gallery display images in a roughly square frame, so a non-square canvas shows with padding in thumbnails. That is a display trade-off; fill, full visibility, and the white background are the requirements.
 
 For an edit, define the mask or changed region and state the invariant pixels:
 
