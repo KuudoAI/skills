@@ -17,6 +17,7 @@
     "version:audit": "bash scripts/bump-version.sh --audit",
     "skills:version-check": "tsx tooling/src/cli.ts version-check",
     "commits:check": "tsx tooling/src/cli.ts commit-check",
+    "evals:export": "tsx tooling/src/cli.ts evals export",
     "smoke": "node --import tsx --test tooling/test/smoke.test.ts",
     "typecheck": "tsc --noEmit",
     "test:unit": "tsx --test tooling/test/*.test.ts",
