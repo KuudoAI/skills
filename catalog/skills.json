@@ -37,7 +37,7 @@
       "description": "Create and launch an Amazon DSP Performance+ (P+) or Brand+ (B+) campaign end-to-end using this amazon-ads-mcp server's allv1_* tools. Drives the full setup: gather user inputs, query the advertiser account to resolve the DSP account ID, create the DSP campaign in PAUSED state, attach ASIN conversion tracking, query eligible automated targeting tactics, create one ad group per (inventoryType, tactic) combination, optionally create ads and ad-group associations, then activate everything in strict parent-first order with verification reads between writes. Supports P+ tactics (CUSTOMER_ACQUISITION, REMARKETING, RETENTION, MAXIMIZE_PERFORMANCE) and B+ tactics (PROSPECTING) across DISPLAY, VIDEO_OLV, VIDEO_STV, AUDIO, and LIVE_EVENTS inventory. Trigger whenever the user mentions creating a DSP P+ or B+ campaign, launching automated DSP targeting, setting up Performance+ or Brand+ ad groups, or any variant like 'spin up a P+ campaign', 'launch Brand+ prospecting', 'create DSP automated targeting'.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "2.1.3",
+        "version": "2.2.0",
         "visibility": "public"
       },
       "status": "reference",
@@ -54,7 +54,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Creative specs and policy work standalone. Registering assets requires the Amazon Ads MCP (code-mode meta-tools) plus an out-of-band HTTP PUT for the upload step; image generation requires an image tool.",
       "metadata": {
-        "version": "0.3.1"
+        "version": "0.4.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -69,7 +69,7 @@
       "description": "Use whenever the user works with Amazon Marketing Cloud (AMC): SQL, workflows, audiences (rule-based or lookalike), playbooks (frequency, off-Amazon conversions, keyword clustering, lookalikes, programmatic audience framework, enhanced scoring, CLTV), custom attribution (first/last-touch, linear, position-based), first-party data uploads, ad-product filtering, AMC sandbox, cross-channel overlap, reach, frequency, or NTB analysis. Triggers: \"AMC\", \"Amazon Marketing Cloud\", \"AMC SQL\", \"AMC workflow\", \"AMC audience\", \"AMC query\", \"AMC playbook\", DSP audiences, attribution model, path-to-conversion, ad frequency, NTB, DOOH, Sponsored TV incremental reach, Sponsored Brands, Brand Store insights, Events Manager / CAPI, Audience Segment Insights, Amazon Your Garage, or SQL referencing tables like sponsored_ads_traffic, dsp_impressions, dsp_clicks, amazon_attributed_events_by_traffic_time, conversions_all, conversions_with_relevance.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "0.3.7"
+        "version": "0.4.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -164,7 +164,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Amazon SP-API MCP (meta-tool pattern) for live fee estimates, returns, storage and settlement data; Amazon Ads MCP for the advertising line. Both optional - without them the skill runs in manual mode on seller-supplied fees and labels the output as such. Scripts need Python 3 only, no dependencies.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -180,7 +180,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing Fulfillment Inbound v2024-03-20 operations, plus the v0 getLabels and getBillOfLading operations for shipment labels. Without a server the skill can only explain the process.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",
@@ -260,7 +260,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Amazon SP-API MCP (meta-tool pattern) for pricing, fees, listings, and reports. Degrades to advisory mode without it, where floors and competitive position depend entirely on seller-supplied figures.",
       "metadata": {
-        "version": "0.1.1"
+        "version": "0.2.0"
       },
       "status": "reference",
       "origin": "first-party",

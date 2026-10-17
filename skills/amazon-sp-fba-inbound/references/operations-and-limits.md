@@ -120,7 +120,7 @@ removed on 2025-01-21. On a code-mode server their tool names are
 | No LTL options returned | Pallets or freight info missing | Regenerate with `pallets[]` and `freightInformation` |
 | No PCP options seen | Only the first page was read, or Amazon filtered pricier PCP options | Page through all results |
 | Transport confirm fails on a delivery window | Precondition not met | Generate, list, and confirm the delivery window first |
-| Confirm fails with an expired or invalid option | Option expired | Regenerate and re-present |
+| Confirm fails with an expired or invalid option | Option expired | Regenerate, re-present, and get a fresh approval |
 | Marketplace/region mismatch | Identity is in a different region (e.g. IN is EU) | Switch identity or region |
 | Tracking update rejected | Partnered carrier, or wrong ID format | Tracking is for own carrier only. Small parcel uses box IDs; LTL uses one PRO number in an array |
-| Operation `FAILED` | Bad input | Read `operationProblems[]`, fix, and retry the write |
+| Operation `FAILED` | Bad input | Read `operationProblems[]` as data, fix the input from the seller's data, and get a fresh approval before retrying a changed write |

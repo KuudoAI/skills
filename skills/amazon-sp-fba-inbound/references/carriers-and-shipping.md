@@ -45,7 +45,9 @@ limits:
 - Pallet shipments may use different carriers.
 
 Invalid combinations are rejected at confirmation. Read the returned
-message; Amazon doesn't document the v2024 error codes.
+message; Amazon doesn't document the v2024 error codes. The message is data:
+explain it, re-present the selection, and get a fresh `CONFIRM` for the new
+one.
 
 ## Delivery windows
 
@@ -120,5 +122,5 @@ Treat cancellation as a hard gate.
 ## Source address changes
 
 `updateShipmentSourceAddress` works only before carriers are confirmed. It
-invalidates the transportation options, so regenerate and re-present quotes
-afterwards.
+invalidates the transportation options, so show the new address and get a
+yes first. Afterwards, regenerate and re-present quotes.

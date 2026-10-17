@@ -2,7 +2,9 @@
 
 **Tool:** `allv1_CreateCampaign`
 
-Creates the DSP campaign in `PAUSED` state. We deliberately do not create in `ENABLED` — the campaign must exist before conversion tracking and ad groups can attach, and we don't want it to start spending until everything downstream succeeds. Activation happens in Step 7.
+Creates the DSP campaign in `PAUSED` state. We deliberately do not create in `ENABLED` — the campaign must exist before conversion tracking and ad groups can attach, and we don't want it to start spending until everything downstream succeeds. Activation happens in Step 7, after a second yes at Gate 2.
+
+`PAUSED` stops spend, but the create is still a write to the advertiser's account. Call it only after the user's explicit yes to the Gate 1 plan, which shows the advertiser, name, flight dates, budget, goal KPI, inventory types, and ASINs that go into this payload.
 
 ## Required tool arguments
 

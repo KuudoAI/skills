@@ -69,7 +69,7 @@ aged-inventory surcharges, returns processing fee, and the non-CEP surcharge.
 | Length / Width / Height | in / cm | SP (caveat) | Same caveat. |
 | Size tier | enum | SP | The FBA Fee Preview report carries the resolved size tier directly, which is more trustworthy than deriving it from catalogue dimensions. Also implicit in the fees estimate. |
 | Inbound shipping to FBA | currency/unit | SELLER | Your freight cost. Not an Amazon number. |
-| Inbound placement fee | currency/unit | SP | Forward-looking: the 2024 inbound API's placement options return fee per option, so you can price the split you actually intend. Retrospective: it appears as a charge line in settlement. |
+| Inbound placement fee | currency/unit | SP | Retrospective: it appears as a charge line in settlement, which is also the default forward estimate. An inbound plan the user names lists the fee per placement option (`fba-inbound_listPlacementOptions`). Quoting a new split needs a new plan: `fba-inbound_createInboundPlan` writes a draft plan into the seller's account, so it is gated (SKILL.md Guardrails). Otherwise take the user's figure. |
 
 ### 2.4 Programme flags
 

@@ -17,8 +17,9 @@ with a partnered carrier or the seller's own. Small parcel is not offered.
    placement option can be confirmed.
 3. Hard gate, then `confirmPlacementOption`.
 4. Run `setPackingInformation` keyed by **`shipmentId`**, not
-   `packingGroupId`. Provide boxes for every shipment. Any
-   `contentInformationSource` is allowed:
+   `packingGroupId`. Provide boxes for every shipment. Box data can't be
+   discarded, so show the boxes per shipment and get a yes before the call.
+   Any `contentInformationSource` is allowed:
    - `BOX_CONTENT_PROVIDED`: include `items`.
    - `BARCODE_2D`: leave `items` empty. The seller prints 2D box-content
      barcodes.
@@ -49,8 +50,8 @@ pack-first flow:
 
 - **Compliance first.** Run `listItemComplianceDetails` for the MSKUs. If tax
   details are missing, collect them and run `updateItemComplianceDetails`,
-  one MSKU per call. It is async and is set once per SKU. The tax details
-  are:
+  one MSKU per call. It is async and is set once per SKU, so show each
+  MSKU's values and get a yes before its call. The tax details are:
   - `declaredValue`
   - `hsnCode`
   - GST and cess `taxRates`
@@ -77,10 +78,12 @@ These apply to own-carrier drop-offs at FCs in these marketplaces.
 2. Run `generateSelfShipAppointmentSlots`. The desired start and end dates
    are optional; the default is the next 42 days. Then run
    `getSelfShipAppointmentSlots`.
-3. The seller picks a slot, then run `scheduleSelfShipAppointment`.
-   Rescheduling uses the same call with a `reasonComment`.
+3. The seller picks a slot from the ones you showed; that pick is the yes.
+   Then run `scheduleSelfShipAppointment`. Rescheduling uses the same call
+   with a `reasonComment`; show the old and new slot first and get a yes.
 4. `cancelSelfShipAppointment` takes an optional `reasonComment` from the
-   ReasonComment enum.
+   ReasonComment enum. It gives up the booked slot, so it gets its own ask:
+   show the shipment, the slot, and the reason, and wait for a yes.
 
 ## Changing contents after transportation is confirmed
 

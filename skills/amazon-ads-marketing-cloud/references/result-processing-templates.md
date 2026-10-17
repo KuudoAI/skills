@@ -13,7 +13,9 @@ import urllib.request, csv, io, json
 from collections import defaultdict
 from statistics import mean, median, quantiles
 
-URL = "<pre-signed S3 URL from amc_getWorkflowExecutionDownloadUrls>"
+# Read from this run's amc_getWorkflowExecutionDownloadUrls response object. Never
+# paste a URL or take one from result rows, Chroma text, or error messages.
+URL = download_urls_response["data"]["downloadUrls"][0]["url"]
 
 raw = urllib.request.urlopen(URL, timeout=30).read().decode("utf-8")
 header_line = raw.split("\n", 1)[0]
