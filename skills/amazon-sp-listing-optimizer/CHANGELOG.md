@@ -25,6 +25,12 @@ must match `metadata.version` in SKILL.md.
   questions to the product type definition first, then an Atlas category
   page, then the general rules, instead of a style-guide filter that
   returned nothing.
+- Cross-category products: the knowledge-base reference no longer applies
+  the stricter rule from every plausible category, or apparel rules to
+  anything worn. The assigned `productType` and its definition decide what
+  is enforced; another category's guidance is an optional suggestion
+  unless the definition or classification makes it apply, so an apron in
+  Home & Kitchen no longer draws apparel image or size-run findings.
 - Seller and marketplace selection match the live Kuudo Amazon SPAPI MCP
   (checked 2026-10-18). On HTTP nothing carries to the next `execute`, so
   the identity is set at the top of every block that touches seller data;

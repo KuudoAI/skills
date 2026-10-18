@@ -257,10 +257,17 @@ Some products straddle two categories: aprons (Home & Kitchen, worn like
 apparel), branded kitchen towels, branded reusable bags, pet apparel.
 
 - The catalog `classifications` path is where Amazon shelves the product,
-  and its `productType` decides which definition applies. Start there.
-- Search once per plausible category and apply the stricter rule from each.
-- If the product is worn, apparel-style rules (department, model versus
-  flat-lay imagery, size runs) generally apply whatever the shelf category.
+  and its `productType` decides which definition applies. Enforce that
+  category's rules and that definition's requirements.
+- Another category's guidance is context, not a requirement. Search it when
+  the product resembles that category, and offer what fits as an optional
+  suggestion (a size chart for an apron sold in sizes, say), never as a
+  compliance finding or a required change.
+- Enforce another category's rule only when the product type definition or
+  the classification makes it apply, for example when the definition
+  requires `department` or a size attribute. Apparel imagery and size-run
+  rules don't apply to an apron shelved in Home & Kitchen unless its
+  definition says so.
 
 ## When Atlas is thin or unavailable
 
