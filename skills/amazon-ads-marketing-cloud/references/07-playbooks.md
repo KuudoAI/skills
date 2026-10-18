@@ -433,36 +433,62 @@ WITH asins (asin) AS (
 lags AS (
   SELECT
     COALESCE(ad_product_type, 'dsp') AS ad_product_type,
-    traffic_event_subtype, user_id, purchases, total_purchases,
+    COALESCE(traffic_event_subtype, 'unknown') AS traffic_event_subtype,
+    user_id, conversion_event_dt_utc,
     SECONDS_BETWEEN(traffic_event_dt_utc, conversion_event_dt_utc) AS lag_seconds
   FROM amazon_attributed_events_by_conversion_time
   WHERE total_purchases > 0
     AND tracked_asin IN (SELECT asin FROM asins)
     AND user_id IS NOT NULL
+),
+ranked AS (
+  -- one row per purchaser and touch type: the first purchase, from its latest touch
+  SELECT
+    ad_product_type, traffic_event_subtype, user_id, lag_seconds,
+    ROW_NUMBER() OVER (
+      PARTITION BY ad_product_type, traffic_event_subtype, user_id
+      ORDER BY conversion_event_dt_utc, lag_seconds
+    ) AS rn
+  FROM lags
+),
+per_user AS (
+  SELECT ad_product_type, traffic_event_subtype, user_id, lag_seconds
+  FROM ranked
+  WHERE rn = 1
+),
+group_totals AS (
+  SELECT ad_product_type, traffic_event_subtype,
+    COUNT(DISTINCT user_id) AS group_purchasers
+  FROM per_user
+  GROUP BY 1, 2
 )
 SELECT
-  ad_product_type,
-  traffic_event_subtype,
+  p.ad_product_type,
+  p.traffic_event_subtype,
   CASE
-    WHEN lag_seconds < 3600 THEN 'a_under_1h'
-    WHEN lag_seconds < 86400 THEN 'b_1h_to_24h'
-    WHEN lag_seconds < 86400 * 3 THEN 'c_1_to_3_days'
-    WHEN lag_seconds < 86400 * 7 THEN 'd_3_to_7_days'
-    WHEN lag_seconds <= 86400 * 14 THEN 'e_7_to_14_days'
+    WHEN p.lag_seconds < 3600 THEN 'a_under_1h'
+    WHEN p.lag_seconds < 86400 THEN 'b_1h_to_24h'
+    WHEN p.lag_seconds < 86400 * 3 THEN 'c_1_to_3_days'
+    WHEN p.lag_seconds < 86400 * 7 THEN 'd_3_to_7_days'
+    WHEN p.lag_seconds <= 86400 * 14 THEN 'e_7_to_14_days'
     ELSE 'f_check_over_14d_or_null'
   END AS lag_bucket,
-  COUNT(DISTINCT user_id) AS purchasers,
-  SUM(purchases) AS promoted_purchases,
-  SUM(total_purchases) AS brand_purchases,
-  ROUND(AVG(lag_seconds) / 3600.0, 2) AS avg_lag_hours
-FROM lags
+  COUNT(DISTINCT p.user_id) AS purchasers,
+  MAX(g.group_purchasers) AS group_purchasers,
+  ROUND(AVG(p.lag_seconds) / 3600.0, 2) AS avg_lag_hours
+FROM per_user p
+JOIN group_totals g
+  ON p.ad_product_type = g.ad_product_type
+ AND p.traffic_event_subtype = g.traffic_event_subtype
 GROUP BY 1, 2, 3
-HAVING COUNT(DISTINCT user_id) >= 100
+HAVING COUNT(DISTINCT p.user_id) >= 100
 ```
 
 - Reads conversion time so recent traffic has had time to convert. The attributed tables report up to 14 days after the last exposure, which caps the lag.
 - The lag counts from the last attributed touch, not the first exposure, so it understates consideration time. For replenishable products, M4 is often the better lookback source.
-- After download, compute the cumulative share of purchasers per bucket and set the lookback near the bucket that covers most of them (a `HYPOTHESIS` to state). View-through and click lags differ, and sponsored ads are mostly click-attributed. The check bucket exposes unexpected values.
+- Within each ad product and touch type, every purchaser sits in exactly one bucket: the lag from the latest attributed touch to their first purchase. Without that, a shopper with several purchases or touches lands in several buckets and cumulative shares can pass 100%.
+- After download, share = `purchasers / group_purchasers`; add the shares in bucket order (`a_` to `e_`) and set the lookback near the bucket where the running share covers most purchasers (a `HYPOTHESIS` to state). A bucket under the 100-user floor drops out but stays in `group_purchasers`, so running shares err low, never above 100%.
+- Compare shares within a group, not across groups: a purchaser reached through two channels or touch types counts once in each. View-through and click lags differ, and sponsored ads are mostly click-attributed. The check bucket exposes unexpected values.
 
 ### M2. Exposure-group overlap
 
@@ -710,7 +736,7 @@ HAVING COUNT(DISTINCT p.user_id) >= 100
 ### M6. Reach and impression frequency
 
 **Atlas source:** "Use case: Reach and impression frequency" (September 2021).
-**Use when:** checking over- or under-exposure or setting frequency caps. Define the period deliberately (flight, month, week), because frequency depends on it.
+**Use when:** checking over- or under-exposure or setting frequency caps. Define the period deliberately (flight, month, week), because frequency depends on it. Conversions come from the traffic-time attributed table, so run 14+ days after the period ends.
 
 ```sql
 WITH dsp_campaigns (campaign_id_string) AS (
@@ -735,29 +761,46 @@ per_user AS (
   SELECT user_id, SUM(impressions) AS impressions
   FROM stacked
   GROUP BY 1
+),
+conv AS (
+  -- purchases attributed to the same campaigns
+  SELECT user_id,
+    SUM(total_purchases) AS purchases,
+    SUM(total_product_sales) AS sales
+  FROM amazon_attributed_events_by_traffic_time
+  WHERE user_id IS NOT NULL
+    AND total_purchases > 0
+    AND (campaign_id_string IN (SELECT campaign_id_string FROM dsp_campaigns)
+      OR campaign_id_string IN (SELECT campaign_id_string FROM sa_campaigns))
+  GROUP BY 1
 )
 SELECT
   CASE
-    WHEN impressions = 1 THEN 'a_1'
-    WHEN impressions = 2 THEN 'b_2'
-    WHEN impressions = 3 THEN 'c_3'
-    WHEN impressions = 4 THEN 'd_4'
-    WHEN impressions = 5 THEN 'e_5'
-    WHEN impressions = 6 THEN 'f_6'
-    WHEN impressions = 7 THEN 'g_7'
-    WHEN impressions = 8 THEN 'h_8'
-    WHEN impressions = 9 THEN 'i_9'
+    WHEN p.impressions = 1 THEN 'a_1'
+    WHEN p.impressions = 2 THEN 'b_2'
+    WHEN p.impressions = 3 THEN 'c_3'
+    WHEN p.impressions = 4 THEN 'd_4'
+    WHEN p.impressions = 5 THEN 'e_5'
+    WHEN p.impressions = 6 THEN 'f_6'
+    WHEN p.impressions = 7 THEN 'g_7'
+    WHEN p.impressions = 8 THEN 'h_8'
+    WHEN p.impressions = 9 THEN 'i_9'
     ELSE 'j_10_plus'
   END AS frequency_bucket,
-  COUNT(DISTINCT user_id) AS users_in_bucket,
-  SUM(impressions) AS impressions_in_bucket
-FROM per_user
+  COUNT(DISTINCT p.user_id) AS users_in_bucket,
+  SUM(p.impressions) AS impressions_in_bucket,
+  COUNT(DISTINCT c.user_id) AS purchasers_in_bucket,
+  SUM(COALESCE(c.purchases, 0)) AS purchases_in_bucket,
+  SUM(COALESCE(c.sales, 0)) AS sales_in_bucket
+FROM per_user p
+LEFT JOIN conv c ON p.user_id = c.user_id
 GROUP BY 1
-HAVING COUNT(DISTINCT user_id) >= 100
+HAVING COUNT(DISTINCT p.user_id) >= 100
 ```
 
-- Summing impressions per user across channels is what de-duplicates reach. For one channel, delete the other branch.
-- After download: share of users per bucket, average frequency = total impressions / total users, and total reach. Lower the top bucket if most users sit well below 10.
+- Summing impressions per user across channels is what de-duplicates reach. For one channel, delete the other branch and its campaign list in `conv`.
+- After download: share of users per bucket, average frequency = total impressions / total users, total reach, and purchase rate per bucket = `purchasers_in_bucket / users_in_bucket`. The bucket where purchase rate stops rising is a candidate cap (a `HYPOTHESIS`, given the next point). Lower the top bucket if most users sit well below 10.
+- Purchases are brand-level (`total_purchases`, halo included) and attributed to the listed campaigns only; a shopper who bought through another campaign counts as a non-purchaser here.
 - Higher buckets hold more engaged shoppers, so conversion rising with frequency is partly selection (`04-analyses-and-misreadings.md`). Small campaigns lose the high-frequency tail to the 100-user floor.
 
 ### M7. First-touch versus last-touch credit by campaign
