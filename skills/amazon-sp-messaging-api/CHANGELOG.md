@@ -13,6 +13,27 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.1] - 2026-10-18
+
+### Fixed
+
+- The `set_active_identity` calls in `references/tool-access.md` and
+  `references/attachments.md` pass `identity_id`, the parameter the live
+  Kuudo Amazon SPAPI MCP requires (checked 2026-10-18), instead of `id`.
+- Identity and region selection match the live server. On HTTP a selection
+  lasts only for the `execute` block that sets it, so the "not isolated per
+  session" note now describes the earlier build and the one-block rule;
+  re-selecting before every send block stays the rule. The tools table adds
+  `set_active_marketplace`, `get_active_marketplace`, and `clear_selection`
+  and drops "callable only in `execute`" (they also answer as direct calls,
+  without carrying into a later block). A marketplace in another region is
+  selected with `set_active_marketplace`, which sets the region;
+  `set_active_region` must agree with it, and `get_active_region` answers
+  `na` with nothing selected.
+- `list_identities` returns two shapes, told apart by `attributes.mode`; on
+  a managed-app identity the `label` is the store name, not the merchant
+  ID.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

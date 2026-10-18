@@ -42,25 +42,56 @@ is no fuzzy matching.
 
 ## Seller and marketplace
 
-The seller-selection tools are callable from `execute`: `list_identities`,
-`set_active_identity`, `get_active_region`, and `list_marketplaces`. There is
-no `get_active_identity`. With nothing selected, calls fail with `Provider
-identity selection is required.`
+The selection tools are `list_identities`, `set_active_identity`,
+`list_marketplaces`, `set_active_marketplace`, `get_active_marketplace`,
+`set_active_region`, `get_active_region`, and `clear_selection`. No tool
+reports which identity is selected, so set it rather than checking it. With
+nothing selected, calls fail with `Provider identity selection is required.`
 
 1. **Ask which seller** unless the user already said; never pick one
    yourself. `list_identities` takes no arguments and returns
-   `{"result": [{id, label, attributes: {account_id, declared_region}}]}`.
-   An account can see 150 or more identities, so filter to the user's
-   merchant ID inside the sandbox and return only the match. If one merchant
-   ID maps to several identities (one per region), ask which marketplace.
-2. The identity's `label` is the merchant ID, which is the Listings API's
-   `sellerId`. Never substitute an account ID or a guess.
-3. **The selection isn't private to your session.** Call
+   `{"result": [{id, label, attributes}]}` in one of two shapes, told apart
+   by `attributes.mode`:
+   - **Managed-app identity** (`mode: "managed_app"`): `label` is the store
+     or business name, not a merchant ID. `attributes` carries `region`
+     (`na`, `eu`, or `fe`), `selling_partner_type`,
+     `authorization_marketplace`, and `marketplaces[]` (each with
+     `marketplaceId`, `countryCode`, `storeName`, `region`, and more).
+   - **Merchant-ID identity:** `label` is the seller's merchant ID, and
+     `attributes` carries `account_id` and `declared_region` (a country
+     code, not the SP region).
+
+   An account can see many identities, so filter inside the sandbox and
+   return only the match. If one seller maps to several identities (one per
+   region), ask which marketplace.
+2. **`sellerId` is the merchant ID.** On a merchant-ID identity it's the
+   `label`. A managed-app identity doesn't carry one, and the Sellers API
+   doesn't return it, so ask the user for their merchant token (shown in
+   Seller Central account settings) before the first call that needs
+   `sellerId`. Never substitute an account ID, a store name, an identity
+   `id`, or a guess.
+3. **Nothing carries to the next `execute`.** On HTTP a selection lasts only
+   for the block that makes it. Call
    `set_active_identity({"identity_id": …})` at the top of every `execute`
-   block that touches seller data, and always in a write block.
+   block that touches seller data, and always in a write block. The
+   selection tools also answer as direct calls, but a selection made that
+   way doesn't reach a later block.
 4. Confirm the marketplace: US `ATVPDKIKX0DER`, UK `A1F83G8C2ARO7P`, DE
-   `A1PA6795UKMFR9`, JP `A1VC38T7YXB528`. `get_active_region` follows the
-   identity.
+   `A1PA6795UKMFR9`, JP `A1VC38T7YXB528`. The region follows the identity.
+   For a marketplace another region serves, call
+   `set_active_marketplace({"marketplace_id": …})` after the identity in the
+   same block (selecting an identity clears an earlier marketplace or
+   region). It sets the region (`Routing marketplace set to A1F83G8C2ARO7P
+   in region eu.`) and leaves each operation's own `marketplaceIds` as you
+   pass them.
+   - `set_active_region` must agree with a selected marketplace, or it fails
+     with `Marketplace 'A1F83G8C2ARO7P' is served by region 'eu', not
+     explicitly selected region 'na'.`
+   - `get_active_region` answers `na` even with nothing selected, so it
+     doesn't prove a selection was made.
+   - `list_marketplaces` maps each marketplace ID to its region;
+     `clear_selection` forgets the identity, marketplace, and region
+     together.
 
 Don't pass `entityId` or tokens in operation params. Unknown keys are
 accepted silently, so their presence proves nothing.

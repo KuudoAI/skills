@@ -67,7 +67,7 @@ Policy-violating titles are visible in **Manage All Inventory**; brand owners ca
 - **No subjective commentary**: "Hot Item", "Best Seller", "Top Rated", "#1".
 - **No restricted phrases** such as "FSA/HSA eligible".
 - No seller name, no price, no time-sensitive language ("New", "Latest", "Now Available").
-- **Model numbers** are recommended in titles for certain categories — check the category-specific style guide (query `amazon_atlas`) rather than assuming.
+- **Model numbers** are recommended in titles for certain categories — check the category's style guide (Amazon publishes these as PDFs; Amazon Agent Atlas has a few category pages, `08-atlas-knowledge-base.md`) rather than assuming.
 
 ### Information order
 
@@ -100,7 +100,7 @@ If a title is suppressed or blocked:
 3. Edit the title to comply (remove prohibited characters, promotional content, excessive repetition, over-length).
 4. Submit. Amazon re-checks automatically and lifts the suppression once the title meets requirements.
 
-Category-specific title formulas live in `amazon_atlas` (`doc_type: style_guide`).
+Category-specific title formulas live in Amazon's per-category style guides (PDFs downloaded from Seller Central), not in Amazon Agent Atlas, which holds only a few category pages (`08-atlas-knowledge-base.md`). Without the category's guide, use the order above and say so.
 
 ---
 

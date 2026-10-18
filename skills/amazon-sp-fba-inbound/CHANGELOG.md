@@ -13,6 +13,26 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.2] - 2026-10-18
+
+### Fixed
+
+- Seller and region selection match the live Kuudo Amazon SPAPI MCP
+  (checked 2026-10-18). On HTTP the server keeps a selection only for the
+  `execute` block that sets it, so the "shared across sessions" caveat now
+  describes the earlier build and the current one-block rule; re-selecting
+  at the top of every block stays the rule. `references/tool-access.md`
+  adds `set_active_marketplace` and `get_active_marketplace`, notes that the
+  selection tools also answer as direct calls without carrying into a later
+  block, that selecting an identity clears an earlier marketplace or
+  region, that `set_active_region` must agree with a selected marketplace,
+  and that `get_active_region` answers `na` with nothing selected.
+- `list_identities` returns two shapes, told apart by `attributes.mode`. On
+  a managed-app identity the `label` is the store name and the attributes
+  carry `region` and `marketplaces[]`, so the identity lookup in SKILL.md
+  and the filter snippet in `references/tool-access.md` match a merchant ID
+  or a store name and return the mode, region, and marketplace IDs.
+
 ## [0.2.1] - 2026-10-17
 
 ### Changed

@@ -27,14 +27,18 @@ Request body fields are flattened into top-level arguments next to the path
 parameters. For example, `createInboundPlan` takes
 `{destinationMarketplaces, items, sourceAddress, name}`.
 
-The server-context tools are callable only from `execute`:
+The selection tools:
 
 - `list_identities`
 - `set_active_identity`
-- `set_active_region`
-- `get_active_region`
 - `list_marketplaces`
+- `set_active_marketplace`, `get_active_marketplace`
+- `set_active_region`, `get_active_region`
 - `clear_selection`
+
+They also answer as direct calls outside `execute`, but a selection made
+that way doesn't reach a later `execute` block, so select inside the block
+that uses it.
 
 There is no session-state, active-identity, or envelope-contract tool on
 this server.
@@ -60,29 +64,44 @@ in the server's package setting, then restart it.
 With no identity selected, SP-API calls fail with
 `Provider identity selection is required.`
 
-> **Server caveat, observed 2026-09-24.** The selected identity is **not
-> isolated per MCP session.** A selection made in one session was visible to
-> other sessions using the same token. A session that never selected anyone
-> received another seller's data.
+> **Selection lasts one `execute` block (checked 2026-10-18).** On HTTP the
+> server keeps the identity, marketplace, and region only for the block that
+> sets them; a marketplace set in one block was gone in the next. An earlier
+> build (observed 2026-09-24) shared the selection across sessions instead.
 >
-> So **call `set_active_identity` at the top of every `execute` block that
-> touches seller data**, including every write block. Never rely on a
-> selection carried over from an earlier call. This narrows the window for
-> the wrong seller but doesn't close it. Report it to the server operator if
-> you see data that doesn't match the requested seller.
+> Either way, **call `set_active_identity` at the top of every `execute`
+> block that touches seller data**, including every write block. Never rely
+> on a selection carried over from an earlier call. Report it to the server
+> operator if you see data that doesn't match the requested seller.
 
-1. `list_identities` takes no arguments. It returns `{"result": [{id, label,
-   attributes: {account_id, declared_region}}]}`. `label` is the seller's
-   merchant ID. `declared_region` is a country code such as `US`, not the
-   SP region; `get_active_region` gives that.
+1. `list_identities` takes no arguments. It returns
+   `{"result": [{id, label, attributes}]}` in one of two shapes, told apart
+   by `attributes.mode`:
+   - **Merchant-ID identity:** `label` is the seller's merchant ID, and
+     `attributes` carries `account_id` and `declared_region`.
+     `declared_region` is a country code such as `US`, not the SP region.
+   - **Managed-app identity** (`mode: "managed_app"`): `label` is the store
+     or business name. `attributes` carries `region` (`na`, `eu`, or `fe`),
+     `selling_partner_type`, `authorization_marketplace`, and
+     `marketplaces[]` (each with `marketplaceId`, `countryCode`,
+     `storeName`, and `region`).
    - Agency tokens return 150 or more entries. **Filter inside the sandbox**
      and return only the match. The full list wastes context and exposes
      other clients' IDs.
 
      ```python
      ids = (await call_tool("list_identities", {})).get("result", [])
-     hits = [i for i in ids if i["label"] == "A2GQWJZXTY0M66"]
-     return [{"id": i["id"], "region": i["attributes"].get("declared_region")} for i in hits]
+     WANT = "A2GQWJZXTY0M66"   # the merchant ID or store name the user gave
+     out = []
+     for i in ids:
+         a = i.get("attributes", {})
+         mkts = a.get("marketplaces", [])
+         if i["label"] == WANT or WANT in [m.get("storeName") for m in mkts]:
+             out.append({"id": i["id"], "mode": a.get("mode"),
+                         "region": a.get("region"),
+                         "declared_region": a.get("declared_region"),
+                         "marketplaces": [m.get("marketplaceId") for m in mkts]})
+     return out
      ```
    - One merchant ID can appear once per region (for example US and CA). If
      it maps to several identities, ask which marketplace.
@@ -93,12 +112,21 @@ With no identity selected, SP-API calls fail with
    - For a status question that spans accounts, confirm the scope first.
 2. `set_active_identity({"identity_id": "<id>"})`. Repeat it at the top of
    each seller-data `execute` block (see the caveat above).
-3. `get_active_region` confirms the region: `na`, `eu`, or `fe`. It follows
-   the identity.
-   - Change it with `set_active_region` only for a marketplace outside the
-     identity's region.
+3. The region (`na`, `eu`, or `fe`) follows the identity. Selecting an
+   identity clears any marketplace or region chosen before it, so set those
+   after it, in the same block.
+   - For a marketplace outside the identity's region, call
+     `set_active_marketplace({"marketplace_id": …})`. It sets the region
+     (`Routing marketplace set to A1F83G8C2ARO7P in region eu.`) and doesn't
+     rewrite the `marketplaceIds` an operation takes.
+   - `set_active_region` must agree with a selected marketplace, or it fails
+     with `Marketplace 'A1F83G8C2ARO7P' is served by region 'eu', not
+     explicitly selected region 'na'.`
+   - `get_active_region` answers `na` even with nothing selected, so it
+     doesn't prove a selection was made.
    - `list_marketplaces` maps each marketplace ID to its region. India
-     (`A21TJRUUN4KGV`) is `eu`.
+     (`A21TJRUUN4KGV`) is `eu`. `clear_selection` forgets the identity,
+     marketplace, and region together.
 4. A **403 `Unauthorized`** on an inbound call is an account-authorization
    problem, not a request problem. The live message was "Authorization
    between the party and the application is not active". That means the

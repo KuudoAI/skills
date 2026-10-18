@@ -22,7 +22,7 @@ If the user pastes a CSV with legacy headers, it is **not** an MCP report — re
 
 ## Pinned field list (empirically valid for SP search term mining)
 
-Use this list for `report_fields` `mode=validate` and `CreateReport` (full workflow in [`mcp-workflow.md`](mcp-workflow.md)):
+Submit this list to `allv1_AdsApiv1CreateReport` as is (full workflow in [`mcp-workflow.md`](mcp-workflow.md)):
 
 `date.value`, `campaign.id`, `campaign.name`, `adGroup.id`, `adGroup.name`, `searchTerm.value`, `metric.impressions`, `metric.clicks`, `metric.totalCost`, `metric.sales`, `metric.purchases`, `budgetCurrency.value`
 
@@ -40,7 +40,7 @@ Product targeting (PAT) campaigns surface **ASIN strings** alongside real custom
 
 These show up in legacy/console exports or in older v3 APIs but are **not** v1 outputs:
 
-- `metric.cost`, `metric.spend`, `metric.spendAmount` — unknown / rejected at validate time
+- `metric.cost`, `metric.spend`, `metric.spendAmount` — unknown; CreateReport rejects them (`400005`)
 - `metric.sales7d`, `metric.purchases7d`, or other **suffix-attributed** variants — not supported here; agents needing strict 7d/14d labels need a different reporting path (the v3 API or `rp_*` v3 tools)
 - `keyword.text`, `keyword.value`, `keyword.matchType` — not available as v1 **output** fields for this pattern
 - **Spaced Title Case headers** (`Customer Search Term`, `7 Day Total Sales`) — legacy export shape, **not** v1 API CSV

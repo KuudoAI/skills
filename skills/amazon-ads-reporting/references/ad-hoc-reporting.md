@@ -19,7 +19,7 @@ Ask only for information that changes the request. If a phrase has multiple mate
 
 Query the live reporting-field catalog rather than relying on memorized names. Search by business concept, inspect the candidate field’s definition and type, and filter candidates against the dimensions already chosen.
 
-Some Amazon Ads integrations expose this as a `report_fields` capability with query and validation modes. Other clients expose schema or field-catalog operations under different names. Discover the available schema and use the equivalent capabilities.
+Some Amazon Ads integrations expose field-catalog or field-validation operations; discover the available schema and use them when present. When the integration has none, Amazon's Reporting API v1 Dimensions and Metrics documentation is the catalog, and CreateReport validates the list itself: a bad list gets a 400 that names each problem (for example `400005` unknown field, `400004` incompatible fields, `400006` missing required field) and creates no report.
 
 Prefer fields whose documented attribution window and grain match the request. Similar-looking metrics can differ by click/view attribution, promoted/halo products, new-to-brand scope, or denominator.
 

@@ -4,6 +4,43 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [1.2.1] - 2026-10-18
+
+### Fixed
+
+- The knowledge-base reference described a server name, a rules collection,
+  and per-category style-guide metadata that Amazon Agent Atlas doesn't
+  have. It is renamed `references/08-atlas-knowledge-base.md` and rewritten
+  from the live service
+  (snapshot 4.2, checked 2026-10-18): the `amazon_sellers` and
+  `amazon_vendors` collections with their real `topic` and `doc_type`
+  values; topic labels that misfile title and bullet requirements, so
+  listing searches run unfiltered; the live `chroma_*` read tools; IDs that
+  change with every reindex, so documents are named by title; a tested
+  whole-document fetch; measured distances; listing document titles; and
+  what to do when Atlas is thin. The superseded-layout note is gone.
+- Category rules: Amazon's per-category style guides are PDFs outside
+  Atlas, which holds only a few category pages. SKILL.md "Category rules",
+  `01-policy-rules.md`, and `04-bullet-intent-scoring.md` now send category
+  questions to the product type definition first, then an Atlas category
+  page, then the general rules, instead of a style-guide filter that
+  returned nothing.
+- Seller and marketplace selection match the live Kuudo Amazon SPAPI MCP
+  (checked 2026-10-18). On HTTP nothing carries to the next `execute`, so
+  the identity is set at the top of every block that touches seller data;
+  the claim that the selection is shared across sessions is gone.
+  `11-tool-access.md` adds `set_active_marketplace` (it sets the region and
+  leaves each operation's `marketplaceIds` alone), the rule that
+  `set_active_region` must agree with a selected marketplace, that
+  `get_active_region` answers `na` with nothing selected, and
+  `clear_selection`. It states that no tool reports the selected identity,
+  without naming a tool that doesn't exist.
+- `list_identities` returns two shapes, told apart by `attributes.mode`. On
+  a managed-app identity the `label` is the store name, not the merchant
+  ID, and no field carries one, so SKILL.md, `06-patch-construction.md`,
+  and `11-tool-access.md` ask the user for the merchant token before the
+  first call that needs `sellerId` instead of reading it from the label.
+
 ## [1.2.0] - 2026-10-17
 
 ### Added

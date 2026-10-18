@@ -4,6 +4,17 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [0.5.1] - 2026-10-18
+
+### Fixed
+
+- Report generation uses only tools the Kuudo Amazon Ads MCP exposes, checked live on 2026-10-18. Setup is `list_identities` → `set_active_identity` → `set_active_profile`, and the selections last for the MCP session. The separate field-validation step is gone: CreateReport validates the pinned list itself, and `references/mcp-workflow.md` lists Amazon's 400 codes (`400005` unknown field, `400004` incompatible, `400006` missing companion, and others) with the fix for each.
+- `allv1_AdsApiv1RetrieveReport` takes `reportIds` as a list. The singular key in the old snippet was rejected with a 400.
+- Status checks no longer loop inside one block. Create the report and return its ID, then check in later blocks; Amazon suggests about once a minute.
+- The CSV is downloaded from `completedReportParts[].url` with a client-side execution facility and parsed there. No server-side copy is stored, so the report job is the only thing the skill creates. An expired URL is refreshed through RetrieveReport.
+- `allv1_QueryAdvertiserAccount` lookups follow `nextToken` across pages.
+- `compatibility` names the three reporting tools and the client-side execution facility. Eval 0 checks field-error handling instead of a validation tool.
+
 ## [0.5.0] - 2026-10-17
 
 ### Added

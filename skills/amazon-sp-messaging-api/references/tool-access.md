@@ -23,7 +23,7 @@ Verified names (the capitals are Amazon's):
 | Send (write) | `messaging_confirmCustomizationDetails`, `messaging_createConfirmDeliveryDetails`, `messaging_createConfirmOrderDetails`, `messaging_createConfirmServiceDetails`, `messaging_createUnexpectedProblem`, `messaging_createDigitalAccessKey`, `messaging_sendInvoice`, `messaging_CreateWarranty`, `messaging_createLegalDisclosure` | `destructiveHint: true`, not idempotent |
 | Upload | `uploads_createUploadDestinationForResource` | `destructiveHint: true` |
 | Orders (read) | `orders_getOrders`, `orders_getOrder`, `orders_getOrderItems` | read-only |
-| Server context (callable only in `execute`) | `list_identities`, `set_active_identity`, `list_marketplaces`, `get_active_region`, `set_active_region` | — |
+| Selection (select inside the `execute` block that uses it) | `list_identities`, `set_active_identity`, `list_marketplaces`, `set_active_marketplace`, `get_active_marketplace`, `set_active_region`, `get_active_region`, `clear_selection` | — |
 
 Unknown names fail with `Unknown tool: <name>`; there's no fuzzy matching.
 Don't use `orders_getOrderItemsBuyerInfo`: messaging doesn't need buyer PII.
@@ -58,21 +58,31 @@ and an empty `attachments` list on `sendInvoice` and `CreateWarranty`.
 With no identity selected, SP-API calls fail with
 `Provider identity selection is required.`
 
-On a code-mode server the selected identity has been observed **not to be
-isolated per MCP session** (2026-09-24). So call `set_active_identity` at the
-top of **every** `execute` block that touches seller data, and above all
-before every send block.
+On HTTP the server keeps a selection only for the `execute` block that
+sets it: nothing carries to the next block (checked 2026-10-18; an earlier
+build shared it across sessions instead). So call
+`set_active_identity({"identity_id": …})` at the top of **every** `execute`
+block that touches seller data, and above all before every send block. The
+selection tools also answer as direct calls, but a selection made that way
+doesn't reach a later block.
 
-- `list_identities` returns `{"result": [{id, label, attributes}]}`.
-  `label` is the seller's merchant ID. Agency tokens return many entries,
-  so **filter inside the sandbox** and return only the match. Never print
-  the full list.
-- Server-context tools wrap their output in `{"result": ...}`; SP-API
-  tools return Amazon's payload directly.
+- `list_identities` returns `{"result": [{id, label, attributes}]}` in one
+  of two shapes, told apart by `attributes.mode`. On a merchant-ID identity
+  `label` is the seller's merchant ID. On a managed-app identity
+  (`mode: "managed_app"`) it's the store name, and `attributes` carries
+  `region` and `marketplaces[]` (each with `marketplaceId`, `countryCode`,
+  and `storeName`). Agency tokens return many entries, so **filter inside
+  the sandbox** and return only the match. Never print the full list.
+- Selection tools wrap their output in `{"result": ...}`; SP-API tools
+  return Amazon's payload directly.
 - The region must serve the order's marketplace: NA for US, CA, MX, and BR;
-  EU for UK, DE, FR, IT, ES, and others; FE for JP, AU, and SG. Use
-  `list_marketplaces` to map a marketplace to its region, and
-  `set_active_region` if needed.
+  EU for UK, DE, FR, IT, ES, and others; FE for JP, AU, and SG. The region
+  follows the identity; for an order in another region's marketplace, call
+  `set_active_marketplace({"marketplace_id": …})` after the identity in the
+  same block. It sets the region and leaves the `marketplaceIds` argument
+  as you pass it. `set_active_region` must agree with a selected
+  marketplace, and `get_active_region` answers `na` even with nothing
+  selected, so it doesn't prove a selection.
 
 ## Response shapes (from Amazon's model)
 
@@ -134,7 +144,7 @@ def status_codes(msg):
     cleaned = "".join(c if c.isalnum() else " " for c in msg)
     return {t for t in cleaned.split() if len(t) == 3 and t.isdigit()}
 
-await call_tool("set_active_identity", {"id": SELLER_IDENTITY_ID})
+await call_tool("set_active_identity", {"identity_id": SELLER_IDENTITY_ID})
 results = []
 for o in approved:          # exactly the orders and bodies the seller approved
     # o["body"]: {"text": ...} or {"attachments": [...], "coverageStartDate": ..., ...}

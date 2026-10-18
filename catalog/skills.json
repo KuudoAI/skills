@@ -37,7 +37,7 @@
       "description": "Create and launch an Amazon DSP Performance+ (P+) or Brand+ (B+) campaign end-to-end using this amazon-ads-mcp server's allv1_* tools. Drives the full setup: gather user inputs, query the advertiser account to resolve the DSP account ID, create the DSP campaign in PAUSED state, attach ASIN conversion tracking, query eligible automated targeting tactics, create one ad group per (inventoryType, tactic) combination, optionally create ads and ad-group associations, then activate everything in strict parent-first order with verification reads between writes. Supports P+ tactics (CUSTOMER_ACQUISITION, REMARKETING, RETENTION, MAXIMIZE_PERFORMANCE) and B+ tactics (PROSPECTING) across DISPLAY, VIDEO_OLV, VIDEO_STV, AUDIO, and LIVE_EVENTS inventory. Trigger whenever the user mentions creating a DSP P+ or B+ campaign, launching automated DSP targeting, setting up Performance+ or Brand+ ad groups, or any variant like 'spin up a P+ campaign', 'launch Brand+ prospecting', 'create DSP automated targeting'.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "2.2.0",
+        "version": "2.2.1",
         "visibility": "public"
       },
       "status": "reference",
@@ -54,7 +54,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Creative specs and policy work standalone. Registering assets requires the Amazon Ads MCP (code-mode meta-tools) plus an out-of-band HTTP PUT for the upload step; image generation requires an image tool.",
       "metadata": {
-        "version": "0.4.0"
+        "version": "0.4.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -85,7 +85,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Offline request generation needs no integration; live operations require access to an Amazon Ads API client with unified/v1 reporting capabilities.",
       "metadata": {
-        "version": "0.4.1"
+        "version": "0.4.2"
       },
       "status": "certified",
       "origin": "first-party",
@@ -116,7 +116,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires a configured Amazon Ads MCP connection with reporting access. Account discovery and report creation depend on the tools and schemas exposed by that server.",
       "metadata": {
-        "version": "0.4.0"
+        "version": "0.4.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -128,11 +128,11 @@
     },
     {
       "name": "amazon-ads-sp-search-term-explorer",
-      "description": "Mine Sponsored Products search terms end-to-end via the Amazon Ads MCP: generate the SP Search Term report via allv1_AdsApiv1CreateReport using v1 dotted field IDs (searchTerm.value, metric.totalCost, metric.sales, budgetCurrency.value — not legacy Console headers), pre-flight validate with report_fields before CreateReport, filter adProduct.value SPONSORED_PRODUCTS, download CSV and parse with the v1 DictReader pattern, partition PAT ASINs in searchTerm.value, elicit brand markers and thresholds, segment into generic and branded gold tables, surface negatives, sufficiency-gated rising stars, and PAT stream. Never use metric.cost / metric.spend or legacy CSV column names. Trigger on: SP search term mining, search term gold, search term negatives, search term report, PAT vs keyword, brand vs generic split, rising stars, exact-match harvest, attribution window questions, or any variant of \"find me wasted spend / scale-worthy keywords / branded defenders\" via the Amazon Ads MCP.\n",
+      "description": "Mine Sponsored Products search terms end-to-end via the Amazon Ads MCP: generate the SP Search Term report via allv1_AdsApiv1CreateReport using v1 dotted field IDs (searchTerm.value, metric.totalCost, metric.sales, budgetCurrency.value — not legacy Console headers), submit the pinned field list, filter adProduct.value SPONSORED_PRODUCTS, download the CSV from its signed URL and parse with the v1 DictReader pattern, partition PAT ASINs in searchTerm.value, elicit brand markers and thresholds, segment into generic and branded gold tables, surface negatives, sufficiency-gated rising stars, and PAT stream. Never use metric.cost / metric.spend or legacy CSV column names. Trigger on: SP search term mining, search term gold, search term negatives, search term report, PAT vs keyword, brand vs generic split, rising stars, exact-match harvest, attribution window questions, or any variant of \"find me wasted spend / scale-worthy keywords / branded defenders\" via the Amazon Ads MCP.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
-      "compatibility": "Requires amazon_ads MCP server >= 0.3.1 (report_fields, CreateReport, RetrieveReport, QueryAdvertiserAccount, download_export, read_download)",
+      "compatibility": "Requires an Amazon Ads MCP exposing allv1_QueryAdvertiserAccount, allv1_AdsApiv1CreateReport, and allv1_AdsApiv1RetrieveReport (such as the Kuudo Amazon Ads MCP), plus a client-side execution facility that can fetch an HTTPS URL and parse CSV.",
       "metadata": {
-        "version": "0.5.0"
+        "version": "0.5.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -180,7 +180,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing Fulfillment Inbound v2024-03-20 operations, plus the v0 getLabels and getBillOfLading operations for shipment labels. Without a server the skill can only explain the process.",
       "metadata": {
-        "version": "0.2.1"
+        "version": "0.2.2"
       },
       "status": "reference",
       "origin": "first-party",
@@ -196,7 +196,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Uses the Listings Restrictions API (getListingsRestrictions) on an SP-API MCP server. Where the host also exposes Amazon's Seller Assistant (Amazon's Selling Partner connector does), it can confirm current rules live; without it the gate runs on the bundled regulatory map and says so. Without any server it can still classify and ask, but can't check gating.",
       "metadata": {
-        "version": "0.1.0"
+        "version": "0.1.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -212,7 +212,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing Listings Items (getListingsItem, searchListingsItems, patchListingsItem) and Catalog Items; Product Type Definitions, FBA Inventory, and A+ Content operations are used when present. AI image work also needs the user's own image-model key, a storage bucket, and a host that can run the bundled Python scripts.",
       "metadata": {
-        "version": "1.2.0"
+        "version": "1.2.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -228,7 +228,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing the Messaging API v1 operations, plus Orders to look up orders. Attachments also need the Uploads API createUploadDestinationForResource and a host shell (curl, openssl) to upload the file to the returned URL. The seller's app needs the Buyer Communication role. Without a server the skill can only draft and explain.",
       "metadata": {
-        "version": "0.2.0"
+        "version": "0.2.1"
       },
       "status": "reference",
       "origin": "first-party",
@@ -307,7 +307,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an SP-API MCP server exposing FBA Inventory (getInventorySummaries), Sales (getOrderMetrics), and Fulfillment Inbound v2024-03-20 reads. Amazon's planning report also needs the Reports API and a host that can run the bundled Python 3.9+ script with outbound HTTPS. Charts render only where the host supports artifacts.",
       "metadata": {
-        "version": "0.2.0"
+        "version": "0.2.1"
       },
       "status": "reference",
       "origin": "first-party",

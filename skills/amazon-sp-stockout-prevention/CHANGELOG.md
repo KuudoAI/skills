@@ -4,6 +4,19 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com). Versions are semver and must
 match `metadata.version` in SKILL.md.
 
+## [0.2.1] - 2026-10-18
+
+### Fixed
+
+- Seller selection matches the live Kuudo Amazon SPAPI MCP (checked
+  2026-10-18): on HTTP nothing carries to the next `execute`, so the reason
+  to re-select at the top of every block is no longer "shared across
+  sessions". `list_identities` returns two shapes, told apart by
+  `attributes.mode`; on a managed-app identity the `label` is the store
+  name and the home marketplace comes from `attributes.marketplaces[]`
+  rather than `declared_region`. A marketplace in another region is
+  selected with `set_active_marketplace`, which sets the region.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

@@ -16,7 +16,7 @@ description: >-
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 compatibility: Requires an SP-API MCP server exposing FBA Inventory (getInventorySummaries), Sales (getOrderMetrics), and Fulfillment Inbound v2024-03-20 reads. Amazon's planning report also needs the Reports API and a host that can run the bundled Python 3.9+ script with outbound HTTPS. Charts render only where the host supports artifacts.
 metadata:
-  version: "0.2.0"
+  version: "0.2.1"
 ---
 
 # Amazon FBA stockout prevention
@@ -50,12 +50,16 @@ On a code-mode SP-API MCP server:
 **Seller.**
 
 - **Call `set_active_identity` at the top of every `execute` block that
-  touches seller data.** The selection can be shared across
-  sessions, so re-selecting pins each call.
+  touches seller data.** On HTTP nothing carries to the next block, so
+  re-selecting pins each call.
 - Find the identity once. Filter `list_identities` inside the sandbox; it
-  returns `{"result": [{id, label, attributes: {account_id,
-  declared_region}}]}`, where `label` is the merchant ID. Agency tokens list
-  150+ sellers.
+  returns `{"result": [{id, label, attributes}]}` in one of two shapes,
+  told apart by `attributes.mode`. On a merchant-ID identity `label` is the
+  merchant ID and `attributes` carries `account_id` and `declared_region`.
+  On a managed-app identity (`mode: "managed_app"`) `label` is the store
+  name and `attributes` carries `region` and `marketplaces[]` (each with
+  `marketplaceId`, `countryCode`, and `storeName`). Agency tokens list 150+
+  sellers.
 - Keep the matching `id`, then just call `set_active_identity(id)` at the
   top of each later block. There's no need to re-list.
 - If the token has exactly one identity, use it and say which one.
@@ -72,9 +76,12 @@ On a code-mode SP-API MCP server:
 - There is no `entityId` argument.
 - Pass `marketplaceIds` / `granularityId` explicitly. One marketplace per
   run.
-- No marketplace named? Use the identity's home marketplace
-  (`attributes.declared_region` is a country code; map it with
-  `list_marketplaces`) and say so. To offer the others,
+- No marketplace named? Use the identity's home marketplace and say so: on
+  a merchant-ID identity, `attributes.declared_region` is a country code
+  (map it with `list_marketplaces`); on a managed-app identity, take it
+  from `attributes.marketplaces[]`, and ask if that lists more than one. A
+  marketplace another region serves needs `set_active_marketplace` after
+  the identity in the same block; it sets the region. To offer the others,
   `sellers_getMarketplaceParticipations` lists the marketplaces the seller
   actually sells in; `list_marketplaces` lists all of Amazon's.
 
