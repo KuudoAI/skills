@@ -74,7 +74,7 @@ enable the Fulfillment Inbound operations (and the v0 ones, for labels and
 bills of lading) in their server's configuration. Do not substitute other tools
 and do not invent results.
 
-**Account context. Nothing works until an identity is selected.**
+**Account context. Select an identity before any seller call.**
 
 1. Call `list_identities` (no arguments). It returns
    `{"result": [{id, label, attributes}]}`. On a merchant-ID identity
@@ -105,10 +105,12 @@ and do not invent results.
 - Marketplace IDs are never injected for you. Pass them only where an
   operation asks for one: `createInboundPlan`, prep, compliance, and item
   labels.
-- The marketplace must sit in the active region, which follows the
-  identity. For a marketplace another region serves, call
-  `set_active_marketplace` after the identity in the same block; it sets
-  the region. `list_marketplaces` maps each marketplace to its region.
+- The marketplace must be one the identity covers (a managed-app identity
+  lists them in `attributes.marketplaces[]`). Call `set_active_marketplace`
+  for it after the identity in the same block; it sets the region. The
+  server doesn't check the marketplace against the identity, and a
+  mismatch fails every call with 403 "Access to requested resource is
+  denied." `list_marketplaces` maps each marketplace to its region.
   India (`A21TJRUUN4KGV`) is `eu`.
 - `listInboundPlans` also returns **AWD** plans. `getInboundPlan` rejects
   those with a 400 ("not supported for Amazon Warehousing and
@@ -322,8 +324,9 @@ Page each list until `pagination.nextToken` is empty, passing it back as
    **ACTIVE plans:** open them with `getInboundPlan` in `lastUpdatedAt`
    order, **not `createdAt`**. A plan created months ago can still hold a live shipment,
    and live shipments keep updating. Open every plan updated in the last 60
-   days, 20 or fewer per `execute` (each block has a 50-call and 30-second
-   limit; this is phase 2 of the plan overview pattern). Sort
+   days, 20 or fewer per `execute` (each block has a 50-call limit, and the
+   build measured on 2026-09-24 also a 30-second one; this is phase 2 of
+   the plan overview pattern). Sort
    each into one bucket:
    - **draft:** no shipments.
    - **awaiting a decision:** a placement option is `OFFERED` and not yet

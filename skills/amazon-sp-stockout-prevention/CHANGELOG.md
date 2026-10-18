@@ -14,8 +14,22 @@ match `metadata.version` in SKILL.md.
   sessions". `list_identities` returns two shapes, told apart by
   `attributes.mode`; on a managed-app identity the `label` is the store
   name and the home marketplace comes from `attributes.marketplaces[]`
-  rather than `declared_region`. A marketplace in another region is
-  selected with `set_active_marketplace`, which sets the region.
+  rather than `declared_region`. The marketplace is set with
+  `set_active_marketplace` after the identity; it must be one the identity
+  covers, because the server doesn't check and a mismatch fails every call
+  with 403 (seen on a live seller, 2026-10-18).
+- The filtered-inventory snippet in `references/data-sources.md` stops at
+  45 pages and returns `next_token` to resume in the next block. Without
+  the cap, a live 98,000-SKU catalog hit the 50-call limit and the block
+  returned nothing. A carried inventory token still worked 75 seconds
+  later, so SKILL.md and the reference no longer require paging inside one
+  block because of a 30-second expiry.
+- `sellers_getMarketplaceParticipations` also returns non-retail
+  marketplaces ("Non-Amazon US", an invoicing marketplace), so the skill
+  keeps only the IDs `list_marketplaces` returns.
+- No 30-second cap stopped a 45-call block on the live server. SKILL.md,
+  `references/data-sources.md`, and `references/inbound-gap.md` treat the
+  50-call limit as the binding one.
 
 ## [0.2.0] - 2026-10-17
 

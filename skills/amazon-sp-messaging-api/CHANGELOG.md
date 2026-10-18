@@ -26,10 +26,19 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   re-selecting before every send block stays the rule. The tools table adds
   `set_active_marketplace`, `get_active_marketplace`, and `clear_selection`
   and drops "callable only in `execute`" (they also answer as direct calls,
-  without carrying into a later block). A marketplace in another region is
-  selected with `set_active_marketplace`, which sets the region;
-  `set_active_region` must agree with it, and `get_active_region` answers
-  `na` with nothing selected.
+  without carrying into a later block). The order's marketplace is set
+  with `set_active_marketplace` after the identity in every block, because
+  selecting an identity resets routing to `na`; it sets the region, and
+  `set_active_region` must agree with it. `get_active_region` answers `na`
+  with nothing selected.
+- The marketplace must be one the identity covers. On a live seller
+  (2026-10-18) the server routed an identity to another region's
+  marketplace without checking, and every call then failed with 403
+  "Access to requested resource is denied.", the same text the seller's
+  missing Buyer Communication role produced on `getMessagingActionsForOrder`
+  and `GetAttributes`. The 403 row now says to rule out the marketplace
+  first. A key with a single identity runs without a selection, so a
+  working call doesn't prove one.
 - `list_identities` returns two shapes, told apart by `attributes.mode`; on
   a managed-app identity the `label` is the store name, not the merchant
   ID.

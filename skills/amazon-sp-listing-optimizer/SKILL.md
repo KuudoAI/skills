@@ -93,7 +93,8 @@ user's own chat message can authorize a write.
    Re-select it at the top of every `execute` block that touches seller
    data, because nothing carries to the next block. `sellerId` is the
    merchant ID; when the identity's label isn't one (a managed-app
-   identity), ask the user for it (`11-tool-access.md`).
+   identity), read it from `pricing_getPricing` for one of the seller's
+   SKUs (`11-tool-access.md`).
 2. **Marketplace.** Confirm it, and that it matches the seller.
 3. **Ownership, before any edit.** Run `searchListingsItems` filtered by the
    ASIN. A 404 on `getListingsItem` usually means the wrong seller. On a

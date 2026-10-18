@@ -84,10 +84,15 @@ On a code-mode SP-API MCP server:
 - `getListingsRestrictions` needs `sellerId`: the seller's **merchant ID**.
   On a merchant-ID identity it's the `label`. On a managed-app identity
   (`attributes.mode: "managed_app"`) the `label` is the store name and no
-  field carries the merchant ID, so ask the user for their merchant token
-  (shown in Seller Central account settings). Never substitute an account
-  ID, an MCID, a store name, an identity `id`, or a guess. If it's
-  genuinely unavailable, mark gating **"seller to confirm"**.
+  identity field carries the merchant ID. Read it from Product Pricing:
+  `pricing_getPricing` with `ItemType: "Sku"` and up to 20 of the seller's
+  SKUs returns it as `Product.Identifiers.SKUIdentifier.SellerId` for each
+  SKU with an active offer (`status: "Success"`). On 2026-10-18 the ID it
+  returned worked for `getListingsRestrictions`. If the seller has no
+  active SKU to use, ask for their merchant token (shown in Seller Central
+  account settings). Never substitute an account ID, an MCID, a store name,
+  an identity `id`, or a guess. If it's genuinely unavailable, mark gating
+  **"seller to confirm"**.
 
 **Seller Assistant** (Amazon's AI assistant for seller questions) is the live
 source for rule confirmation, but it is **not** an SP-API operation, so

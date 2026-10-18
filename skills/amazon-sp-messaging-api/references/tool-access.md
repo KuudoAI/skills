@@ -57,6 +57,9 @@ and an empty `attachments` list on `sendInvoice` and `CreateWarranty`.
 
 With no identity selected, SP-API calls fail with
 `Provider identity selection is required.`
+A key that reaches a single identity is the exception: its calls ran as
+that identity with nothing selected (2026-10-18, even right after
+`clear_selection`), so a call that works doesn't prove a selection.
 
 On HTTP the server keeps a selection only for the `execute` block that
 sets it: nothing carries to the next block (checked 2026-10-18; an earlier
@@ -76,13 +79,17 @@ doesn't reach a later block.
 - Selection tools wrap their output in `{"result": ...}`; SP-API tools
   return Amazon's payload directly.
 - The region must serve the order's marketplace: NA for US, CA, MX, and BR;
-  EU for UK, DE, FR, IT, ES, and others; FE for JP, AU, and SG. The region
-  follows the identity; for an order in another region's marketplace, call
-  `set_active_marketplace({"marketplace_id": …})` after the identity in the
-  same block. It sets the region and leaves the `marketplaceIds` argument
-  as you pass it. `set_active_region` must agree with a selected
-  marketplace, and `get_active_region` answers `na` even with nothing
-  selected, so it doesn't prove a selection.
+  EU for UK, DE, FR, IT, ES, and others; FE for JP, AU, and SG. Selecting
+  an identity clears any earlier marketplace or region, and with none set
+  the region is `na`. So call `set_active_marketplace({"marketplace_id":
+  …})` with the order's marketplace after the identity in the same block.
+  It sets the region and leaves the `marketplaceIds` argument as you pass
+  it. The marketplace must be one the identity covers (a managed-app
+  identity lists them in `attributes.marketplaces[]`). The server doesn't
+  check, and a mismatch fails every call with 403 `Unauthorized`, "Access
+  to requested resource is denied." `set_active_region` must agree with a
+  selected marketplace, and `get_active_region` answers `na` even with
+  nothing selected, so it doesn't prove a selection.
 
 ## Response shapes (from Amazon's model)
 
@@ -120,7 +127,7 @@ means the call failed.
 | Code | Meaning | Action |
 |---|---|---|
 | 400 | Invalid input: text too long, bad marketplace, unknown upload ID | Fix and preview again; don't silently alter approved text |
-| 403 | App lacks the Buyer Communication role for this seller, or the type isn't allowed for this order | Same 403 on every order → role missing; tell the seller. Single order → skip it |
+| 403 | App lacks the Buyer Communication role for this seller, the type isn't allowed for this order, or the marketplace isn't one the identity covers | Rule out the marketplace first (Identity and region): every case reads "Access to requested resource is denied." Then the same 403 on every order → role missing; tell the seller. Single order → skip it |
 | 404 | Order not found in this marketplace or region | Check the marketplace and region |
 | 413 / 415 | Payload too large, or unsupported media type | Report it; check the attachment |
 | 429 | Throttled (1 request/second, burst 5) | Back off and retry that call |

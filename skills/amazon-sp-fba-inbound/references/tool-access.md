@@ -1,6 +1,7 @@
 # Tool access on a code-mode SP-API MCP server
 
-These notes were verified live, read-only, on 2026-09-24. The server's own tool
+These notes were verified live, read-only, on 2026-09-24; the identity,
+routing, and sandbox notes were checked again on 2026-10-18. The server's own tool
 descriptions and `get_schema` output are the authority on tool names and on
 argument names, types, and shapes. If they disagree with this file on those,
 follow them. They never relax a gate in SKILL.md section 4, and any other
@@ -63,6 +64,9 @@ in the server's package setting, then restart it.
 
 With no identity selected, SP-API calls fail with
 `Provider identity selection is required.`
+A key that reaches a single identity is the exception: its calls ran as
+that identity with nothing selected (2026-10-18, even right after
+`clear_selection`), so a call that works doesn't prove a selection.
 
 > **Selection lasts one `execute` block (checked 2026-10-18).** On HTTP the
 > server keeps the identity, marketplace, and region only for the block that
@@ -92,17 +96,21 @@ With no identity selected, SP-API calls fail with
      ```python
      ids = (await call_tool("list_identities", {})).get("result", [])
      WANT = "A2GQWJZXTY0M66"   # the merchant ID or store name the user gave
+     want = WANT.lower().rstrip(".")
      out = []
      for i in ids:
          a = i.get("attributes", {})
          mkts = a.get("marketplaces", [])
-         if i["label"] == WANT or WANT in [m.get("storeName") for m in mkts]:
+         names = [i["label"]] + [m.get("storeName") or "" for m in mkts]
+         if want in [n.lower().rstrip(".") for n in names]:
              out.append({"id": i["id"], "mode": a.get("mode"),
                          "region": a.get("region"),
                          "declared_region": a.get("declared_region"),
                          "marketplaces": [m.get("marketplaceId") for m in mkts]})
      return out
      ```
+   - One seller's store name can differ by a trailing period from one
+     marketplace to the next, so the match ignores case and that period.
    - One merchant ID can appear once per region (for example US and CA). If
      it maps to several identities, ask which marketplace.
    - When asking the user to choose a seller, give counts by region and ask
@@ -112,13 +120,18 @@ With no identity selected, SP-API calls fail with
    - For a status question that spans accounts, confirm the scope first.
 2. `set_active_identity({"identity_id": "<id>"})`. Repeat it at the top of
    each seller-data `execute` block (see the caveat above).
-3. The region (`na`, `eu`, or `fe`) follows the identity. Selecting an
-   identity clears any marketplace or region chosen before it, so set those
-   after it, in the same block.
-   - For a marketplace outside the identity's region, call
-     `set_active_marketplace({"marketplace_id": …})`. It sets the region
-     (`Routing marketplace set to A1F83G8C2ARO7P in region eu.`) and doesn't
-     rewrite the `marketplaceIds` an operation takes.
+3. Selecting an identity clears any marketplace or region chosen before it,
+   and with none set the region is `na`. So after the identity, in the same
+   block, call `set_active_marketplace({"marketplace_id": …})` for the
+   marketplace you're working in. It sets the region (`Routing marketplace
+   set to A1F83G8C2ARO7P in region eu.`) and doesn't rewrite the
+   `marketplaceIds` an operation takes.
+   - Use a marketplace the identity covers: a managed-app identity lists
+     them in `attributes.marketplaces[]`, all in its `attributes.region`.
+     The server doesn't check. On 2026-10-18 it routed an `na` identity to
+     UK without complaint, and every call then failed with 403
+     `Unauthorized`, "Access to requested resource is denied." A seller's
+     account in another region is a separate identity.
    - `set_active_region` must agree with a selected marketplace, or it fails
      with `Marketplace 'A1F83G8C2ARO7P' is served by region 'eu', not
      explicitly selected region 'na'.`
@@ -127,14 +140,16 @@ With no identity selected, SP-API calls fail with
    - `list_marketplaces` maps each marketplace ID to its region. India
      (`A21TJRUUN4KGV`) is `eu`. `clear_selection` forgets the identity,
      marketplace, and region together.
-4. A **403 `Unauthorized`** on an inbound call is an account-authorization
-   problem, not a request problem. The live message was "Authorization
-   between the party and the application is not active". That means the
-   seller's authorization of the app is inactive (expired or revoked) or
-   lacks the Amazon Fulfillment role. Don't retry. Tell the seller to
-   re-authorize the app in Seller Central (Manage Your Apps) with the
-   Amazon Fulfillment role, or to reconnect the account through the
-   provider that manages their connection, then ask again.
+4. A **403 `Unauthorized`** reading "Access to requested resource is
+   denied." right after routing to a marketplace the identity doesn't cover
+   is a routing mistake (step 3). Otherwise a 403 on an inbound call is an
+   account-authorization problem, not a request problem. The live message
+   was "Authorization between the party and the application is not
+   active". That means the seller's authorization of the app is inactive
+   (expired or revoked) or lacks the Amazon Fulfillment role. Don't retry.
+   Tell the seller to re-authorize the app in Seller Central (Manage Your
+   Apps) with the Amazon Fulfillment role, or to reconnect the account
+   through the provider that manages their connection, then ask again.
 
 Don't pass `entityId`, a merchant ID, or tokens in operation params. They
 aren't in the schema, and the server may accept and silently ignore them, so
@@ -148,21 +163,25 @@ sandbox** (counts, totals, the first few rows) and return only that.
 
 Sandbox limits:
 
-- **A 30-second time limit per `execute`** (measured live). At about 0.5
-  to 1 second per call, run 20 or fewer `getInboundPlan` or `getShipment`
-  calls per block. Fast listing calls can go up to about 40.
 - **At most 50 `call_tool()` calls per `execute`.** Call 51 fails with
-  `Tool call limit exceeded`. Plan fan-outs in chunks (see the time limit above), and
-  carry a cursor between blocks.
+  `Tool call limit exceeded: at most 50 call_tool() invocations are allowed
+  per execute().`, and the block returns nothing. Plan fan-outs in chunks
+  and carry a cursor between blocks.
+- **Time.** The build measured on 2026-09-24 stopped blocks at 30 seconds;
+  on 2026-10-18 a 45-call block ran about 75 seconds. At about 0.5 to 1
+  second per call, 20 or fewer `getInboundPlan` or `getShipment` calls per
+  block fit either way. Fast listing calls can go up to about 40. If a
+  block times out, halve the chunk.
 - Output over about 30 KB is truncated, so return summaries.
-- No `asyncio.sleep`, no network, no file I/O. No `dir`, `hasattr`, or
-  `print` output.
-- The stdlib is restricted. `json`, `re`, and `math` work. `time`,
-  `collections`, and `itertools` don't.
-- `datetime` imports, but `datetime.now()` fails ("OS function not
-  implemented"). Get today's date on the host and write it into the code
-  as a literal.
-- `%` string formatting fails. Use f-strings.
+- No `asyncio.sleep`, no network, no file I/O. No `dir` or `print` output,
+  and `hasattr` answered `False` for an attribute that exists.
+- The stdlib is restricted. `json`, `re`, `math`, `datetime`,
+  `collections`, and `itertools` import; `time`, `statistics`, `csv`,
+  `io`, `gzip`, `base64`, `functools`, and `urllib` don't.
+- `datetime.now()` fails. Get today's date on the host and write it into
+  the code as a literal.
+- `%` formatting and `str.format()` fail; use f-strings. `next()` over a
+  generator expression fails; take `[0]` of a list comprehension.
 
 **Write, check, read, and summarize in one block:**
 
@@ -246,8 +265,8 @@ One live seller had 205 plans updated in 60 days, 175 of them SHIPPED.
 Opening everything took 11 blocks and about 205 calls. Opening only ACTIVE
 plans takes 1 or 2.
 
-Each `execute` also has a 30-second time limit, and `getInboundPlan` takes
-about 0.5 to 1 second, so open 20 or fewer per block.
+`getInboundPlan` takes about 0.5 to 1 second, so open 20 or fewer per block
+(the 2026-09-24 build stopped blocks at 30 seconds).
 
 **Phase 1: list and count.** A few calls; returns counts plus recent ACTIVE
 IDs only.

@@ -13,8 +13,11 @@ match `metadata.version` in SKILL.md.
   identity is set at the top of every block, and the "isn't isolated per
   session" reason is gone. `sellerId` comes from the identity's `label`
   only on a merchant-ID identity; on a managed-app identity the label is
-  the store name, so the skill asks the user for their merchant token
-  before `getListingsRestrictions`.
+  the store name, so the skill reads the merchant ID from
+  `pricing_getPricing` (`Product.Identifiers.SKUIdentifier.SellerId` for a
+  SKU with an active offer; on a live seller on 2026-10-18 it worked for
+  `getListingsRestrictions`) and asks for the merchant token only when no
+  SKU has an active offer.
 
 ## [0.1.0] - 2026-09-24
 

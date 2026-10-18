@@ -35,11 +35,28 @@ must match `metadata.version` in SKILL.md.
   `get_active_region` answers `na` with nothing selected, and
   `clear_selection`. It states that no tool reports the selected identity,
   without naming a tool that doesn't exist.
+- The claim that the region follows the identity is replaced by what a
+  live managed-app seller showed on 2026-10-18: selecting an identity
+  resets routing to `na`, so the marketplace is set after it in every
+  block, and the server routes an identity to any marketplace without
+  checking, after which every call fails with 403 "Access to requested
+  resource is denied." A key with a single identity runs without a
+  selection, even after `clear_selection`, so a working call doesn't prove
+  one.
 - `list_identities` returns two shapes, told apart by `attributes.mode`. On
   a managed-app identity the `label` is the store name, not the merchant
-  ID, and no field carries one, so SKILL.md, `06-patch-construction.md`,
-  and `11-tool-access.md` ask the user for the merchant token before the
-  first call that needs `sellerId` instead of reading it from the label.
+  ID, and no identity field carries one. SKILL.md,
+  `06-patch-construction.md`, and `11-tool-access.md` read it from
+  `pricing_getPricing` instead (`Product.Identifiers.SKUIdentifier.SellerId`
+  for a SKU with an active offer), and ask the user for the merchant token
+  only when no SKU has one. On the live seller the ID worked for
+  `searchListingsItems`, `getListingsItem`, `getDefinitionsProductType`,
+  and `getListingsRestrictions`.
+- `11-tool-access.md` says to pass SKUs as they are: the server encodes
+  path parameters, so a SKU encoded first returns 404. It notes that an FBA
+  inventory SKU can have no listing, and its sandbox limits match the live
+  server: `collections` and `itertools` import, `str.format()` fails, and
+  no 30-second cap stopped a 45-call block.
 
 ## [1.2.0] - 2026-10-17
 

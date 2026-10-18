@@ -9,8 +9,11 @@ These were verified live, read-only, on 2026-09-24. `get_schema(detail="full")` 
  "marketplaceIds": ["ATVPDKIKX0DER"], "details": true}
 ```
 
-- **Paging.** Follow `pagination.nextToken`. It expires about 30 seconds
-  after it's issued, so page inside one `execute`.
+- **Paging.** Follow `pagination.nextToken`, which sits next to `payload`.
+  Amazon documents a 30-second expiry; on 2026-10-18 a token still worked
+  75 seconds later in a new block. Page inside one `execute` while the
+  catalog fits, and carry the token when the 50-call limit stops you (see
+  below).
 - **Filtering.** `sellerSkus` takes up to 50 SKUs; `sellerSku` takes one.
   `startDateTime` returns only SKUs changed since that time.
 - **Response.** `inventorySummaries[]` holds:
@@ -48,11 +51,12 @@ transit.
 await call_tool("set_active_identity", {"identity_id": SID})
 MK = "ATVPDKIKX0DER"
 LOW = 50                      # the question's threshold, set on the host
+TOK = None                    # a carried next_token, to resume a large catalog
 counts = {"skus": 0, "stocked": 0, "zero_stock": 0, "in_transit": 0}
-rows, tok = [], None
+rows, tok, pages = [], TOK, 0
 def keep(sku, f, t):
     return f > 0 and (f < LOW or t > 0)
-while True:
+while pages < 45:             # 50 calls per block, and call 51 loses everything
     a = {"granularityType": "Marketplace", "granularityId": MK,
          "marketplaceIds": [MK], "details": True}
     if tok:
@@ -69,12 +73,18 @@ while True:
             counts["in_transit"] += 1
         if keep(s["sellerSku"], f, t):
             rows.append({"sku": s["sellerSku"], "fulfillable": f, "in_transit": t})
+    pages += 1
     tok = (r.get("pagination") or pl.get("pagination") or {}).get("nextToken")
     if not tok:
         break
 rows.sort(key=lambda x: x["fulfillable"])
-return {"counts": counts, "matched": len(rows), "rows": rows[:25]}
+return {"counts": counts, "matched": len(rows), "rows": rows[:25], "next_token": tok}
 ```
+
+A `next_token` in the result means the catalog is bigger than one block
+(45 pages, 2,250 SKUs). Pass it as `TOK` in the next block and add up the
+counts. Without the page cap, a 98,000-SKU catalog hit the 50-call limit on
+2026-10-18 and the block returned nothing.
 
 ## Sales: `getOrderMetrics` (instant)
 
@@ -92,7 +102,7 @@ return {"counts": counts, "matched": len(rows), "rows": rows[:25]}
 - **Response:** `payload[]` holds `interval`, `unitCount`, `orderItemCount`,
   `orderCount`, `averageUnitPrice`, and `totalSales`.
 - **Call cost:** one call per SKU, with a low rate limit (about 0.5 per second,
-  burst 15). Stay within about 20 SKUs per `execute`: after the burst of 15 it runs at about 2 seconds per call, against the 30-second limit. Beyond about 40 stocked SKUs,
+  burst 15). Stay within about 20 SKUs per `execute`: after the burst of 15 it runs at about 2 seconds per call, so 20 SKUs keep a block near 30 seconds. Beyond about 40 stocked SKUs,
   the planning report is cheaper, because one file covers every SKU.
 - **Interval:** use the last 30 *complete* days. Order data for the current
   day is partial.

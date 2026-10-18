@@ -65,7 +65,8 @@ On a code-mode SP-API MCP server:
 - If the token has exactly one identity, use it and say which one.
   Otherwise, if the user hasn't said which seller, ask: give counts, never
   the list. Never use whichever seller happens to be active.
-- A 403 `Unauthorized` means the seller's app authorization is inactive.
+- A 403 `Unauthorized` means the seller's app authorization is inactive,
+  or the marketplace isn't one the identity covers (see Parameters).
   Report it; don't retry.
 - A provider "service is unavailable" error for one seller while others
   respond means that seller's connection can't get an Amazon token. Report a broken
@@ -79,15 +80,21 @@ On a code-mode SP-API MCP server:
 - No marketplace named? Use the identity's home marketplace and say so: on
   a merchant-ID identity, `attributes.declared_region` is a country code
   (map it with `list_marketplaces`); on a managed-app identity, take it
-  from `attributes.marketplaces[]`, and ask if that lists more than one. A
-  marketplace another region serves needs `set_active_marketplace` after
-  the identity in the same block; it sets the region. To offer the others,
+  from `attributes.marketplaces[]`, and ask if that lists more than one.
+  Call `set_active_marketplace` for it after the identity in the same
+  block; it sets the region. The server doesn't check it against the
+  identity, and a marketplace the identity doesn't cover fails every call
+  with 403 "Access to requested resource is denied." To offer the others,
   `sellers_getMarketplaceParticipations` lists the marketplaces the seller
-  actually sells in; `list_marketplaces` lists all of Amazon's.
+  actually sells in, including non-retail ones such as "Non-Amazon US" and
+  an invoicing marketplace. Keep only the IDs that `list_marketplaces`
+  returns; it lists all of Amazon's retail marketplaces.
 
 **Sandbox limits.**
 
-- At most 50 `call_tool()` calls **and 30 seconds** per `execute`. Detail
+- At most 50 `call_tool()` calls per `execute`; call 51 fails and the
+  block returns nothing. An earlier build also stopped blocks at 30
+  seconds; on 2026-10-18 a 45-call block ran about 75 seconds. Detail
   reads (`getInboundPlan`, `getShipment`) take about 0.5 to 1 second each,
   so run 20 or fewer per block. Fast list calls can go up to about 40.
 - Output over about 30 KB is truncated, so summarize inside the sandbox.
@@ -139,8 +146,12 @@ Call `getInventorySummaries` with:
   `marketplaceIds: [id]`
 - `details: true`
 
-Page through `nextToken` until it's empty. The token expires in about 30
-seconds, so page inside one block.
+Page through `nextToken` until it's empty, inside one block when the
+catalog fits: a block holds about 45 pages (2,250 SKUs) before the 50-call
+limit. Past that, carry the token to the next block; Amazon documents a
+30-second expiry, but on 2026-10-18 a token still worked 75 seconds later.
+For a catalog of tens of thousands of SKUs, use `sellerSkus` (up to 50) or
+the planning report rather than paging everything.
 
 For each SKU, keep:
 
@@ -276,7 +287,7 @@ some paths.
 
 | Path | Cost at 500 SKUs | How to run it |
 |---|---|---|
-| Inventory | 10 pages, a few seconds, one block | Page inside one block; the token expires in about 30 seconds. Filter in the sandbox and return counts plus matching rows (see *Context budget*) |
+| Inventory | 10 pages, a few seconds, one block | Page inside one block (about 45 pages fit) and carry `nextToken` past that. Filter in the sandbox and return counts plus matching rows (see *Context budget*) |
 | Amazon's report plus the script | The same 4 calls at any size | The default is the at-risk slice: 25 compact rows, about 8 KB at 500 SKUs, plus counts for the whole catalog. `--all --limit 0` is about 155 KB, so use it only on explicit request, after warning |
 | Estimate fallback (no Python) | 1 `getOrderMetrics` call per SKU at about 0.5/s; 500 SKUs would take 15+ minutes | **Don't estimate every SKU.** Cover up to about 60 stocked SKUs (3 blocks of about 20): first the ones the seller names, then the lowest fulfillable. Say the result is partial, with how many SKUs were checked, and recommend running where the report can be read |
 | Inbound gap | Grows with the number of recent plans, not SKUs | Batch all flagged SKUs into one pass; see [references/inbound-gap.md](references/inbound-gap.md) |

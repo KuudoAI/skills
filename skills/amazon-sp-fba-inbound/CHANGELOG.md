@@ -31,7 +31,24 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   a managed-app identity the `label` is the store name and the attributes
   carry `region` and `marketplaces[]`, so the identity lookup in SKILL.md
   and the filter snippet in `references/tool-access.md` match a merchant ID
-  or a store name and return the mode, region, and marketplace IDs.
+  or a store name and return the mode, region, and marketplace IDs. The
+  match ignores case and a trailing period, because one live seller's store
+  name differed by a period between marketplaces.
+- The claim that the region follows the identity is replaced by what a
+  live managed-app seller showed on 2026-10-18: selecting an identity
+  resets routing to `na`, so the marketplace is set after it in every
+  block, and the server routes an identity to any marketplace without
+  checking, after which every call fails with 403 "Access to requested
+  resource is denied." `references/tool-access.md` tells that 403 apart
+  from an inactive authorization.
+- A key with a single identity runs without a selection, even after
+  `clear_selection`, so "Nothing works until an identity is selected" is
+  gone and a working call no longer counts as proof of one.
+- The sandbox limits match the live server: no 30-second cap stopped a
+  45-call block (the 2026-09-24 build had one); `collections` and
+  `itertools` import, while `statistics`, `csv`, `io`, `gzip`, `base64`,
+  `functools`, and `urllib` don't; `str.format()` fails; and `hasattr`
+  answered `False` for an attribute that exists.
 
 ## [0.2.1] - 2026-10-17
 
