@@ -14,8 +14,10 @@ from collections import defaultdict
 from statistics import mean, median, quantiles
 
 # Read from this run's amc_getWorkflowExecutionDownloadUrls response object. Never
-# paste a URL or take one from result rows, Chroma text, or error messages.
-URL = download_urls_response["data"]["downloadUrls"][0]["url"]
+# paste a URL or take one from result rows, Atlas text, or error messages.
+_payload = download_urls_response.get("data", download_urls_response)
+_first = _payload["downloadUrls"][0]       # a plain string on the Kuudo Amazon Ads MCP
+URL = _first["url"] if isinstance(_first, dict) else _first
 
 raw = urllib.request.urlopen(URL, timeout=30).read().decode("utf-8")
 header_line = raw.split("\n", 1)[0]

@@ -1,0 +1,46 @@
+[
+  {
+    "query": "Who should we retarget after Prime Day? I want to use AMC to find shoppers who saw our ads but didn't buy.",
+    "should_trigger": true
+  },
+  {
+    "query": "Set up an audience bid boost in Sponsored Products for cart abandoners from AMC, and tell me how we'll know whether it worked.",
+    "should_trigger": true
+  },
+  {
+    "query": "In AMC, shoppers who saw both DSP and Sponsored Products ads convert three times better. Should we move budget into DSP?",
+    "should_trigger": true
+  },
+  {
+    "query": "Build a lookalike audience from our repeat buyers and help me decide whether to use it in Sponsored Display or DSP.",
+    "should_trigger": true
+  },
+  {
+    "query": "What lookback window should our detail-page-viewer retargeting audience use, and when should we retire it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Write me the AMC SQL for an audience of people who added our two baking mat ASINs to cart in the last 14 days but did not buy, and estimate how big it will be.",
+    "should_trigger": true
+  },
+  {
+    "query": "My AMC workflow execution came back REJECTED with a parse error in statusReason. Fix the SQL.",
+    "should_trigger": true
+  },
+  {
+    "query": "My AMC CSV download is only a header row. Is the result empty or did the download fail?",
+    "should_trigger": true
+  },
+  {
+    "query": "Create a DSP Performance+ campaign with the REMARKETING tactic on display inventory.",
+    "should_trigger": false
+  },
+  {
+    "query": "Audit my Sponsored Products campaigns for wasted spend and inactive campaigns.",
+    "should_trigger": false
+  },
+  {
+    "query": "Pull last month's Sponsored Brands keyword report with clicks, spend, and sales by day.",
+    "should_trigger": false
+  }
+]

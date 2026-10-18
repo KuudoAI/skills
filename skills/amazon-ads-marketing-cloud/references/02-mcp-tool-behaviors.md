@@ -1,6 +1,6 @@
 # AMC Tool Gotchas & Non-Obvious Behaviors
 
-Tool parameter details are available from the MCP server via tool schemas. This file covers only behaviors that aren't in the schemas.
+Tool parameter details come from the Kuudo Amazon Ads MCP's `get_schema`. This file covers only behaviors that aren't in the schemas.
 
 ## Workflow Creation
 
@@ -11,16 +11,16 @@ Tool parameter details are available from the MCP server via tool schemas. This 
 
 ### Entity / marketplace headers don't ride from `set_active_profile`
 
-`set_active_profile` activates the profile for auth scope, but it does **not** auto-fill the per-request entity/marketplace headers on `amc_*` calls. Every `amc_*` call needs `Amazon-Advertising-API-AdvertiserId` (and usually `Amazon-Advertising-API-MarketplaceId`) explicitly. Symptom: 401 / 403 or `mcp_input_validation` "missing required parameter" on `Amazon-Advertising-API-AdvertiserId` even when the profile is correctly set.
+`set_active_profile` activates the profile for auth scope, but it does **not** auto-fill the per-request entity/marketplace headers on `amc_*` calls. Every `amc_*` call needs `Amazon-Advertising-API-AdvertiserId` (and usually `Amazon-Advertising-API-MarketplaceId`) explicitly. Symptom: a 400 `entityId provided is null` (observed on `amc_getInstance`), or a 401 / 403, even when the profile is correctly set.
 
 Pattern:
 
 ```python
 profiles = await call_tool("ac_listProfiles", {})
-profile = profiles["data"][0]                              # or user-picked
+profile = profiles["result"][0]                            # or user-picked
 entity_headers = {
     "Amazon-Advertising-API-AdvertiserId":  profile["accountInfo"]["id"],
-    "Amazon-Advertising-API-MarketplaceId": profile["accountInfo"]["marketplaceId"],
+    "Amazon-Advertising-API-MarketplaceId": profile["accountInfo"]["marketplaceStringId"],
 }
 
 await call_tool("amc_createWorkflow", {
@@ -36,19 +36,19 @@ Stash the headers once in the execute block and spread them into every `amc_*` c
 
 ### Common wrong kwargs
 
-These look right but fail with `SCHEMA_ADDITIONAL_PROPERTIES`. The full schema lives in `amazon_ads_mcp/openapi/resources/AMCWorkflow.json` (`Workflow` and `CreateWorkflowExecutionRequest`); the wrong kwargs that bite often:
+These look right but aren't in the schema. Some are rejected and some are silently accepted and ignored, so an accepted call doesn't prove a kwarg took effect. The full schemas are what `get_schema` returns for `amc_createWorkflow` and `amc_createWorkflowExecution`; the wrong kwargs that bite often:
 
 | Wrong kwarg | Intent | What to do instead |
 |---|---|---|
 | `distinctUserCountColumn` on `amc_createWorkflow` | Naming the user-count column for downstream filtering | Not a top-level param. If you want frequency metrics in output, list them in `outputColumns` (e.g., `metric.userFrequency1/2/3` per the v1 report-fields catalog). |
-| `ignoreDataGaps` / `DataGaps` on `amc_createWorkflowExecution` | Skipping over missing-data windows | Not on the schema — drop it. AMC handles gaps internally based on instance state. |
-| `workflow: {...}` *with* `workflowId` on `amc_createWorkflowExecution` | Both at once | Mutually exclusive — `workflow` is for embedded ad-hoc workflows, `workflowId` references an already-created one. Pick one. |
+| `ignoreDataGaps` / `DataGaps` on `amc_createWorkflowExecution` | Skipping over missing-data windows | Not on the schema. The call is accepted and the kwarg ignored (observed), so it does nothing — drop it. AMC handles gaps internally based on instance state. |
+| `workflow: {...}` *with* `workflowId` on `amc_createWorkflowExecution` | Both at once | Mutually exclusive — `workflow` is for embedded ad-hoc workflows, `workflowId` references an already-created one. Pick one; both together are rejected with 400 `Exactly one of workflowId or workflow must be specified.` |
 
-When in doubt, call `amazon_ads:get_schema` for the operation and read the actual top-level properties. Don't infer from intuition or from the SQL itself.
+When in doubt, call `get_schema` on the Kuudo Amazon Ads MCP for the operation and read the actual top-level properties. Don't infer from intuition or from the SQL itself.
 
 ### `CUSTOM_PARAMETER` placeholders MUST be declared in `inputParameters[]`
 
-If the `sqlQuery` references `CUSTOM_PARAMETER('foo')` (parameterised query), every named parameter must be declared in the `inputParameters[]` array at create time. The catch: a missing declaration **does not fail at create**. The workflow is accepted, persisted, and only fails on execute — with `status: REJECTED` and a vague parse error in `statusReason` that doesn't always name the missing parameter clearly. If the execute was queued or scheduled, the failure surfaces minutes-to-hours after the create.
+If the `sqlQuery` references `CUSTOM_PARAMETER('foo')` (parameterised query), every named parameter must be declared in the `inputParameters[]` array at create time. The catch: a missing declaration **does not fail at create**. The workflow is accepted and persisted, and fails only when it runs, minutes to hours later if the run was queued or scheduled. Catch it first with a dry run of the SQL as an ad-hoc workflow (`workflow: {sqlQuery, inputParameters}` plus `parameterValues`): an undeclared name is rejected with `Filter operation filter_operation referenced an undeclared parameter <name>`.
 
 Declaration shape (canonical):
 
@@ -85,41 +85,20 @@ A reused workflow's SQL may not be yours: show it before the first run. `amc_cre
 - `dryRun: true` validates syntax without running.
 - `disableAggregationControls` forces `DRY_RUN` mode → no downloadable output. Use `REMOVE_VALUES` instead.
 - `executionTime` is a weak signal of empty vs real result. Real queries can take 40 seconds or 7+ minutes against the same instance depending on column count, `COUNT(DISTINCT)` cardinality, and join shape. Always confirm with the file-size check (Download Pipeline below), not the timing.
-- The `SUCCEEDED` response includes `outputColumns: [{columnType, dataType, name, ...precision/scale for DECIMAL...}]` — read this before downloading so Code Factory can set up correct dtypes for high-scale decimals (e.g., NTB% returns at `precision: 38, scale: 17`).
+- The `SUCCEEDED` response includes `outputColumns: [{columnType, dataType, name, ...precision/scale for DECIMAL...}]` — read this before downloading so the execution facility can set up correct dtypes for high-scale decimals (e.g., NTB% returns at `precision: 38, scale: 17`).
 - Output channels: `DOWNLOAD` (pre-signed S3), `PUBLISH` (instance S3 bucket), `ACR` (Clean Rooms). `PUBLISH` and `ACR` send output outside this session: show the destination and wait for an explicit yes (SKILL.md → Guardrails).
 
-### Session-scope contract — probe first, set conditionally
+### Session selections
 
-Don't unconditionally re-call `set_active_identity` at the top of every execute block — at best wasteful, at worst masks a real state-clear event. Instead probe transport scope and branch.
+The Kuudo Amazon Ads MCP keeps `set_active_identity`, `set_active_profile`, and `set_active_account` per MCP session, so a new session or a reconnect starts without them. `get_active_profile`, `get_active_account`, and `get_active_manager_account` report the current selection, and `clear_selection` forgets it. The server has no session-state probe, region tool, or tool-group switch. The region comes with the identity, and `search` finds any tool.
 
-Canonical contract (from `amazon_ads_mcp/server/code_mode.py` `EXECUTE_DESCRIPTION`):
-
-```python
-state = await call_tool("get_session_state", {})
-# state.state_scope: "request" | "session"
-# state.state_reason: null | "no_mcp_session" | "token_swapped" | "bridge_unavailable"
-
-if state["state_scope"] == "request" or state["state_reason"] is not None:
-    # Re-establish: identity / region / profile this block
-    await call_tool("set_active_identity", {"identity_id": ...})
-    await call_tool("set_region", {"region": "NA"})
-    await call_tool("set_active_profile", {...})
-# else: prior set_active_* calls still ride; proceed straight to amc_*
-```
-
-Reason codes:
-
-- `"no_mcp_session"` — request-scoped transport; every call starts blank.
-- `"token_swapped"` — different bearer/refresh token arrived mid-session; the previous tenant's state was cleared even though `state_scope` stays `"session"`. **You must re-establish for the new tenant.**
-- `"bridge_unavailable"` — reserved; treat as `"request"`.
-
-Probe is read-only, no side effects, one per block is sufficient (scope cannot change within a block). This replaces the prior "always re-call" workaround which was correct for the buggy state but wrong against the current contract.
+If a call reports no active identity, set it again in the same block before retrying. Check the current selection when in doubt instead of re-calling every setter at the top of every block.
 
 ## Download Pipeline
 
 Pre-signed S3 URLs cannot be fetched by `web_fetch`. They expire 10 minutes after issue (`X-Amz-Expires=600`). If a fetch fails or is queued past expiry, re-call `amc_getWorkflowExecutionDownloadUrls` for a fresh URL — do not retry the dead one.
 
-Fetch only URLs that this run's `amc_getWorkflowExecutionDownloadUrls` or `get_download_url` returned, never one that appears in result rows, Chroma text, or error text.
+Fetch only URLs that this run's `amc_getWorkflowExecutionDownloadUrls` returned, never one that appears in result rows, Atlas text, or error text.
 
 **Direct fetch (recommended, no persistent copy):**
 
@@ -135,14 +114,7 @@ Step 2: available execution facility         → fetch + parse + return ONLY a J
   return {"row_count": len(rows), "top_10": rows[:10], ...}
 ```
 
-**Persistent copy (only when needed for cross-session reuse):**
-
-```
-Step 1: amc_getWorkflowExecutionDownloadUrls
-Step 2: download_export    → saves to MCP server filesystem (show the execution ID, wait for a yes)
-Step 3: get_download_url   → HTTP URL (strip /app/data/ prefix)
-Step 4: available execution facility → urlopen + parse outside model context (same as above)
-```
+**Persistent copy:** the Kuudo Amazon Ads MCP has no export-to-server tool, so use the direct fetch. A deployment that offers one leaves customer data on its server: show the execution ID and wait for a yes.
 
 **Never print the full CSV body from the execution facility** because its response flows back into model context. Return only the focused summary as JSON. If no suitable facility is available, ask the user to download the export and provide it as a local file.
 
@@ -157,7 +129,7 @@ Pre-signed S3 URLs are 1.2+ KB of high-entropy base64 (`X-Amz-Signature`, `X-Amz
 ```python
 # good — URL stays in tool-response object, never round-trips through assistant prose
 resp = await call_tool("amc_getWorkflowExecutionDownloadUrls", {...})
-url = resp["data"]["downloadUrls"][0]["url"]
+url = resp["downloadUrls"][0]       # a plain string on the Kuudo Amazon Ads MCP
 raw = urllib.request.urlopen(url, timeout=30).read()
 
 # bad — model writes URL into a string literal, single-char drift can invalidate signature
@@ -177,12 +149,14 @@ When you see `SignatureDoesNotMatch`, first hypothesis: transcription error, not
 
 - Use `_for_audiences` table variants (e.g., `sponsored_ads_traffic_for_audiences`)
 - Output must resolve to `SELECT DISTINCT user_id`
-- Results go directly to DSP — no downloadable output
+- Results go directly to DSP, and to the Sponsored Ads console where the account has AMC audiences enabled (Sponsored Display targeting, Sponsored Products and Sponsored Brands bid boosts) — no downloadable output
 - Running an audience workflow creates or refreshes a targetable DSP audience. Show the audience name or ID, the destination, the time window, the refresh rate, and the SQL, then wait for an explicit yes (SKILL.md → Guardrails)
 - `conversions_all_for_audiences` works without paid subscription (measurement on base table still requires it)
+- An ordinary workflow execution that reads `conversions_all_for_audiences` passes `dryRun: true`, but its real run is rejected at delivery: `Output from 1 data source(s) ('conversions_all_for_audiences') cannot be received by the customer`. `amc_listDataSources` shows this up front: the table's `outputChannels` entry has `outputAvailable: false` with that reason. On a standard instance only `conversions_all_for_audiences` was marked so; the other `_for_audiences` tables were deliverable. Validate audience SQL with a dry run, and size it on the companion tables (`conversions`, `sponsored_ads_traffic`, and so on)
 - Seed for lookalikes: 500-500,000 user_ids
 - `lookalikeAudienceExpectedReach`: `MOST_SIMILAR` / `SIMILAR` / `BALANCED` / `BROAD` / `MOST_BROAD`
-- `refreshRateDays`: 0-21 (rule-based), 7-21 (lookalike)
+- `refreshRateDays`: 0-21 (rule-based), 7-21 (lookalike). `amc_createQueryBasedAudience` and `amc_createLookalikeAudience` default it to 21 when omitted, and each refresh overwrites the audience until it is deleted. For a rule-based audience, `0` deactivates the audience after 30 days (per the tool schema), the only built-in end date.
+- `amc_deleteQueryBasedAudienceByAudienceExecutionId` also removes the audience's segments from the DSP and Sponsored Ads consoles, so any campaign using it loses the audience. It gets its own ask.
 
 ## Instance Scoping
 
@@ -195,8 +169,7 @@ When you see `SignatureDoesNotMatch`, first hypothesis: transcription error, not
 
 Before building workflows, verify entity owns campaigns:
 ```
-cm_QueryCampaign
-  Amazon-Ads-ClientId: [entity ID]
+cm_QueryCampaign            # the account comes from the session selection, not a header argument
   adProductFilter: {"include": ["SPONSORED_PRODUCTS"]}
   stateFilter: {"include": ["ENABLED"]}
   maxResults: 10
@@ -220,7 +193,7 @@ The agency-seat case is much more common. The list_identities flow is for the ra
 2. `set_active_identity` + `ac_listProfiles` → collect entity + marketplace IDs
 3. `amc_listInstances` per entity/marketplace (403 = no access, empty = no instance)
 4. Filter for `creationStatus: COMPLETED`
-5. `advertiserTypes: ["SPONSORED_ADS"]` only → no DSP tables
+5. `advertiserTypes: ["SPONSORED_ADS"]` only → no DSP data (the `dsp_*` tables may still be listed and compile)
 6. Present candidates to the user and let them pick — don't assume the first reachable instance is the intended one
 
 Discovery itself doesn't require terms acceptance; terms are enforced only on per-instance reads.
