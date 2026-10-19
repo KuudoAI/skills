@@ -23,11 +23,11 @@ Contents: [MCP surface](#the-mcp-surface) · [The three-call flow](#the-three-ca
 
 ## The MCP surface
 
-The Amazon Ads MCP uses code-mode meta-tools:
+The Kuudo Amazon Ads MCP uses code-mode meta-tools:
 
-- `amazon_ads_v4:search(query, detail, limit, tags)` — find tools
-- `amazon_ads_v4:get_schema(tools, detail)` — get parameter schemas
-- `amazon_ads_v4:execute(code)` — run `await call_tool(name, params)` in
+- `search(query, detail, limit, tags)` — find tools
+- `get_schema(tools, detail)` — get parameter schemas
+- `execute(code)` — run `await call_tool(name, params)` in
   Python; chain several calls in one block and `return` the final value
 
 Always `get_schema` before a first call to an unfamiliar tool. Do not assume
@@ -42,7 +42,7 @@ parameter names.
 | Search assets | `creat_searchAssets` |
 | Brand entity ID lookup | `sb_getBrands` |
 | Sponsored Brands direct byte upload | `sb_createAsset` |
-| SB media polling | `sb_completeUpload`, `sb_describeMedia` |
+| SB media status | `sb_describeMedia` |
 
 ## The three-call flow, and the gap in the middle
 
@@ -55,7 +55,7 @@ Registering an asset takes three steps. **The MCP can only do two of them.**
 
 Step 2 is a plain HTTP PUT with a raw binary body and a matching
 `Content-Type` header. It is **not** multipart and has no form field name.
-`amazon_ads_v4:execute` runs Python with only `call_tool` in scope — no HTTP
+`execute` runs Python with only `call_tool` in scope — no HTTP
 client — so the agent cannot perform this step through the Ads MCP. Nothing
 else in the catalog performs an upload either — that was checked across the
 full tool surface (roughly 734 tools at the time of writing), so it is a real
@@ -251,8 +251,8 @@ file is small and the use is Sponsored Brands, but check the size first —
 typical generated images exceed 1 MB, and custom images are allowed up to 5 MB
 precisely because they are large.
 
-`sb_createAsset` and `sb_completeUpload` are writes. Show the file, its size,
-and the brand entity ID, and wait for the user's yes before each.
+`sb_createAsset` is a write. Show the file, its size, and the brand entity
+ID, and wait for the user's yes before each call.
 
 ## Known discrepancies
 

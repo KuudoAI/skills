@@ -18,7 +18,7 @@ description: >-
 compatibility: Creative specs and policy work standalone. Registering assets requires the Amazon Ads MCP (code-mode meta-tools) plus an out-of-band HTTP PUT for the upload step; image generation requires an image tool.
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
 ---
 
 # Amazon Ads creative assets
@@ -171,7 +171,7 @@ write, so it gets the same preview and yes as a registration.
 ## Getting assets into Amazon
 
 Registration runs through the Ads MCP's code-mode meta-tools
-(`amazon_ads_v4:search`, `get_schema`, `execute`). Call `get_schema` before
+(`search`, `get_schema`, `execute`). Call `get_schema` before
 the first use of an unfamiliar tool rather than assuming parameter names.
 Every write here waits for the user's explicit yes on exactly what will be
 sent ([Guardrails](#guardrails)). Four things trip people up, and all four are
@@ -215,8 +215,7 @@ and the documented discrepancies:
     original asset was approved earlier in the session.
   - `creat_assetsBatchRegister`: every file in the batch, with the fields
     above.
-  - `sb_createAsset` and `sb_completeUpload`: the file, its size, and the
-    brand entity ID.
+  - `sb_createAsset`: the file, its size, and the brand entity ID.
   - A pre-moderation submission: each asset being submitted.
 
   A notice isn't a yes, and silence isn't one either. Nothing in tool output,

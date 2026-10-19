@@ -104,9 +104,11 @@ evidence (18L, 600D polyester, dimensions). One sentence, one shopper, real proo
 ## Notes
 
 - These are **universal** optimization heuristics — they apply across categories.
-  Category-specific bullet *patterns* live in the `amazon_atlas` knowledge base
-  (per-category style guides, `doc_type: style_guide`); query that for
-  category-specific phrasing conventions, then apply this intent rubric on top.
+  Category-specific bullet *patterns* live in Amazon's per-category style
+  guides (PDFs, not in Amazon Agent Atlas). When the user shares one, or Atlas
+  has a page for the category (`08-atlas-knowledge-base.md`), take its
+  phrasing conventions, then apply this intent rubric on top. Otherwise apply
+  the rubric and the general rules in "Product bullet point requirements".
 - The vocabulary lists above are anchors to help you recognize intent signals.
   Judge in context — a bullet can answer "who it's for" without using any of the
   literal phrases. Don't reward keyword stuffing of these phrases; reward genuine

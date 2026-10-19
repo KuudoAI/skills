@@ -49,7 +49,7 @@ the query string. It must name this order and the approved type; if it
 doesn't, stop and show it to the seller.
 
 ```python
-await call_tool("set_active_identity", {"id": SELLER_IDENTITY_ID})
+await call_tool("set_active_identity", {"identity_id": SELLER_IDENTITY_ID})
 r = await call_tool("uploads_createUploadDestinationForResource", {
     "marketplaceIds": ["ATVPDKIKX0DER"],
     "contentMD5": "1B2M2Y8AsgTpgAmY7PhCfg==",
@@ -98,7 +98,7 @@ create a new destination. Don't reuse the old one.
 ## Step D — Send with the attachment (MCP)
 
 ```python
-await call_tool("set_active_identity", {"id": SELLER_IDENTITY_ID})
+await call_tool("set_active_identity", {"identity_id": SELLER_IDENTITY_ID})
 await call_tool("messaging_sendInvoice", {
     "amazonOrderId": "113-1234567-1234567",
     "marketplaceIds": ["ATVPDKIKX0DER"],

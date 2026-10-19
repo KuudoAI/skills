@@ -13,6 +13,43 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.2] - 2026-10-18
+
+### Fixed
+
+- Seller and region selection match the live Kuudo Amazon SPAPI MCP
+  (checked 2026-10-18). On HTTP the server keeps a selection only for the
+  `execute` block that sets it, so the "shared across sessions" caveat now
+  describes the earlier build and the current one-block rule; re-selecting
+  at the top of every block stays the rule. `references/tool-access.md`
+  adds `set_active_marketplace` and `get_active_marketplace`, notes that the
+  selection tools also answer as direct calls without carrying into a later
+  block, that selecting an identity clears an earlier marketplace or
+  region, that `set_active_region` must agree with a selected marketplace,
+  and that `get_active_region` answers `na` with nothing selected.
+- `list_identities` returns two shapes, told apart by `attributes.mode`. On
+  a managed-app identity the `label` is the store name and the attributes
+  carry `region` and `marketplaces[]`, so the identity lookup in SKILL.md
+  and the filter snippet in `references/tool-access.md` match a merchant ID
+  or a store name and return the mode, region, and marketplace IDs. The
+  match ignores case and a trailing period, because one live seller's store
+  name differed by a period between marketplaces.
+- The claim that the region follows the identity is replaced by what a
+  live managed-app seller showed on 2026-10-18: selecting an identity
+  resets routing to `na`, so the marketplace is set after it in every
+  block, and the server routes an identity to any marketplace without
+  checking, after which every call fails with 403 "Access to requested
+  resource is denied." `references/tool-access.md` tells that 403 apart
+  from an inactive authorization.
+- A key with a single identity runs without a selection, even after
+  `clear_selection`, so "Nothing works until an identity is selected" is
+  gone and a working call no longer counts as proof of one.
+- The sandbox limits match the live server: no 30-second cap stopped a
+  45-call block (the 2026-09-24 build had one); `collections` and
+  `itertools` import, while `statistics`, `csv`, `io`, `gzip`, `base64`,
+  `functools`, and `urllib` don't; `str.format()` fails; and `hasattr`
+  answered `False` for an attribute that exists.
+
 ## [0.2.1] - 2026-10-17
 
 ### Changed

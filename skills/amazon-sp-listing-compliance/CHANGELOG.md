@@ -4,6 +4,21 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com). Versions are semver and must
 match `metadata.version` in SKILL.md.
 
+## [0.1.1] - 2026-10-18
+
+### Fixed
+
+- Seller selection matches the live Kuudo Amazon SPAPI MCP (checked
+  2026-10-18): on HTTP nothing carries to the next `execute`, so the
+  identity is set at the top of every block, and the "isn't isolated per
+  session" reason is gone. `sellerId` comes from the identity's `label`
+  only on a merchant-ID identity; on a managed-app identity the label is
+  the store name, so the skill reads the merchant ID from
+  `pricing_getPricing` (`Product.Identifiers.SKUIdentifier.SellerId` for a
+  SKU with an active offer; on a live seller on 2026-10-18 it worked for
+  `getListingsRestrictions`) and asks for the merchant token only when no
+  SKU has an active offer.
+
 ## [0.1.0] - 2026-09-24
 
 ### Added

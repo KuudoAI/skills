@@ -9,6 +9,18 @@ edits) · **minor** = behavioral additions (new sections, rules, triggers) ·
 **major** = contract changes (response shape, output format, scope).
 Every bump also updates `evals/evals.json` `skill_version`.
 
+## [0.4.1] - 2026-10-18
+
+### Fixed
+
+- Tool names match the live Kuudo Amazon Ads MCP (checked 2026-10-18). The
+  meta-tools are plain `search`, `get_schema`, and `execute`, without a
+  server-name prefix, since the prefix depends on how each client names the
+  connection. Sponsored Brands media status comes from `sb_describeMedia`
+  alone; the separate completion step the skill listed isn't on the server,
+  so its row and its approval gate are gone, and `sb_createAsset` keeps its
+  own gate.
+
 ## [0.4.0] - 2026-10-17
 
 ### Added

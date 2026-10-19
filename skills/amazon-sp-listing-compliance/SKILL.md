@@ -17,7 +17,7 @@ description: >-
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 compatibility: Uses the Listings Restrictions API (getListingsRestrictions) on an SP-API MCP server. Where the host also exposes Amazon's Seller Assistant (Amazon's Selling Partner connector does), it can confirm current rules live; without it the gate runs on the bundled regulatory map and says so. Without any server it can still classify and ask, but can't check gating.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Amazon listing compliance gate
@@ -75,15 +75,24 @@ On a code-mode SP-API MCP server:
   - optional: `conditionType` (`new_new`, `new_open_box`, `new_oem`,
     `refurbished_refurbished`, `used_*`, `collectible_*`, and others),
     `reasonLocale`, and `productType`
-- **Select the seller.** Call `list_identities`, filter to the seller's
-  merchant ID inside the sandbox, and call `set_active_identity` at the
-  top of **every** `execute` block that touches seller data. The selection
-  isn't isolated per session. Ask which seller unless the user already said;
-  never pick one yourself.
-- `getListingsRestrictions` needs `sellerId`: the seller's **merchant ID**,
-  which is the selected identity's `label`. Never substitute an account ID,
-  an MCID, or a guess. If it's genuinely unavailable, mark gating **"seller
-  to confirm"**.
+- **Select the seller.** Call `list_identities`, filter to the seller the
+  user named inside the sandbox, and call
+  `set_active_identity({"identity_id": …})` at the top of **every**
+  `execute` block that touches seller data: on HTTP nothing carries to the
+  next block. Ask which seller unless the user already said; never pick one
+  yourself.
+- `getListingsRestrictions` needs `sellerId`: the seller's **merchant ID**.
+  On a merchant-ID identity it's the `label`. On a managed-app identity
+  (`attributes.mode: "managed_app"`) the `label` is the store name and no
+  identity field carries the merchant ID. Read it from Product Pricing:
+  `pricing_getPricing` with `ItemType: "Sku"` and up to 20 of the seller's
+  SKUs returns it as `Product.Identifiers.SKUIdentifier.SellerId` for each
+  SKU with an active offer (`status: "Success"`). On 2026-10-18 the ID it
+  returned worked for `getListingsRestrictions`. If the seller has no
+  active SKU to use, ask for their merchant token (shown in Seller Central
+  account settings). Never substitute an account ID, an MCID, a store name,
+  an identity `id`, or a guess. If it's genuinely unavailable, mark gating
+  **"seller to confirm"**.
 
 **Seller Assistant** (Amazon's AI assistant for seller questions) is the live
 source for rule confirmation, but it is **not** an SP-API operation, so

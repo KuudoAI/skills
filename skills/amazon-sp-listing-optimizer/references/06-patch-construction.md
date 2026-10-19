@@ -9,7 +9,7 @@ Load this when constructing a `listings_patchListingsItem` body, especially for 
 `listings_patchListingsItem` corresponds to SP-API `PATCH /listings/2021-08-01/items/{sellerId}/{sku}`.
 
 **Required parameters:**
-- `sellerId` — the seller's merchant ID (e.g., `A3433YFPRAEA9F`); on a server with identity selection, this is the selected identity's `label`
+- `sellerId` — the seller's merchant ID (e.g., `A3433YFPRAEA9F`); on a server with identity selection, it's the selected identity's `label` only when that label is a merchant ID. A managed-app identity's label is a store name; read the merchant ID from `pricing_getPricing` as `11-tool-access.md` shows
 - `sku` — the SKU to patch
 - `marketplaceIds` — array containing the marketplace ID (e.g., `['ATVPDKIKX0DER']`)
 - `productType` — the product type from `listings_getListingsItem` summaries (e.g., `APRON`, `BOOK_DOCUMENT_STAND`, `TABLE_RUNNER`)

@@ -42,25 +42,83 @@ is no fuzzy matching.
 
 ## Seller and marketplace
 
-The seller-selection tools are callable from `execute`: `list_identities`,
-`set_active_identity`, `get_active_region`, and `list_marketplaces`. There is
-no `get_active_identity`. With nothing selected, calls fail with `Provider
-identity selection is required.`
+The selection tools are `list_identities`, `set_active_identity`,
+`list_marketplaces`, `set_active_marketplace`, `get_active_marketplace`,
+`set_active_region`, `get_active_region`, and `clear_selection`. No tool
+reports which identity is selected, so set it rather than checking it. With
+nothing selected, calls fail with `Provider identity selection is required.`
+A key that reaches a single identity is the exception: its calls ran as
+that identity with nothing selected (2026-10-18, even right after
+`clear_selection`), so a call that works doesn't prove a selection.
 
 1. **Ask which seller** unless the user already said; never pick one
    yourself. `list_identities` takes no arguments and returns
-   `{"result": [{id, label, attributes: {account_id, declared_region}}]}`.
-   An account can see 150 or more identities, so filter to the user's
-   merchant ID inside the sandbox and return only the match. If one merchant
-   ID maps to several identities (one per region), ask which marketplace.
-2. The identity's `label` is the merchant ID, which is the Listings API's
-   `sellerId`. Never substitute an account ID or a guess.
-3. **The selection isn't private to your session.** Call
+   `{"result": [{id, label, attributes}]}` in one of two shapes, told apart
+   by `attributes.mode`:
+   - **Managed-app identity** (`mode: "managed_app"`): `label` is the store
+     or business name, not a merchant ID. `attributes` carries `region`
+     (`na`, `eu`, or `fe`), `selling_partner_type`,
+     `authorization_marketplace`, and `marketplaces[]` (each with
+     `marketplaceId`, `countryCode`, `storeName`, `region`, and more).
+   - **Merchant-ID identity:** `label` is the seller's merchant ID, and
+     `attributes` carries `account_id` and `declared_region` (a country
+     code, not the SP region).
+
+   An account can see many identities, so filter inside the sandbox and
+   return only the match. If one seller maps to several identities (one per
+   region), ask which marketplace.
+2. **`sellerId` is the merchant ID.** On a merchant-ID identity it's the
+   `label`. A managed-app identity doesn't carry one, and the Sellers API
+   doesn't return it, but Product Pricing does. Call `pricing_getPricing`
+   with `ItemType: "Sku"` and up to 20 of the seller's SKUs (from the user,
+   `fba-inventory_getInventorySummaries`, or `orders_getOrderItems`). Each
+   SKU with an active offer comes back with `status: "Success"` and the
+   merchant ID in `Product.Identifiers.SKUIdentifier.SellerId`; a SKU
+   without one returns `ClientError`.
+
+   ```python
+   await call_tool("set_active_identity", {"identity_id": IDENTITY_ID})
+   await call_tool("set_active_marketplace", {"marketplace_id": MKT})
+   r = await call_tool("pricing_getPricing", {
+       "MarketplaceId": MKT, "ItemType": "Sku", "Skus": SKUS[:20]})
+   ids = [p["Product"]["Identifiers"]["SKUIdentifier"].get("SellerId")
+          for p in r.get("payload", []) if p.get("status") == "Success"]
+   return {"seller_ids": sorted(set(ids)), "active_skus": len(ids)}
+   ```
+
+   On 2026-10-18 the ID it returned worked for `searchListingsItems`,
+   `getListingsItem`, `getDefinitionsProductType`, and
+   `getListingsRestrictions`. If no SKU has an active offer, ask the user
+   for their merchant token (Seller Central account settings). Never
+   substitute an account ID, a store name, an identity `id`, or a guess;
+   without `sellerId`, Amazon answers 400 `InvalidInput`.
+3. **Nothing carries to the next `execute`.** On HTTP a selection lasts only
+   for the block that makes it. Call
    `set_active_identity({"identity_id": …})` at the top of every `execute`
-   block that touches seller data, and always in a write block.
+   block that touches seller data, and always in a write block. The
+   selection tools also answer as direct calls, but a selection made that
+   way doesn't reach a later block.
 4. Confirm the marketplace: US `ATVPDKIKX0DER`, UK `A1F83G8C2ARO7P`, DE
-   `A1PA6795UKMFR9`, JP `A1VC38T7YXB528`. `get_active_region` follows the
-   identity.
+   `A1PA6795UKMFR9`, JP `A1VC38T7YXB528`. It must be one the identity
+   covers: a managed-app identity lists them in `attributes.marketplaces[]`,
+   all in its `attributes.region`. Selecting an identity clears an earlier
+   marketplace or region, and with none set the region is `na`, so call
+   `set_active_marketplace({"marketplace_id": …})` after the identity in the
+   same block. It sets the region (`Routing marketplace set to
+   A1F83G8C2ARO7P in region eu.`) and leaves each operation's own
+   `marketplaceIds` as you pass them. The server doesn't check the
+   marketplace against the identity: on 2026-10-18 it routed an `na`
+   identity to UK without complaint, and every call then failed with 403
+   `Unauthorized`, "Access to requested resource is denied." A seller's
+   account in another region is a separate identity.
+   - `set_active_region` must agree with a selected marketplace, or it fails
+     with `Marketplace 'A1F83G8C2ARO7P' is served by region 'eu', not
+     explicitly selected region 'na'.`
+   - `get_active_region` answers `na` even with nothing selected, so it
+     doesn't prove a selection was made.
+   - `list_marketplaces` maps each marketplace ID to its region;
+     `clear_selection` forgets the identity, marketplace, and region
+     together.
 
 Don't pass `entityId` or tokens in operation params. Unknown keys are
 accepted silently, so their presence proves nothing.
@@ -68,19 +126,29 @@ accepted silently, so their presence proves nothing.
 A 404 on `getListingsItem` for a SKU the user is sure exists usually means
 the wrong identity is active, or the SKU belongs to another seller on the
 ASIN. Check with `searchListingsItems` filtered by ASIN before concluding it
-is missing.
+is missing. An FBA inventory SKU can also have no listing in that
+marketplace; `searchListingsItems` with `identifiers: [SKU]` and
+`identifiersType: "SKU"` then returns 0 results.
+
+Pass the SKU exactly as the seller has it. The server encodes path
+parameters itself: SKUs with spaces, parentheses, commas, or `&` work as
+they are, and a SKU you encode first fails with 404 (`SKU 'BLUE%20MUG' not
+found`).
 
 ## Sandbox limits
 
-- **30 seconds** and at most **50 `call_tool()` calls** per `execute`
-  block. Output over about **30 KB** is truncated.
-- `import json` (and `re`, `math`) explicitly; they aren't preloaded.
-  `time`, `collections`, and `itertools` aren't available, and
+- At most **50 `call_tool()` calls** per `execute` block; call 51 fails and
+  the block returns nothing. An earlier build also stopped blocks at 30
+  seconds; on 2026-10-18 a 45-call block ran about 75 seconds. Output over
+  about **30 KB** is truncated.
+- `import json` (and `re`, `math`, `collections`, `itertools`) explicitly;
+  they aren't preloaded. `time`, `statistics`, `csv`, `io`, `gzip`,
+  `base64`, `functools`, and `urllib` aren't available, and
   `datetime.now()` fails, so write today's date as a literal. There's no
   `asyncio.sleep`, network, or file I/O.
-- These fail: `%` formatting, dict union (`a | b`), and `next()` over a
-  generator expression. Use f-strings, `d.update(...)`, and a list
-  comprehension with `[0]`.
+- These fail: `%` formatting, `str.format()`, dict union (`a | b`), and
+  `next()` over a generator expression. Use f-strings, `{**a, **b}` or
+  `d.update(...)`, and a list comprehension with `[0]`.
 - Errors arrive as plain strings such as `Invalid params: Error calling tool
   'X': HTTP error 400: …`. Catch them and return Amazon's `errors[]`
   verbatim.

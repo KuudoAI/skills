@@ -4,6 +4,12 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [2.2.1] - 2026-10-18
+
+### Fixed
+- Profile lookup uses `ac_listProfiles`, the profile-listing tool the live Kuudo Amazon Ads MCP exposes (checked 2026-10-18); the lookup tools the skill named aren't on the server.
+- Profile setup no longer says `set_active_profile` rejects unknown IDs with a suggestion. It accepts any value, so the skill now confirms the ID in `ac_listProfiles` first and asks when more than one profile matches.
+
 ## [2.2.0] - 2026-10-17
 
 ### Added

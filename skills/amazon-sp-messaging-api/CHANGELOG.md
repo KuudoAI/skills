@@ -13,6 +13,36 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [0.2.1] - 2026-10-18
+
+### Fixed
+
+- The `set_active_identity` calls in `references/tool-access.md` and
+  `references/attachments.md` pass `identity_id`, the parameter the live
+  Kuudo Amazon SPAPI MCP requires (checked 2026-10-18), instead of `id`.
+- Identity and region selection match the live server. On HTTP a selection
+  lasts only for the `execute` block that sets it, so the "not isolated per
+  session" note now describes the earlier build and the one-block rule;
+  re-selecting before every send block stays the rule. The tools table adds
+  `set_active_marketplace`, `get_active_marketplace`, and `clear_selection`
+  and drops "callable only in `execute`" (they also answer as direct calls,
+  without carrying into a later block). The order's marketplace is set
+  with `set_active_marketplace` after the identity in every block, because
+  selecting an identity resets routing to `na`; it sets the region, and
+  `set_active_region` must agree with it. `get_active_region` answers `na`
+  with nothing selected.
+- The marketplace must be one the identity covers. On a live seller
+  (2026-10-18) the server routed an identity to another region's
+  marketplace without checking, and every call then failed with 403
+  "Access to requested resource is denied.", the same text the seller's
+  missing Buyer Communication role produced on `getMessagingActionsForOrder`
+  and `GetAttributes`. The 403 row now says to rule out the marketplace
+  first. A key with a single identity runs without a selection, so a
+  working call doesn't prove one.
+- `list_identities` returns two shapes, told apart by `attributes.mode`; on
+  a managed-app identity the `label` is the store name, not the merchant
+  ID.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

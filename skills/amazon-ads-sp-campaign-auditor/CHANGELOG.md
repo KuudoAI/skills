@@ -4,6 +4,14 @@ All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
 
+## [0.4.1] - 2026-10-18
+
+### Fixed
+
+- `references/mcp-canonical-fields.md` names only tools the Kuudo Amazon Ads MCP exposes, checked live on 2026-10-18. The account lookup is `allv1_QueryAdvertiserAccount`, profile selection uses `ac_listProfiles` and `set_active_profile`, and the region comes with the identity. Field IDs come from Amazon's Reporting API v1 documentation, report creation validates them, and the reference lists the 400 codes it returns.
+- The finished report is downloaded from the signed URL in the retrieval response. No server-side copy is stored, so the report job is the only thing the skill creates (Purpose and workflow steps 2–3).
+- Evals 2, 3, 4, and 6 check the live flow: field errors fixed before resubmitting, Amazon's error classes, the cost field from the v1 metrics documentation, and the live account-lookup tool.
+
 ## [0.4.0] - 2026-10-17
 
 ### Added

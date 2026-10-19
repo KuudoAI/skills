@@ -17,7 +17,7 @@ description: >-
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
 compatibility: Requires an SP-API MCP server exposing Fulfillment Inbound v2024-03-20 operations, plus the v0 getLabels and getBillOfLading operations for shipment labels. Without a server the skill can only explain the process.
 metadata:
-  version: "0.2.1"
+  version: "0.2.2"
 ---
 
 # Amazon FBA inbound
@@ -74,12 +74,16 @@ enable the Fulfillment Inbound operations (and the v0 ones, for labels and
 bills of lading) in their server's configuration. Do not substitute other tools
 and do not invent results.
 
-**Account context. Nothing works until an identity is selected.**
+**Account context. Select an identity before any seller call.**
 
 1. Call `list_identities` (no arguments). It returns
-   `{"result": [{id, label, ...}]}`, where `label` is the merchant ID. Filter
-   by label **inside** `execute` and return only the match. Agency tokens
-   list 150+ sellers; don't pull the whole list into context.
+   `{"result": [{id, label, attributes}]}`. On a merchant-ID identity
+   `label` is the merchant ID; on a managed-app identity
+   (`attributes.mode: "managed_app"`) it's the store name, and
+   `attributes.marketplaces[]` lists the marketplaces it sells in
+   (`references/tool-access.md`). Filter **inside** `execute` and return
+   only the match. Agency tokens list 150+ sellers; don't pull the whole
+   list into context.
 2. Agency tokens can see many sellers. If the token has exactly one
    identity, use it and say which one. Otherwise, if the user hasn't said
    which seller, give counts by country (never the list) and ask for the
@@ -87,11 +91,10 @@ and do not invent results.
    answer with whatever seller happens to be active. If one merchant ID
    maps to several regions, ask which marketplace.
 3. **Call `set_active_identity` at the top of every `execute` block that
-   touches seller data.** On the live server the selection is shared across
-   MCP sessions, not isolated. Another session can change it, and a session
-   that never selected anyone can silently get another seller's data.
-   Re-selecting in the same block keeps each call pinned to the right
-   seller.
+   touches seller data.** On HTTP nothing carries to the next block: the
+   server keeps a selection only for the block that makes it (an earlier
+   build shared it across sessions instead). Re-selecting in the same block
+   keeps each call pinned to the right seller.
 4. A 403 `Unauthorized` means the seller's app authorization is inactive or
    lacks the Amazon Fulfillment role. Don't retry. Tell the seller to
    re-authorize in Seller Central (Manage Your Apps) or reconnect through
@@ -102,9 +105,13 @@ and do not invent results.
 - Marketplace IDs are never injected for you. Pass them only where an
   operation asks for one: `createInboundPlan`, prep, compliance, and item
   labels.
-- The marketplace must sit in the active region. Check with
-  `get_active_region` and `list_marketplaces`. India (`A21TJRUUN4KGV`) is
-  `eu`.
+- The marketplace must be one the identity covers (a managed-app identity
+  lists them in `attributes.marketplaces[]`). Call `set_active_marketplace`
+  for it after the identity in the same block; it sets the region. The
+  server doesn't check the marketplace against the identity, and a
+  mismatch fails every call with 403 "Access to requested resource is
+  denied." `list_marketplaces` maps each marketplace to its region.
+  India (`A21TJRUUN4KGV`) is `eu`.
 - `listInboundPlans` also returns **AWD** plans. `getInboundPlan` rejects
   those with a 400 ("not supported for Amazon Warehousing and
   Distribution"). Label them AWD and leave them out; this skill doesn't
@@ -317,8 +324,9 @@ Page each list until `pagination.nextToken` is empty, passing it back as
    **ACTIVE plans:** open them with `getInboundPlan` in `lastUpdatedAt`
    order, **not `createdAt`**. A plan created months ago can still hold a live shipment,
    and live shipments keep updating. Open every plan updated in the last 60
-   days, 20 or fewer per `execute` (each block has a 50-call and 30-second
-   limit; this is phase 2 of the plan overview pattern). Sort
+   days, 20 or fewer per `execute` (each block has a 50-call limit, and the
+   build measured on 2026-09-24 also a 30-second one; this is phase 2 of
+   the plan overview pattern). Sort
    each into one bucket:
    - **draft:** no shipments.
    - **awaiting a decision:** a placement option is `OFFERED` and not yet
@@ -383,7 +391,7 @@ yes.
 | `updateInboundPlanName`, `updateShipmentName` | Renames the seller's team sees in Seller Central; reversible, no fee | Show, then yes |
 | `cancelSelfShipAppointment` | Gives up a booked FC slot | Its own ask: show the appointment and reason, then yes |
 | `generatePackingOptions`, `generatePlacementOptions`, `generateTransportationOptions`, `generateDeliveryWindowOptions`, `generateSelfShipAppointmentSlots`, `generateShipmentContentUpdatePreviews`, `createMarketplaceItemLabels`, and every `list*` and `get*` read (including `getInboundOperationStatus`, `getItemEligibilityPreview`, and v0 `getLabels` and `getBillOfLading`) | Produce options, quotes, previews, label PDFs, or data. Nothing is committed and nothing is charged | Run without asking |
-| `set_active_identity`, `set_active_region`, `clear_selection` | Server selection, shared across sessions; it decides whose account every later call touches | Only for the seller the user named, or the token's only identity (section 1). Never switch sellers on your own |
+| `set_active_identity`, `set_active_marketplace`, `set_active_region`, `clear_selection` | Server selection for the current `execute` block; it decides whose account every call in that block touches | Only for the seller the user named, or the token's only identity (section 1). Never switch sellers on your own |
 
 **Show, then yes:**
 
