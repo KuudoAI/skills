@@ -66,10 +66,10 @@
     },
     {
       "name": "amazon-ads-marketing-cloud",
-      "description": "Use whenever the user works with Amazon Marketing Cloud (AMC): SQL, workflows, audiences (rule-based or lookalike), playbooks (frequency, off-Amazon conversions, keyword clustering, lookalikes, programmatic audience framework, enhanced scoring, CLTV), custom attribution (first/last-touch, linear, position-based), first-party data uploads, ad-product filtering, AMC sandbox, cross-channel overlap, reach, frequency, or NTB analysis. Triggers: \"AMC\", \"Amazon Marketing Cloud\", \"AMC SQL\", \"AMC workflow\", \"AMC audience\", \"AMC query\", \"AMC playbook\", DSP audiences, attribution model, path-to-conversion, ad frequency, NTB, DOOH, Sponsored TV incremental reach, Sponsored Brands, Brand Store insights, Events Manager / CAPI, Audience Segment Insights, Amazon Your Garage, or SQL referencing tables like sponsored_ads_traffic, dsp_impressions, dsp_clicks, amazon_attributed_events_by_traffic_time, conversions_all, conversions_with_relevance.\n",
+      "description": "Use whenever the user works with Amazon Marketing Cloud (AMC): writing, debugging, or running AMC SQL and workflows; planning, building, activating, and measuring audiences (rule-based or lookalike; cart abandoners, detail-page viewers, lapsed, repeat, or high-value customers; post-Prime Day or seasonal audiences; DSP or Sponsored Display targeting; Sponsored Products or Sponsored Brands audience bid boosts); and analyses such as time to conversion, path to conversion, ad-type overlap, reach and frequency, new-to-brand, custom attribution, and bid boost performance. Also use when someone asks who to retarget, suppress, or expand to, or whether an audience or AMC insight drove incremental sales, even without saying \"AMC\". Covers AMC playbooks, first-party data uploads, the AMC sandbox, Events Manager, and SQL on tables like sponsored_ads_traffic, dsp_impressions, amazon_attributed_events_by_traffic_time, conversions_all, or the _for_audiences variants.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "0.4.0"
+        "version": "0.5.0"
       },
       "status": "reference",
       "origin": "first-party",

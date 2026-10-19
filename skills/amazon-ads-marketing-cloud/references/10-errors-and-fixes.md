@@ -1,6 +1,11 @@
 # Error Envelope Cookbook
 
-`amazon_ads_mcp` now emits two distinct envelope shapes depending on where in the request lifecycle the failure occurred. The good shape (`mcp_input_validation`) is self-describing and actionable. The legacy shape (`internal_error`) is still overloaded across multiple precondition / sandbox / upstream failures and requires inspecting `details[0]` to recover the actual cause.
+Failures from the Kuudo Amazon Ads MCP come in a few shapes depending on how the tool was called and where the failure occurred. Called directly by name (observed 2026-10-18), a tool fails with an MCP protocol error, covered first. The two JSON envelope shapes after it are documented from earlier server versions; read their fields the same way if you see them. The good shape (`mcp_input_validation`) is self-describing and actionable. The legacy shape (`internal_error`) is still overloaded across multiple precondition / sandbox / upstream failures and requires inspecting `details[0]` to recover the actual cause.
+
+## Direct tool calls — MCP protocol errors (observed)
+
+- `Invalid params: Error calling tool '<tool>': HTTP error <status>: <reason> - {'code': '<status>', 'details': '<Amazon message>'}` for a failure at Amazon's edge, for example `HTTP error 403: Forbidden - {'code': '403', 'details': 'Unauthorized request.'}`. Read `details` the way you would read `upstream_message`.
+- `Not found: Unknown tool: '<name>'` when the tool doesn't exist on the server. `search` for the current name; don't guess.
 
 ## Shape 1 — `mcp_input_validation` (good — self-describing)
 
@@ -63,11 +68,14 @@ These are MCP-server-local — Amazon never received the request.
 
 | `details[0].issue` (or substring) | Root cause | Action |
 |---|---|---|
-| "No active identity" / "identity not set" | Identity ContextVar cleared between requests | Call `set_active_identity` first thing in the current execute block. See `tool-gotchas.md` → Identity persistence. |
+| "No active identity" / "identity not set" | Identity ContextVar cleared between requests | Call `set_active_identity` first thing in the current execute block. See `02-mcp-tool-behaviors.md` → Identity persistence. |
 | "No active profile" / "profile not set" | Profile not activated for the current identity | `ac_listProfiles` → `set_active_profile` with the right profileId / marketplaceId. |
 | "advertiserTypes does not include DSP" / table-not-found on `dsp_*` | SP-only instance, SQL references DSP tables | Inspect `amc_getInstance.advertiserTypes`; if `["SPONSORED_ADS"]`, rewrite SQL to use only `sponsored_ads_*` and `amazon_attributed_events_by_*` tables. |
-| "Schema mismatch" / "column not found" | SQL references a column that doesn't exist on this instance / dataset version | Query Chroma `chroma_query_documents("dataset table columns")` to confirm the live schema; the table reference docs in the `amazon_ads` collection are authoritative. |
-| "Invalid time window format" | Date-only string in `timeWindowStart`/`End` | Use full datetime: `yyyy-MM-dd'T'HH:mm:ss`. |
+| "Schema mismatch" / "column not found" | SQL references a column that doesn't exist on this instance / dataset version | Check the instance's columns with `amc_listDataSources`, which is authoritative for this instance; Atlas's data-source guides (`topic: amc`) explain them. |
+| 400 `Cannot deserialize value of type java.time.LocalDateTime from String "2026-10-01"` | Date-only string in `timeWindowStart`/`End` | Use full datetime: `yyyy-MM-dd'T'HH:mm:ss`. |
+| 400 `entityId provided is null` | `Amazon-Advertising-API-AdvertiserId` missing from the call | Pass the advertiser and marketplace headers on every `amc_*` call; they don't ride from `set_active_profile`. |
+| `Unknown tool: '<name>'` | The tool isn't on this server | `search` for the current name. Don't guess. |
+| 400 `Exactly one of workflowId or workflow must be specified.` | Both `workflow` and `workflowId` on `amc_createWorkflowExecution` | Pass one: `workflow` for ad-hoc SQL, `workflowId` for a saved workflow. |
 
 ## Authorization failures
 
@@ -75,6 +83,7 @@ These are upstream — Amazon returned 401 / 403. `upstream_status` will be set.
 
 | `upstream_message` (or substring) | Root cause | Action |
 |---|---|---|
+| 403 `Unauthorized request.` | The identity has no access to this instance or entity | Use an instance from this identity's own `amc_listInstances`, or ask the user for access. |
 | "Terms and conditions must be accepted to continue" | Per-instance terms not accepted by this advertiser/entity | Run the terms acceptance flow (SKILL.md → Troubleshooting → Terms acceptance flow). Don't auto-accept. |
 | "Access denied" / "Unauthorized advertiser" | Entity ID on the request doesn't match the entity that owns the instance | Re-run preflight: confirm `ac_listProfiles` returned the entity that actually owns the instance. Vendor and seller entities are distinct even under the same merchant account. |
 | "Token expired" / 401 | Refresh token cycled mid-session | Re-call `set_active_identity` to mint a fresh access token. If the MCP refresh middleware is doing this automatically, this error indicates the upstream rejected the new token — check the refresh token in env. |
@@ -85,14 +94,16 @@ These are upstream — Amazon returned 401 / 403. `upstream_status` will be set.
 |---|---|---|
 | "Aggregation threshold not met" | A `GROUP BY` produced a cell below the privacy threshold (typically 100 distinct users) | Add `HAVING COUNT(DISTINCT user_id) >= 100`; or broaden the grouping (e.g., remove a column from `GROUP BY`); or set `privacyFilteringBehavior: "REMOVE_VALUES"` to keep rows and null the suppressed values. |
 | Empty result with no error | Real query ran, returned zero rows | Verify with the file-size check (`file size <= header line length` = empty). Then walk Empty Results troubleshooting in SKILL.md. |
-| "Output contains raw user_id" | SQL has `user_id` in a SELECT list outside the audience query pattern | Move `user_id` to COUNT / JOIN / WHERE only. Audience queries are the exception — they must `SELECT DISTINCT user_id` from a `_for_audiences` table variant. |
+| `Non-viewable column user_id was included in the query output` | SQL has `user_id` in a SELECT list outside the audience query pattern | Move `user_id` to COUNT / JOIN / WHERE only. Audience queries are the exception — they must `SELECT DISTINCT user_id` from a `_for_audiences` table variant. |
+| `Non-viewable column <name> was included in the query output` for another column | `SELECT *`, or a non-viewable column in the output | Name the columns you need, or aggregate the column with `COUNT`, `COUNT_DISTINCT`, or `APPROX_COUNT_DISTINCT`. |
+| `Output from 1 data source(s) (\'conversions_all_for_audiences\') cannot be received by the customer` | A real run of an ordinary workflow read an audience-only table (it passes a dry run) | Use that table only in audience queries; size on `conversions`, or base `conversions_all` with the paid feature. `amc_listDataSources` marks such tables `outputAvailable: false`. |
 
 ## Execution failures
 
 | Symptom | Root cause | Action |
 |---|---|---|
 | Workflow `FAILED` with no result, `dryRun: false` | SQL parse error, or runtime error after execution started | Re-submit with `dryRun: true` — failures surface immediately at parse time without burning execution slots. |
-| `RUNNING` for >30 minutes | Genuine long-running query (cross-join, no time filter, etc.) — or stuck | Check the SQL for missing time window in WHERE clauses, missing JOIN keys, or accidental Cartesian products. AMC `optimize-amc-sql-queries` doc in Chroma covers the usual culprits. |
+| `RUNNING` for >30 minutes | Genuine long-running query (cross-join, no time filter, etc.) — or stuck | Check the SQL for missing time window in WHERE clauses, missing JOIN keys, or accidental Cartesian products. "Optimize AMC SQL queries" in Atlas covers the usual culprits. |
 | Pre-signed URL fetch returns 403 / SignatureDoesNotMatch | URL expired (10-min limit) | Re-call `amc_getWorkflowExecutionDownloadUrls` for a fresh URL. Never reuse an expired URL. |
 
 ## Diagnostic flow
