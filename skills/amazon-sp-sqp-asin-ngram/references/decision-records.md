@@ -2,6 +2,14 @@
 
 Lead with up to three distinct actionable decisions by default (user-adjustable), then concise holds/no-change findings and supporting tables. A table of diagnostic `investigate` rows is not an action queue. One decision selects one primary change. Do not replace a decision with a checklist of price, shipping, reviews, images and title investigations.
 
+## Seller-facing explanation
+
+The main answer should let a seller choose without decoding a statistical or API report: what to change, why, how uncertain the evidence is, and what to watch. Explain what uncertainty means for this choice. “The intervals overlap” or “the gap could be noise” alone is insufficient: say that a few purchases could change the apparent difference, so the data does not yet establish a lasting problem. Explain the independent reason for any proposed edit, such as confirmed missing dimensions.
+
+Use “searches containing large” instead of “theme cohort”, “other relevant searches” instead of “disjoint remainder”, and “first bullet” instead of `bullet_point[0]` in the main recommendation. Do not replace clicks with shoppers: one shopper can click more than once. Do not convert a statistical range into a promised sales range or proof that there is no difference.
+
+Retain exact selectors, gates, indices, membership IDs and Wilson intervals in structured records or a clearly separated technical appendix. They support audit and execution; they are not the explanation. Show them in the main response only when the user asks for that detail, defining unfamiliar terms and why they matter. Keep the primary answer to the decision and a few supporting numbers rather than filling it with every available limitation.
+
 ## Evidence before action
 
 Fetch available decisive evidence once per ASIN/marketplace and reuse it. Record source, date, coverage and confirmation status separately for product facts and listing presentation. Catalog is useful discovery evidence but merges multiple sources: disagreement with a listing does not prove the listing is wrong. `product_fact_correction` requires a seller-confirmed specification or the user's explicit confirmation for this variant. Repetition of the disputed listing claim is not independent confirmation. Otherwise return `hold_missing_evidence` naming the single fact to confirm.

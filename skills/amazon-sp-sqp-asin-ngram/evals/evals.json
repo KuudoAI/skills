@@ -630,7 +630,7 @@
         },
         {
           "name": "check-3",
-          "condition": "Explains the observed gap could be noise and that approximate 95% intervals 2.3\u201310.5% and 5.8\u201316.7% overlap"
+          "condition": "Explains in everyday language why the small purchase counts make the apparent gap uncertain and why confirmed missing dimensions still justify the proposed edit; interval numbers alone are not an explanation"
         },
         {
           "name": "check-4",
@@ -639,6 +639,10 @@
         {
           "name": "check-5",
           "condition": "Does not replace the action with a generic checklist or duplicate overlapping-theme edits"
+        },
+        {
+          "name": "check-6",
+          "condition": "Does not require statistical or API vocabulary to understand the recommendation: technical intervals, indices, gates and selectors stay in supporting detail rather than the main explanation"
         }
       ]
     },
