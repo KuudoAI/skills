@@ -132,7 +132,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Requires an Amazon Ads MCP exposing allv1_QueryAdvertiserAccount, allv1_AdsApiv1CreateReport, and allv1_AdsApiv1RetrieveReport (such as the Kuudo Amazon Ads MCP), plus a client-side execution facility that can fetch an HTTPS URL and parse CSV.",
       "metadata": {
-        "version": "0.5.1"
+        "version": "0.5.2"
       },
       "status": "reference",
       "origin": "first-party",
@@ -288,10 +288,10 @@
     },
     {
       "name": "amazon-sp-sqp-asin-ngram",
-      "description": "ASIN-level Amazon SQP / organic search diagnostics tied to search queries and n-gram themes: impression/click/purchase share, conversion index, funnel gaps, shipping and price friction, variant cannibalization, and lift-aware opportunity ranking. Use when users analyze Search Query Performance per ASIN, need SKU-specific SEO/PDP/ops recommendations from SQP, want RankScore-style prioritization, report QA badges for findings, stop-word hygiene for n-grams, or ASIN+query decision records alongside ngram-keyword-framework query-level rules. Not a substitute for Ads-only n-gram bid rules — use ngram-keyword-framework for sponsored search-term rollups.\n",
+      "description": "Analyze Amazon Search Query Performance (SQP) per ASIN using funnel counts, query-product relevance, product evidence and n-gram themes. Use for Brand Analytics exports, per-ASIN search visibility or organic-rank questions, listing/offer diagnostic hypotheses and opportunity prioritization. Explain what SQP can and cannot establish about organic position. For Ads-only search terms, bids or negatives, use amazon-ads-sp-search-term-explorer instead.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
-        "version": "1.4.0"
+        "version": "2.0.0"
       },
       "status": "reference",
       "origin": "first-party",
