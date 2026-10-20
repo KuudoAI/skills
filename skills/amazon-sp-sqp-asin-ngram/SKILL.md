@@ -29,6 +29,8 @@ For Ads-only search-term, bid or negative-keyword work, use `amazon-ads-sp-searc
 4. **Choose the decision.** Apply [decision records](references/decision-records.md) and [ASIN rules](references/asin-rules.md). A specific verified content gap plus a localized comparison can justify one exact listing test; a seller-confirmed contradiction can justify a correction even with thin SQP. A metric gap alone cannot. Retrieve accessible decisive evidence; otherwise name one blocker. Keep no-change decisions brief.
 5. **Report and hand off.** Default to at most three distinct actions, deduplicating overlapping themes and edits. Include an Amazon attribute/index selector, before/after, evidence, affected cohort and comparable-period measure. Explain that gaps could be noise. Retain supporting query diagnostics using [row priority and QA](references/opportunity-score-and-qa.md); `investigate` does not itself require an edit. Use the additive `schema_version: "2.1"` contract, retaining 2.0 diagnostic field meanings and adding `theme_rollups`/`theme_decisions`. Read the [Amazon source ledger](references/amazon-sources.md) for provenance and research limits.
 
+Apply user-supplied corrections to the working rows before aggregation. Build every reported table from that same corrected dataset; a missing value must not survive as an earlier total in the summary. The synthetic example below is never a substitute for calculating the supplied data.
+
 Single-query requests can use row diagnostics directly, without claiming a recurring pattern. Withhold a calculation only when its inputs are missing/invalid; preserve reported values and disclose conflicts.
 
 ## Example: one size clarification, not a checklist
