@@ -2,9 +2,11 @@
 
 These are disclosed analyst conventions, not Amazon ranking or expected-lift models.
 
+These row priorities remain diagnostic details. For multi-query requests, lead with [theme decisions](decision-records.md) using [pooled theme gates](theme-analysis.md). Thin rows remain eligible to contribute to a sufficient theme.
+
 ## Sufficiency and priority
 
-Default minimums: **200 total query impressions AND 20 ASIN clicks** per query–ASIN row. Inclusive comparisons; the user may change either. Record effective thresholds. Missing counts, unresolved marketplace or incompatible periods mean insufficient evidence. These minimums are triage rules, not statistical significance; two purchases can remain weak evidence even when the click threshold passes. Restrict each proposed test to the evidence actually available.
+Default minimums: **200 market query impressions AND 20 ASIN clicks** per query–ASIN row. Inclusive comparisons; the user may change either. Record effective thresholds. Missing counts, unresolved marketplace or incompatible periods mean insufficient evidence. These minimums are triage rules, not statistical significance; two purchases can remain weak evidence even when the click threshold passes. Restrict each proposed test to the evidence actually available.
 
 Apply this exhaustive table after evidence assessment:
 

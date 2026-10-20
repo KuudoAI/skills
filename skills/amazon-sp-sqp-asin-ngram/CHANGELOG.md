@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0] - 2026-10-20
+
+- Lead with theme-level decisions and exact Amazon attribute proposals; retain 2.0 query diagnostics under additive schema 2.1.
+- Add a Python 3.10+ standard-library helper for deduplicated 1/2/3-gram cohorts, disjoint comparisons, configurable gates, union totals and approximate Wilson intervals.
+- Require seller/user confirmation for factual corrections; distinguish complete listing coverage from catalog facts and make uncertainty explicit.
+- Add paired action/no-change fixtures, numerical tests and behavioral regressions; no automatic listing writes.
+
+
 All notable changes to this skill are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com); versions are semver and
 must match `metadata.version` in SKILL.md.
