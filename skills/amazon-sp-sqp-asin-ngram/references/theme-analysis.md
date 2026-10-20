@@ -38,6 +38,8 @@ Reject inconsistent scopes, conflicting duplicate data, and ASIN counts exceedin
 5. Alias grams with identical complete membership and relevance. The helper chooses the longest phrase then lexical order; choose the most meaningful alias for display and retain the rest. Never combine different exclusion sets silently.
 6. Overall reach comes from the union of rows (`scope_totals`), never the sum of overlapping themes. Market totals in different ASIN scopes are repeated benchmarks, not additive portfolio totals.
 
+The helper output is supporting analysis, not the seller-facing answer. Present it using the [seller-answer contract](decision-records.md).
+
 The helper returns `schema_version: "2.1"`, effective thresholds, original normalized rows, duplicate provenance, scope totals, and theme rollups. It performs arithmetic, not evidence assessment or copy recommendations. Use [decision records](decision-records.md) next.
 
 ## Gates and uncertainty
@@ -54,7 +56,7 @@ The helper returns `schema_version: "2.1"`, effective thresholds, original norma
 
 Volume requires both impressions and clicks. Theme and remainder must pass volume, recurrence and purchase gates for a localized-gap candidate. Pool thin rows before these tests. A dominant query requires the remaining theme to pass all gates and its index threshold; otherwise do not claim recurrence. Report offsetting winners/losers, not just aggregate weakness. Broad weakness in theme and remainder, or no valid remainder, does not establish a localized content problem.
 
-Output 95% Wilson intervals for ASIN purchase-per-click in theme and remainder. For `p = purchases/clicks`, `z = 1.959963984540054`, center is `(p + z²/(2n))/(1+z²/n)` and half-width is `z*sqrt(p*(1-p)/n + z²/(4n²))/(1+z²/n)`. These are descriptive binomial approximations: SQP event counts do not establish independent click trials. They are unavailable for unknown counts, zero clicks or purchases exceeding clicks; retain valid event ratios and disclose that limitation. Never cap counts to force an interval.
+In supporting output, retain 95% Wilson intervals for ASIN purchase-per-click in theme and remainder. For `p = purchases/clicks`, `z = 1.959963984540054`, center is `(p + z²/(2n))/(1+z²/n)` and half-width is `z*sqrt(p*(1-p)/n + z²/(4n²))/(1+z²/n)`. These are descriptive binomial approximations: SQP event counts do not establish independent click trials. They are unavailable for unknown counts, zero clicks or purchases exceeding clicks; retain valid event ratios and disclose that limitation. Never cap counts to force an interval.
 
 In decision text, explain the practical consequence of uncertainty in everyday language: small purchase counts can make an apparent difference unstable, so the numbers alone do not establish a lasting problem or justify a rewrite. Keep interval values and whether they overlap in the supporting calculations; neither overlap nor non-overlap alone proves a reliable effect. Gates and intervals do not prove causation or justify a content edit without a verified gap. For the size fixture, 6/120 has an interval of 2.3–10.5%, and 12/120 has 5.8–16.7%: the edit is supported by missing confirmed dimensions, not established performance harm.
 

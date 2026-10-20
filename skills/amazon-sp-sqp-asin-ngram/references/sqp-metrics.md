@@ -1,5 +1,7 @@
 # SQP scope, counts and derived metrics
 
+Use these rules for analysis and supporting records. Present the recommendation using the [seller-answer contract](decision-records.md); include a technical limitation in the main answer only when it changes the decision.
+
 Use the pinned Amazon schema and reporting documentation in [amazon-sources.md](amazon-sources.md). Preserve raw fields alongside normalized or derived values.
 
 ## Scope before arithmetic

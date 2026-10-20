@@ -1,5 +1,7 @@
 # Evidence-conditioned ASIN findings
 
+Use these rules for analysis and supporting records. Present the recommendation using the [seller-answer contract](decision-records.md); include a technical limitation in the main answer only when it changes the decision.
+
 Use [theme analysis](theme-analysis.md) for recurring comparisons and [decision records](decision-records.md) for the action queue. A funnel observation selects where to look; it does not identify the cause. Retrieve available decisive evidence before returning a hold.
 
 | Finding | When it can produce a concrete proposal |

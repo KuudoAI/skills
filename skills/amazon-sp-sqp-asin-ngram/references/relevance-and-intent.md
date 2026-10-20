@@ -1,5 +1,7 @@
 # Product evidence, relevance and intent
 
+Use these rules for analysis and supporting records. Present the recommendation using the [seller-answer contract](decision-records.md); include a technical limitation in the main answer only when it changes the decision.
+
 Assess the full query before recommending listing targeting. SQP has performance signals, not product specifications.
 
 ## Obtain product evidence

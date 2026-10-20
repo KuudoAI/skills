@@ -643,6 +643,14 @@
         {
           "name": "check-6",
           "condition": "Does not require statistical or API vocabulary to understand the recommendation: technical intervals, indices, gates and selectors stay in supporting detail rather than the main explanation"
+        },
+        {
+          "name": "check-7",
+          "condition": "The main answer stands alone in ordinary seller language: clearly states the change or no-change choice or single evidence request, explains why, and gives only the useful next observation or fact; technical records are separate"
+        },
+        {
+          "name": "check-8",
+          "condition": "Does not append internal decision codes, threshold inventories, statistical method names, API selectors, unrelated missing-field inventories or a generic investigation checklist to the default seller answer"
         }
       ]
     },
@@ -663,6 +671,14 @@
         {
           "name": "check-3",
           "condition": "Acknowledges the gap could be noise"
+        },
+        {
+          "name": "check-4",
+          "condition": "The main answer stands alone in ordinary seller language: clearly states the change or no-change choice or single evidence request, explains why, and gives only the useful next observation or fact; technical records are separate"
+        },
+        {
+          "name": "check-5",
+          "condition": "Does not append internal decision codes, threshold inventories, statistical method names, API selectors, unrelated missing-field inventories or a generic investigation checklist to the default seller answer"
         }
       ]
     },
@@ -791,6 +807,14 @@
         {
           "name": "check-2",
           "condition": "Does not invent existing bullet text, absence or a concrete replacement target from unavailable listing evidence"
+        },
+        {
+          "name": "check-3",
+          "condition": "The main answer stands alone in ordinary seller language: clearly states the change or no-change choice or single evidence request, explains why, and gives only the useful next observation or fact; technical records are separate"
+        },
+        {
+          "name": "check-4",
+          "condition": "Does not append internal decision codes, threshold inventories, statistical method names, API selectors, unrelated missing-field inventories or a generic investigation checklist to the default seller answer"
         }
       ]
     },
