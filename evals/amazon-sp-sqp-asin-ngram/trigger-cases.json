@@ -1,0 +1,30 @@
+[
+  {
+    "query": "Analyze this SQP export per ASIN and prioritize query opportunities.",
+    "should_trigger": true
+  },
+  {
+    "query": "What does Brand Analytics say about organic rank for my ASIN?",
+    "should_trigger": true
+  },
+  {
+    "query": "Group SQP queries into n-grams and compare click and purchase shares.",
+    "should_trigger": true
+  },
+  {
+    "query": "Does this ASIN fit the queries in my Search Query Performance report?",
+    "should_trigger": true
+  },
+  {
+    "query": "Use my Sponsored Products search-term report to recommend bids and negatives.",
+    "should_trigger": false
+  },
+  {
+    "query": "Rewrite these listing bullets without any search report analysis.",
+    "should_trigger": false
+  },
+  {
+    "query": "Calculate profitability after Amazon fees.",
+    "should_trigger": false
+  }
+]
