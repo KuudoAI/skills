@@ -26,5 +26,9 @@
   {
     "query": "Calculate profitability after Amazon fees.",
     "should_trigger": false
+  },
+  {
+    "query": "Find recurring phrases across my SQP queries and give me one exact listing change or tell me to leave it alone.",
+    "should_trigger": true
   }
 ]

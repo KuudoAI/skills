@@ -85,7 +85,7 @@
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "compatibility": "Offline request generation needs no integration; live operations require access to an Amazon Ads API client with unified/v1 reporting capabilities.",
       "metadata": {
-        "version": "0.4.2"
+        "version": "0.4.3"
       },
       "status": "certified",
       "origin": "first-party",
@@ -288,10 +288,11 @@
     },
     {
       "name": "amazon-sp-sqp-asin-ngram",
-      "description": "Analyze Amazon Search Query Performance (SQP) per ASIN using funnel counts, query-product relevance, product evidence and n-gram themes. Use for Brand Analytics exports, per-ASIN search visibility or organic-rank questions, listing/offer diagnostic hypotheses and opportunity prioritization. Explain what SQP can and cannot establish about organic position. For Ads-only search terms, bids or negatives, use amazon-ads-sp-search-term-explorer instead.\n",
+      "description": "Analyze Amazon Search Query Performance (SQP) exports by ASIN and recurring n-gram themes to select specific evidence-backed listing tests or no-change decisions. Use for Brand Analytics, search visibility, organic-rank questions, and query/product opportunity analysis. Explain SQP's limits on organic position. For Ads-only search terms, bids or negatives, use amazon-ads-sp-search-term-explorer instead.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Optional deterministic rollup helper requires Python 3.10+ (standard library only). Supplied SQP and product evidence work without live tools.",
       "metadata": {
-        "version": "2.0.0"
+        "version": "2.1.0"
       },
       "status": "reference",
       "origin": "first-party",
