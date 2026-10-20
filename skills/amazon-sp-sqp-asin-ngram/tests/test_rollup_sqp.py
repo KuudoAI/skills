@@ -59,6 +59,7 @@ class RollupTests(unittest.TestCase):
             data = copy.deepcopy(self.data)
             for row in data['rows']:
                 row['asin_counts'].update(clicks=clicks, purchases=purchases)
+                row['market'].update(clicks=100, purchases=100)
             ci = self.theme(self.run_rollup(data))['theme']['purchase_per_click_interval']
             if clicks == 0 or purchases > clicks:
                 self.assertIsNone(ci['lower'])
@@ -99,7 +100,7 @@ class RollupTests(unittest.TestCase):
 
     def test_pools_thin_members_and_honors_overrides(self):
         for row in self.data['rows'][:3]:
-            row['market']['impressions'] = 80; row['asin_counts']['clicks'] = 10
+            row['market']['impressions'] = 80; row['asin_counts'].update(impressions=40, clicks=10)
         out = self.run_rollup()
         self.assertTrue(self.theme(out)['theme']['gates']['volume'])
         self.data['config'] = {'minimum_market_impressions': 250}
@@ -128,6 +129,7 @@ class RollupTests(unittest.TestCase):
 
     def test_dominant_query_recomputed_and_not_recurring(self):
         self.data['rows'][0]['asin_counts']['clicks'] = 400
+        self.data['rows'][0]['market'].update(clicks=800, purchases=80)
         t = self.theme(self.run_rollup())
         self.assertEqual(t['concentration']['leader_id'], 'q1')
         self.assertTrue(t['concentration']['dominant'])
@@ -141,6 +143,7 @@ class RollupTests(unittest.TestCase):
         self.assertFalse(t['localized_gap_candidate'])
         for row in self.data['rows']:
             row['market']['purchases'] = 0
+            row['asin_counts']['purchases'] = 0
         self.assertIsNone(self.theme(self.run_rollup())['theme']['relative_conversion_index'])
 
     def test_malformed_input_is_actionable(self):
@@ -149,6 +152,21 @@ class RollupTests(unittest.TestCase):
             self.assertIn(key, self.run_rollup(data, valid=False))
         self.data['config'] = {'invented_threshold': 4}
         self.assertIn('config', self.run_rollup(valid=False))
+
+    def test_asin_counts_cannot_exceed_same_stage_market_totals(self):
+        for field in ('impressions', 'clicks', 'cart_adds', 'purchases'):
+            data = copy.deepcopy(self.data)
+            data['rows'][0]['market'][field] = 10
+            data['rows'][0]['asin_counts'][field] = 11
+            self.assertIn(field, self.run_rollup(data, valid=False))
+        # Cross-stage event counts need not form a shopper-probability funnel.
+        data = copy.deepcopy(self.data)
+        for row in data['rows']:
+            row['market'].update(clicks=10, purchases=30)
+            row['asin_counts'].update(clicks=5, purchases=15)
+        t = self.theme(self.run_rollup(data))
+        self.assertEqual(t['theme']['purchase_per_click']['asin'], 3)
+        self.assertIsNone(t['theme']['purchase_per_click_interval']['lower'])
 
     def test_supplied_tokens_preserve_constraints(self):
         self.data['rows'][0]['tokens'] = ['large', '40×30', 'dog', 'bed']

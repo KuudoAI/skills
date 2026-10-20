@@ -27,7 +27,7 @@ Python 3.10+, standard library only. Input is normalized JSON, not an arbitrary 
 
 Counts and query volume are nonnegative integers or null; missing counts stay unknown rather than zero. Preserve `searchQueryScore`, reported rates, prices and evidence in diagnostic records outside this helper. `relevance` accepts exact, substitute, complement, irrelevant, unknown. Optional `tokens` supplies language-appropriate tokens. Default is Unicode NFKC/casefold and whitespace splitting, with punctuation retained; it is unsuitable for unsegmented languages unless tokens are supplied. Keep original query text. Do not strip negation, units, model numbers or size constraints.
 
-Reject inconsistent scopes and conflicting duplicate data before comparison. Complete WEEK is Sunday–Saturday; MONTH and QUARTER must be a single complete period. When an export lacks marketplace, obtain request metadata or ask. Resolve missing/conflicting counts before rerunning the affected comparison; continue unaffected scopes separately.
+Reject inconsistent scopes, conflicting duplicate data, and ASIN counts exceeding known same-stage market totals before comparison. Different-stage event counts, such as purchases exceeding clicks, remain valid ratios with interval limitations. Complete WEEK is Sunday–Saturday; MONTH and QUARTER must be a single complete period. When an export lacks marketplace, obtain request metadata or ask. Resolve missing/conflicting counts before rerunning the affected comparison; continue unaffected scopes separately.
 
 ## Aggregation
 

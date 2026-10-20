@@ -89,6 +89,10 @@ def prepare(data):
             row[owner] = {key: row[owner].get(key) for key in COUNTS}
             for key, value in row[owner].items():
                 count(value, f"{row['row_id']}.{owner}.{key}")
+        for field in COUNTS:
+            market_count, asin_count = row['market'][field], row['asin_counts'][field]
+            if market_count is not None and asin_count is not None and asin_count > market_count:
+                raise ValueError(f"{row['row_id']}.{field}: ASIN count exceeds corresponding market total; reconcile source counts")
         query_key = normalized(row['query'])
         tokens = row.get('tokens', query_key.split())
         if not isinstance(tokens, list) or not tokens or any(not isinstance(t, str) or not t.strip() or len(t.split()) != 1 for t in tokens):
