@@ -20,6 +20,7 @@ test("scaffolds a first-party reference skill without optional directories", asy
   assert.match(await read(root, "skills/release-notes/LICENSE.txt"), /Required Notice: Copyright/);
   assert.match(await read(root, "skills/release-notes/SKILL.md"), /license: PolyForm-Shield-1.0.0/);
   assert.match(await read(root, "skills/release-notes/SKILL.md"), /name: release-notes/);
+  assert.match(await read(root, "skills/release-notes/SKILL.md"), /display-name: "Release Notes"/);
   assert.match(await read(root, "skills/release-notes/SKILL.md"), /Author the skill instructions before requesting certification\./);
   assert.deepEqual(JSON.parse(await read(root, "catalog/entries/release-notes.json")), {
     name: "release-notes",
