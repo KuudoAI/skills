@@ -96,6 +96,22 @@
       "governanceLicense": "PolyForm-Shield-1.0.0"
     },
     {
+      "name": "amazon-ads-review-requests",
+      "description": "Launch, manage, and review Amazon Ads Review Requests campaigns (US beta): the Sponsored Products ad product that shows verified purchasers a \"How was your item?\" card and charges only when a shopper leaves a rating or review. Creates the ENGAGEMENT-goal campaign, ad group, required THEME target, and one REVIEW_REQUEST ad per ASIN after one approval. Also lists these campaigns, adds or pauses ASINs, changes bids, budgets, and dates, and reports reviews, written reviews, star rating, and cost per review. Use whenever someone wants more ratings or reviews for a product through Amazon Ads, a new launch needs reviews, or they mention Review Requests, review request ads, an ENGAGEMENT campaign, or cost per review, even without naming the ad product. Not for the free per-order \"Request a Review\" button or Solicitations API, Amazon Vine, buyer messages, or regular Sponsored Products campaigns.",
+      "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
+      "compatibility": "Requires an Amazon Ads MCP server exposing the unified v1 campaign-management tools (create, query, update, and delete for campaigns, ad groups, targets, and ads); performance reviews also need unified v1 reporting. Servers built from Amazon's spec before the October 30, 2026 beta may reject or drop ENGAGEMENT and customerActionSettings; the skill notes the gap and verifies from Amazon's responses instead.",
+      "metadata": {
+        "version": "0.1.0"
+      },
+      "status": "reference",
+      "origin": "first-party",
+      "maintainers": [
+        "KuudoAI"
+      ],
+      "registries": {},
+      "governanceLicense": "PolyForm-Shield-1.0.0"
+    },
+    {
       "name": "amazon-ads-sb-performance-review",
       "description": "Produce a Sponsored Brands (SB) campaign performance review from SB Campaigns Report data: portfolio summary, top and worst campaigns by efficiency, low-CTR creative signals, new-to-brand (NTB) analysis when present, placement or format splits if columns exist, and actionable recommendations. Use when users ask for Sponsored Brands audits, SB headline/video/store spotlight reviews, brand awareness efficiency, NTB share, SB CTR vs benchmarks, or SB campaign deep-dives. The agent must fetch and parse the report for the user’s environment — do not assume a global variable, fixed file path, or stable Amazon export schema; write loader and column-mapping code after inspecting the actual artifact.\n",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
