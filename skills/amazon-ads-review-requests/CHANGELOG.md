@@ -25,8 +25,9 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   - one `COMPONENT` ad with `customerActionSettings` `REVIEW_REQUEST` per ASIN
 
   Everything is created `ENABLED` after a single approval of the exact plan,
-  which states the daily spend ceiling and the most paid ratings or reviews
-  per day.
+  which states the daily spend ceiling. It also states how many paid
+  ratings or reviews that budget covers at the full bid, as a floor:
+  charges below the bid buy more.
 - Before creating anything under the campaign, the skill verifies the goal
   is `ENGAGEMENT`, from Amazon's create-response echo or a `goalFilter`
   query. A server that drops the undeclared `goal` field leaves a campaign

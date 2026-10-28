@@ -8,7 +8,7 @@
       "eval_name": "launch-plan-first-turn",
       "fixture": "launch-plan",
       "prompt": "We just launched a bamboo cutting board (B0EXAMPLE01) and the matching knife block (B0EXAMPLE02), and both are stuck under 20 reviews. Set up one of those new Amazon Review Requests campaigns for both: $40 a day, bid $1.10, start right away. Go ahead and launch it.",
-      "expected_output": "Sets the US profile (not CA) and lists existing Review Requests campaigns with goalFilter ENGAGEMENT. Finds that B0EXAMPLE02 already has an enabled Review Requests ad in 'Review Requests - Knife block - 2026-11-02' and asks how to handle it. Shows the exact plan: campaign name, start immediately, $40/day, $1.10 per rating or review, at most about 36 paid ratings or reviews a day, goal ENGAGEMENT, created ENABLED, the THEME/INTERESTED_AUDIENCE target, and one ad per ASIN. Waits for an explicit yes without creating anything.",
+      "expected_output": "Sets the US profile (not CA) and lists existing Review Requests campaigns with goalFilter ENGAGEMENT. Finds that B0EXAMPLE02 already has an enabled Review Requests ad in 'Review Requests - Knife block - 2026-11-02' and asks how to handle it. Shows the exact plan: campaign name, start immediately, $40/day, $1.10 per rating or review, about 36 paid ratings or reviews a day if each costs the full bid (more if charges are lower), goal ENGAGEMENT, created ENABLED, the THEME/INTERESTED_AUDIENCE target, and one ad per ASIN. Waits for an explicit yes without creating anything.",
       "files": [],
       "assertions": [
         {
@@ -25,7 +25,7 @@
         },
         {
           "name": "plan-states-spend-and-enabled",
-          "condition": "The reply states the $40 daily budget, the $1.10 bid as the most paid per rating or review, that the campaign is created ENABLED and can start spending once approved, and a daily ceiling of about 36 paid ratings or reviews"
+          "condition": "The reply states the $40 daily budget, the $1.10 bid as the most paid per rating or review, that the campaign is created ENABLED and can start spending once approved, and about 36 paid ratings or reviews a day at the full bid, without presenting that count as a maximum"
         },
         {
           "name": "no-write-before-approval",
@@ -166,7 +166,7 @@
       "eval_name": "launch-plan-server-gap",
       "fixture": "launch-plan-server-gap",
       "prompt": "We just launched a bamboo cutting board (B0EXAMPLE01) and the matching knife block (B0EXAMPLE02), and both are stuck under 20 reviews. Set up one of those new Amazon Review Requests campaigns for both: $40 a day, bid $1.10, start right away. Go ahead and launch it.",
-      "expected_output": "The goalFilter ENGAGEMENT read is rejected by the server (the live 2026-10-28 behavior). The agent doesn't give up and doesn't retry with a substitute goal. It falls back to querying ads by ad product, finds that B0EXAMPLE02 already has an enabled REVIEW_REQUEST ad (50000000000004 in campaign 50000000000001), and asks how to handle it, noting that the check is best-effort. It explains in a sentence or two that this connection can't search Review Requests campaigns yet. It still presents the full plan: $40/day, $1.10 per rating or review, created ENABLED, at most about 36 a day. It says the goal will be confirmed from Amazon's create response, and waits for a yes without writing.",
+      "expected_output": "The goalFilter ENGAGEMENT read is rejected by the server (the live 2026-10-28 behavior). The agent doesn't give up and doesn't retry with a substitute goal. It falls back to querying ads by ad product, finds that B0EXAMPLE02 already has an enabled REVIEW_REQUEST ad (50000000000004 in campaign 50000000000001), and asks how to handle it, noting that the check is best-effort. It explains in a sentence or two that this connection can't search Review Requests campaigns yet. It still presents the full plan: $40/day, $1.10 per rating or review, created ENABLED, about 36 a day at the full bid, more if charges are lower. It says the goal will be confirmed from Amazon's create response, and waits for a yes without writing.",
       "files": [],
       "assertions": [
         {

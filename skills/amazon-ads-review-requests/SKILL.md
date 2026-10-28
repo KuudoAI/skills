@@ -46,7 +46,7 @@ live, so the job is:
 | United States only, open beta | Use a US profile and USD. Decline other marketplaces and say more are planned. |
 | Products need fewer than 1,000 total ratings and reviews. Amazon checks this at creation and continuously after. | Ads for an ASIN pause on their own at 1,000. The Ads API cannot read a product's review count, so ask the user or rely on Amazon's per-ASIN error. |
 | A campaign is Review Requests because `optimizations.goalSettings.goal` is `ENGAGEMENT`. This is set at creation and cannot change. | A campaign created without it is an ordinary SP campaign. Nothing can convert it later. |
-| Billing is cost per click, and the billable click is a shopper leaving a rating or review. Impressions are free. | The **bid** is the most paid per rating or review, and the **daily budget** caps spend. Budget ÷ bid is the most billable reviews per day. |
+| Billing is cost per click, and the billable click is a shopper leaving a rating or review. Impressions are free. | The **bid** is the most paid per rating or review, and the **daily budget** caps spend. Budget ÷ bid is how many paid reviews a fully spent budget buys if each costs the full bid. Charges below the bid buy more, so it is a floor, never a maximum. |
 | Each ad group needs exactly one target, `THEME` with `INTERESTED_AUDIENCE`. Keyword, product, and audience targeting are not supported. | Never offer targeting choices. The target is plumbing. |
 | One ad covers one ASIN, and its action settings are fixed once created. | One ad per ASIN. To swap an ASIN, pause the old ad and create a new one. |
 | Campaign queries return Review Requests campaigns only when `goalFilter` includes `ENGAGEMENT`. | Without the filter, the account looks like it has none. |
@@ -184,8 +184,9 @@ Show, then stop and wait for an explicit yes:
 - the ad group name, the required `THEME` / `INTERESTED_AUDIENCE` target,
   and the ASIN list (one ad each)
 - the most it can spend: "up to $<budget> per day from <start>, at no more
-  than $<bid> per rating or review (at most about <floor(budget / bid)> paid
-  ratings or reviews a day)"
+  than $<bid> per rating or review. If every one cost the full bid, the
+  budget covers about <floor(budget / bid)> paid ratings or reviews a day;
+  charges below the bid buy more." Never present that count as a maximum.
 - the calls in order: create campaign, verify it, create ad group, create
   target, create ads, read back
 - any duplicates or risks found during the read
