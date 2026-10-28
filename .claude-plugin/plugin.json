@@ -1,7 +1,7 @@
 {
   "name": "kuudo-skills",
   "description": "Portable skills for Amazon Ads, Seller Central, Vendor Central, and related commerce workflows",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": {
     "name": "KuudoAI"
   },
