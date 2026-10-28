@@ -107,7 +107,8 @@ do when the server's schema predates Review Requests. Key points:
 - Use the `allv1_*` family. It is the only one whose schemas include
   `COMPONENT` ads and the `INTERESTED_AUDIENCE` theme target. The SP-only
   `spv1_SP*` tools reject both.
-- Run `get_schema` with `detail="full"` before the first write of each kind.
+- Run `get_schema(tools=["allv1_CreateCampaign", ...], detail="full")`
+  before the first write of each kind. The argument is a list named `tools`.
   Where the schema and this skill disagree on argument names, the schema
   wins. It never overrides the approval or verification rules.
 - Other servers use other names. Match by operation (create campaign, query
