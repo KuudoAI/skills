@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Set up a Review Requests campaign for B0EXAMPLE01 with a $40 daily budget and a $1.10 bid.",
+    "should_trigger": true
+  },
+  {
+    "query": "Our new garlic press only has 12 reviews. Can we pay Amazon to get more verified buyers to rate it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Launch the new Amazon Ads review request ads for our three newest ASINs.",
+    "should_trigger": true
+  },
+  {
+    "query": "List my ENGAGEMENT-goal Sponsored Products campaigns and pause the one for the travel mug.",
+    "should_trigger": true
+  },
+  {
+    "query": "How much are we paying per review on the Review Requests campaigns this month?",
+    "should_trigger": true
+  },
+  {
+    "query": "Raise the bid on our review requests campaign to $1.50 and the daily budget to $75.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add ASIN B0EXAMPLE09 to the existing Review Requests campaign.",
+    "should_trigger": true
+  },
+  {
+    "query": "Are the 'How was your item?' ads actually getting written reviews or just star ratings?",
+    "should_trigger": true
+  },
+  {
+    "query": "Send the Request a Review solicitation for order 113-4471902-5530618.",
+    "should_trigger": false
+  },
+  {
+    "query": "Enroll our new ASIN in Amazon Vine to get early reviews.",
+    "should_trigger": false
+  },
+  {
+    "query": "Message the buyer of order 114-2208734-1192245 and ask them to leave a review.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a Sponsored Products auto campaign for our new cutting board.",
+    "should_trigger": false
+  },
+  {
+    "query": "Audit the structure and budget utilization of all our Sponsored Products campaigns.",
+    "should_trigger": false
+  },
+  {
+    "query": "Which Amazon Ads profile belongs to our US advertiser account?",
+    "should_trigger": false
+  },
+  {
+    "query": "Summarize the most common complaints in our product's customer reviews.",
+    "should_trigger": false
+  },
+  {
+    "query": "Launch a DSP Performance+ remarketing campaign for our top ASINs.",
+    "should_trigger": false
+  }
+]
