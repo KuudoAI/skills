@@ -32,16 +32,27 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 
 ### Added
 
+- The identity layer: identities come from the login, each identity is for one
+  provider, and each server shows the one or more for its provider. With one
+  identity, use it and say which. With several, ask which applies unless the
+  user named one. Counts and "not found" replies name the identity searched.
 - "Calling the Tools": check that each filter took effect, and report only
   searches that ran.
-- Lookup from a profile or entity ID back to its account, what a 404 from
-  `ac_getProfileById` does and does not mean, and profiles that belong to no
-  advertiser account.
+- Which listing answers which question: `allv1_QueryAdvertiserAccount`,
+  `ac_ListAdsAccounts`, and `ac_listProfiles` each cover something different,
+  and the profiles inside `list_identities` are not an inventory.
+- Lookup from a profile, entity, or DSP advertiser ID back to its account, what
+  a 404 from `ac_getProfileById` does and does not mean, and profiles that
+  belong to no advertiser account.
+- The manager above an account, found by matching IDs in the linked rows, because
+  the link query returned 401.
+- A seller profile's `accountInfo.id` as the link to SP-API's `sellerId`.
 - What to do when a profile looks missing, because `ac_listProfiles` covers only
-  the connection's region, and when an account has no profile at all.
-- Paging code that follows `nextToken` and dedupes accounts before counting.
-- `compatibility` frontmatter, and trigger wording for reverse lookups and
-  missing profiles.
+  the identity's region, and when an account has no profile at all.
+- Paging code that follows `nextToken` and dedupes accounts before counting,
+  because a later page can repeat earlier rows.
+- `compatibility` frontmatter, and trigger wording for reverse lookups, missing
+  profiles, and identities, with campaign creation and reports excluded.
 - Behavioral evals in `evals/evals.json`, covering identifier explanations,
   marketplace selection, ambiguous and non-global lookups, reverse lookup from
   a profile ID, missing profiles, manager relationships, the read-only

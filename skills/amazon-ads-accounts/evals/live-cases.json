@@ -49,7 +49,8 @@
       "checks": [
         "Says no account with that name was found and presents no ID as its account ID",
         "Says global and non-global or legacy accounts were searched, and the audit shows a flat non-global query ran and returned only non-global rows",
-        "Gives a concrete next step, such as confirming the exact name or whether another connection holds the account"
+        "Gives a concrete next step, such as confirming the exact name or whether another connection holds the account",
+        "Names the identity searched"
       ]
     },
     {
@@ -59,7 +60,8 @@
       "checks": [
         "Reports the distinct total across global and non-global accounts",
         "Includes the non-global accounts in the list",
-        "Labels which accounts are non-global, legacy, or regional"
+        "Labels which accounts are non-global, legacy, or regional",
+        "Names the identity searched"
       ]
     },
     {
@@ -121,6 +123,56 @@
         "Says none is typed as a manager account, or says this could not be confirmed",
         "If the link query fails, says so and says completeness or nesting cannot be confirmed",
         "Does not quote a fixed limit on linked accounts"
+      ]
+    },
+    {
+      "id": "entity-id-to-account",
+      "pick": "An entity ID from a marketplace entry in an account's alternateIds.",
+      "prompt": "I found {entity_id} in an old spreadsheet. Which advertiser account and marketplace does it belong to?",
+      "checks": [
+        "Gives the advertiser account's name and ID",
+        "Names the marketplace",
+        "Does not present the entity ID as the advertiser account ID"
+      ]
+    },
+    {
+      "id": "dsp-id-to-account",
+      "pick": "A DSP advertiser ID on a global account with no marketplace entries.",
+      "prompt": "Our DSP advertiser ID is {dsp_advertiser_id}. What advertiser account is that, and does it have a profile ID I can use?",
+      "checks": [
+        "Gives the advertiser account's name and ID",
+        "Says the account has no profile ID listed",
+        "Does not present the DSP advertiser ID or any other number as its profile ID"
+      ]
+    },
+    {
+      "id": "manager-above-account",
+      "pick": "A global account whose ID appears in a manager's linked rows, with a name no other account shares.",
+      "prompt": "Which manager account is our {account} advertiser account under? I need the manager account ID.",
+      "checks": [
+        "Names the manager and gives its ID",
+        "States the listed link as a link, and does not say the question cannot be answered",
+        "If the link query fails, says other parents or nesting are unconfirmed"
+      ]
+    },
+    {
+      "id": "several-identities",
+      "pick": "A login with at least two identities on this server. Skip this case on a login with one, and report the skip.",
+      "prompt": "How many advertiser accounts can I access in total? List their names.",
+      "checks": [
+        "Shows each identity's label and region",
+        "Asks which identity to use or whether to search them all",
+        "Presents no number as the total for the login until those identities are searched"
+      ]
+    },
+    {
+      "id": "named-identity",
+      "pick": "A login with at least two identities on this server. Skip this case on a login with one, and report the skip. This is the one case where the run prompt may allow set_active_identity, for the named identity only.",
+      "prompt": "How many advertiser accounts are on our {identity_label} login? List their names.",
+      "checks": [
+        "Selects the named identity before any account query",
+        "Reports the distinct total across that identity's global and non-global accounts",
+        "Says the count covers that identity and that the login has others"
       ]
     }
   ]

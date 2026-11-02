@@ -12,7 +12,7 @@ This reference covers read-only relationship discovery. Association, disassociat
 |---|---|
 | “Which manager accounts can I access?” or “What do I manage?” | `ac_getManagerAccountsForUser` |
 | “Which accounts are linked to this manager?” | `ac_getManagerAccountsForUser`, then `allv1_QueryAccountLink` with `CHILD` to confirm the list |
-| “Which manager is above this advertiser account?” | `allv1_QueryAccountLink` with `PARENT` |
+| “Which manager is above this advertiser account?” | `ac_getManagerAccountsForUser`, then `allv1_QueryAccountLink` with `PARENT` to confirm the list |
 
 Check only the tool required for the question. If that tool is unavailable, explain which relationship cannot be resolved; unrelated missing account tools do not block the request.
 
@@ -23,6 +23,15 @@ Check only the tool required for the question. If that tool is unavailable, expl
 Each linked row has `accountId`, `accountName`, `accountType`, and `marketplaceId`. `DSP_ADVERTISING_ACCOUNT` rows add a `dspAdvertiserId`, and `VENDOR` rows add a `profileId`. A linked `accountId` can be an `ENTITY...` value, so do not present it as an `advertiserAccountId`. Report the types the rows state.
 
 Treat this list as what the call returned, not proof that no other relationships exist. Report the count you see rather than quoting a limit; one manager returned 60 linked rows on 2026-10-30.
+
+## Find the manager above an account
+
+Get the account's `alternateIds` from `allv1_QueryAdvertiserAccount`, then look for those IDs in each manager's `linkedAccounts`:
+
+- `DSP_ADVERTISING_ACCOUNT` rows match on `dspAdvertiserId`.
+- `VENDOR` rows match on `profileId`, or on `accountId` as `entityId`.
+
+Match on IDs rather than names. Every linked row matched an account this way on 2026-11-02. A matched row is a listed link, so state it as one. Then try the link query with `PARENT`, and if it fails, say that other parents and nesting are unconfirmed.
 
 ## Query account links
 

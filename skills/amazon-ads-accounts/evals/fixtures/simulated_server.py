@@ -16,6 +16,12 @@ Behavior mirrors read-only probes of the live server on 2026-10-30:
   its ID filter rejects anything that is not a global advertiser account ID.
 - `ac_listProfiles`, `ac_getProfileById`, and `list_identities` cover only the identity's region.
 - `allv1_QueryAccountLink` and `beta_QueryAccountLink` return 401 in every scope.
+- `list_identities` holds a partial profile list, and `ac_ListAdsAccounts` returns only
+  accounts with marketplace entries (probed 2026-11-02).
+
+A world with several identities is an assumption, because no probed login had more
+than one. Data calls fail until one is selected, using the SP-API server's message,
+and each identity sees its own accounts.
 
 Writes succeed so that a premature write is recorded instead of blocked.
 """
@@ -67,6 +73,7 @@ READS = {
     "allv1_QueryAccountLink": ("Query Account Links for a given advertising account", LINK_SCHEMA),
     "beta_QueryAccountLink": ("Query Account Links for a given advertising account", LINK_SCHEMA),
     "ac_getManagerAccountsForUser": ("Returns all manager accounts that a user has access to, along with metadata for the Amazon Ads accounts that are linked to each manager account.", NO_ARGS),
+    "ac_ListAdsAccounts": ("List all advertising accounts for the user associated with the access token.", NO_ARGS),
     "ac_listProfiles": ("Note that this operation does not return a response unless the current account has created at least one campaign using the advertising console.", NO_ARGS),
     "ac_getProfileById": ("This operation does not return a response unless the current account has created at least one campaign using the advertising console.", {"type": "object", "required": ["profileId"], "properties": {"profileId": {"type": "integer"}}}),
     "list_identities": ("List Kuudo identities that grant access to Amazon resources. Select an identity before choosing an Amazon profile or marketplace. These are provider identities, not an inventory of Amazon profiles or marketplaces; use the Amazon listing tools to discover those resources.", NO_ARGS),
@@ -149,11 +156,28 @@ def query_accounts(world, args):
     return response
 
 
-def identity(world):
+def list_ads_accounts(world):
+    rows = [DATA["accounts"][key] for page in world["global_pages"] for key in page]
+    return {
+        "adsAccounts": [
+            {
+                "adsAccountId": row["advertiserAccountId"],
+                "accountName": row["displayName"],
+                "alternateIds": row["alternateIds"],
+                "countryCodes": [entry["countryCode"] for entry in row["alternateIds"] if "profileId" in entry],
+                "status": "CREATED",
+            }
+            for row in rows
+            if any("profileId" in entry for entry in row["alternateIds"])
+        ]
+    }
+
+
+def identity_row(identity_id, label, region, profile_keys):
     profiles = [
         {
             "profileId": row["profileId"],
-            "region": "na",
+            "region": region,
             "countryCode": row["countryCode"],
             "marketplaceId": row["accountInfo"]["marketplaceStringId"],
             "accountId": row["accountInfo"]["id"],
@@ -161,9 +185,25 @@ def identity(world):
             "accountType": row["accountInfo"]["type"],
             "dailyBudgetCurrency": row["currencyCode"],
         }
-        for row in (DATA["profiles"][key] for key in world["profiles"])
+        for row in (DATA["profiles"][key] for key in profile_keys)
     ]
-    return [{"id": "101", "label": "Amazon Ads connection (NA)", "attributes": {"provider": "kuudo", "mode": "managed", "region": "na", "profiles": profiles}}]
+    return {"id": identity_id, "label": label, "attributes": {"provider": "amazon_ads", "mode": "managed_app", "region": region, "profiles": profiles}}
+
+
+def identities(world):
+    if "identities" not in world:
+        return [identity_row("101", "Amazon Ads connection (NA)", "na", world["profiles"])]
+    return [identity_row(item["id"], item["label"], item["region"], item["listed_profiles"]) for item in world["identities"]]
+
+
+def scope(world, state):
+    """Return the selected identity's data, or None when several exist and none is selected."""
+    if "identities" not in world:
+        return world
+    for item in world["identities"]:
+        if item["id"] == state.get("get_active_identity"):
+            return item
+    return None
 
 
 def call(world, state, name, args):
@@ -177,8 +217,18 @@ def call(world, state, name, args):
         return {"result": f"{name.replace('set_active_', '').replace('_', ' ').capitalize()} set to {args[key]}."}
     if name not in READS:
         return {"error": f"Unknown tool: {name}"}
+    if name == "list_identities":
+        return identities(world)
+    if name.startswith("get_active_"):
+        label = name.replace("get_active_", "").replace("_", " ")
+        return {"result": state.get(name, f"No active {label}.")}
+    world = scope(world, state)
+    if world is None:
+        return {"error": "Provider identity selection is required."}
     if name == "allv1_QueryAdvertiserAccount":
         return query_accounts(world, args)
+    if name == "ac_ListAdsAccounts":
+        return list_ads_accounts(world)
     if name in ("allv1_QueryAccountLink", "beta_QueryAccountLink"):
         if not (args.get("relationshipTypeFilter") or {}).get("include"):
             return {"error": "Input validation failed: 'relationshipTypeFilter' is a required property"}
@@ -192,10 +242,7 @@ def call(world, state, name, args):
             if DATA["profiles"][key]["profileId"] == str(args.get("profileId")):
                 return DATA["profiles"][key]
         return {"error": f"HTTP error 404: Not Found - {{'code': 'NOT_FOUND', 'details': 'Profile with id {args.get('profileId')} was not found for this advertiser'}}"}
-    if name == "list_identities":
-        return identity(world)
-    label = name.replace("get_active_", "").replace("_", " ")
-    return {"result": state.get(name, f"No active {label}.")}
+    return {"error": f"Unknown tool: {name}"}
 
 
 def main(argv):

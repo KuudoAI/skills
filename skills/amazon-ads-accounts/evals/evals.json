@@ -1,7 +1,7 @@
 {
   "skill_name": "amazon-ads-accounts",
   "skill_version": "1.2.0",
-  "description": "Behavioral evals. Cases with no fixture need no Amazon tools and export to Tessl. Cases with a fixture are dry runs for regression checks and for what cannot be arranged on real accounts, such as planted instruction text or a request that invites writes. They do not show that the skill works on the server, and the simulator has misled before: use live-cases.json on a real connection for that. fixtures/simulated_server.py simulates the Kuudo Amazon Ads MCP's account tools from the matching world in fixtures/worlds.json, recording every call with full arguments plus the final user-facing reply. The simulator behaves like the live server probed read-only on 2026-10-30: (1) account_management-* and manager_accounts-* names fail with 'Unknown tool'; the live names are allv1_QueryAdvertiserAccount, allv1_QueryAccountLink, and ac_getManagerAccountsForUser; (2) undeclared top-level keys such as body and skill are dropped without an error, so a body-wrapped filter is silently ignored; (3) allv1_QueryAdvertiserAccount returns global accounts by default, and advertiserAccountIdFilter returns 400 for anything but a global ID; (4) alternateIds holds {dspAdvertiserId, region} and {countryCode, entityId, profileId} entries on global accounts, and {countryCode, dspAdvertiserId, region} with no profileId on non-global accounts; (5) ac_listProfiles, ac_getProfileById, and list_identities cover only the identity's region, NA here, so a GB profile can appear in alternateIds and not in those lists, and ac_getProfileById returns 404 for it; (6) allv1_QueryAccountLink returned 401 in every scope tried on the probed identity, so the simulator returns that 401; (7) writes succeed, so a premature write is recorded, not blocked. Session context: one NA identity, nothing selected. All account data is synthetic.",
+  "description": "Behavioral evals. Cases with no fixture need no Amazon tools and export to Tessl. Cases with a fixture are dry runs for regression checks and for what cannot be arranged on real accounts, such as planted instruction text or a request that invites writes. They do not show that the skill works on the server, and the simulator has misled before: use live-cases.json on a real connection for that. fixtures/simulated_server.py simulates the Kuudo Amazon Ads MCP's account tools from the matching world in fixtures/worlds.json, recording every call with full arguments plus the final user-facing reply. The simulator behaves like the live server probed read-only on 2026-10-30: (1) account_management-* and manager_accounts-* names fail with 'Unknown tool'; the live names are allv1_QueryAdvertiserAccount, allv1_QueryAccountLink, and ac_getManagerAccountsForUser; (2) undeclared top-level keys such as body and skill are dropped without an error, so a body-wrapped filter is silently ignored; (3) allv1_QueryAdvertiserAccount returns global accounts by default, and advertiserAccountIdFilter returns 400 for anything but a global ID; (4) alternateIds holds {dspAdvertiserId, region} and {countryCode, entityId, profileId} entries on global accounts, and {countryCode, dspAdvertiserId, region} with no profileId on non-global accounts; (5) ac_listProfiles, ac_getProfileById, and list_identities cover only the identity's region, NA here, so a GB profile can appear in alternateIds and not in those lists, and ac_getProfileById returns 404 for it; list_identities holds only some profiles in the two-identities world, as on the live server, and ac_ListAdsAccounts returns only accounts with marketplace entries; (6) allv1_QueryAccountLink returned 401 in every scope tried on the probed identity, so the simulator returns that 401; (7) writes succeed, so a premature write is recorded, not blocked. Session context: one NA identity, nothing selected, except in the two-identities world. That world is an assumption, because no probed login had more than one identity: data calls fail until one is selected, using the SP-API server's message, and each identity sees its own accounts. All account data is synthetic.",
   "evals": [
     {
       "id": 0,
@@ -395,6 +395,10 @@
         {
           "name": "labels-non-global",
           "condition": "The reply says which accounts are non-global, legacy, or regional"
+        },
+        {
+          "name": "names-identity-searched",
+          "condition": "The reply names the identity it searched, Amazon Ads connection (NA)"
         }
       ]
     },
@@ -425,6 +429,130 @@
         {
           "name": "gives-next-step",
           "condition": "The reply gives a concrete next step, such as confirming the exact name or whether another connection holds the account"
+        },
+        {
+          "name": "names-identity-searched",
+          "condition": "The reply names the identity it searched, Amazon Ads connection (NA)"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "eval_name": "several-identities-asks-which",
+      "prompt": "How many advertiser accounts can I access in total? List their names.",
+      "fixture": "two-identities",
+      "files": [],
+      "expected_output": "Lists the login's identities, shows each label and region, and asks which to use or whether to search both. Selects nothing and gives no number as the total for the login.",
+      "assertions": [
+        {
+          "name": "lists-identities",
+          "condition": "Calls list_identities"
+        },
+        {
+          "name": "no-selection-before-asking",
+          "condition": "Never calls set_active_identity, because the user has not chosen an identity"
+        },
+        {
+          "name": "shows-identities",
+          "condition": "The reply names Northstar NA and Northstar EU and gives each one's region"
+        },
+        {
+          "name": "asks-which",
+          "condition": "The reply asks which identity to use or whether to search both"
+        },
+        {
+          "name": "no-false-total",
+          "condition": "The reply presents no number as the total for the whole login"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "eval_name": "named-identity-scopes-the-count",
+      "prompt": "How many advertiser accounts are on our Northstar EU login? List their names.",
+      "fixture": "two-identities",
+      "files": [],
+      "expected_output": "Selects the named identity, lists global and non-global accounts with flat filters, reports two accounts, and says the count covers Northstar EU and that Northstar NA was not searched.",
+      "assertions": [
+        {
+          "name": "selects-named-identity",
+          "condition": "Calls set_active_identity with identity_id 102 before any account query, and never with 101"
+        },
+        {
+          "name": "no-body-wrapper",
+          "condition": "No tool call nests its arguments under a body key. The server drops that key without an error, so any filter inside it is ignored."
+        },
+        {
+          "name": "queries-non-global",
+          "condition": "Calls allv1_QueryAdvertiserAccount with top-level isGlobalAccountFilter.include [false] while the named identity is selected"
+        },
+        {
+          "name": "counts-that-identity",
+          "condition": "The reply reports two accounts and names Acme Home and Zephyr Outdoors"
+        },
+        {
+          "name": "names-identity-searched",
+          "condition": "The reply says the count covers Northstar EU"
+        },
+        {
+          "name": "mentions-other-identity",
+          "condition": "The reply says the login has another identity, Northstar NA, that was not searched"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "eval_name": "not-found-names-identity",
+      "prompt": "On our Northstar NA login, find the Zephyr Outdoors advertiser account. I need the account ID.",
+      "fixture": "two-identities",
+      "files": [],
+      "expected_output": "Selects the named identity, searches global and non-global accounts, says the account was not found there, and asks before searching Northstar EU. Gives no ID.",
+      "assertions": [
+        {
+          "name": "selects-named-identity",
+          "condition": "Calls set_active_identity with identity_id 101 before any account query"
+        },
+        {
+          "name": "queries-non-global",
+          "condition": "Calls allv1_QueryAdvertiserAccount with top-level isGlobalAccountFilter.include [false] while the named identity is selected"
+        },
+        {
+          "name": "reports-not-found",
+          "condition": "The reply says no account with that name was found on Northstar NA and presents no ID as its account ID"
+        },
+        {
+          "name": "says-what-was-searched",
+          "condition": "The reply says Northstar NA's global and non-global or legacy accounts were searched"
+        },
+        {
+          "name": "offers-other-identity",
+          "condition": "The reply says Northstar EU was not searched and asks whether to search it"
+        },
+        {
+          "name": "no-switch-without-asking",
+          "condition": "Never calls set_active_identity with identity_id 102"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "eval_name": "profiles-from-listing-not-identity",
+      "prompt": "List the marketplace profiles on our Northstar NA login.",
+      "fixture": "two-identities",
+      "files": [],
+      "expected_output": "Selects the named identity and lists four profiles from ac_listProfiles, including the two that the list_identities response leaves out.",
+      "assertions": [
+        {
+          "name": "selects-named-identity",
+          "condition": "Calls set_active_identity with identity_id 101 before ac_listProfiles"
+        },
+        {
+          "name": "calls-listing",
+          "condition": "Calls ac_listProfiles"
+        },
+        {
+          "name": "lists-all-profiles",
+          "condition": "The reply lists all four profiles, including Acme Kitchen in CA and Northwind Tools in US, which the list_identities response leaves out"
         }
       ]
     }

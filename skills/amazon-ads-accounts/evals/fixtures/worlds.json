@@ -1,5 +1,5 @@
 {
-  "_note": "Synthetic accounts for dry-run evals; none of these identifiers exist. Row shapes and tool behavior mirror read-only probes of the Kuudo Amazon Ads MCP on 2026-10-30.",
+  "_note": "Synthetic accounts for dry-run evals; none of these identifiers exist. Row shapes and tool behavior mirror read-only probes of the Kuudo Amazon Ads MCP on 2026-10-30 and 2026-11-02. The two-identities world is an assumption: no probed login had more than one identity.",
   "accounts": {
     "acme-kitchen": {
       "advertiserAccountId": "amzn1.ads-account.g.acmekitchen01",
@@ -128,6 +128,7 @@
     "acme-us": { "profileId": "3333333333333333", "countryCode": "US", "currencyCode": "USD", "dailyBudget": 100.0, "timezone": "America/Los_Angeles", "accountInfo": { "id": "ENTITY1ACMEUS", "marketplaceStringId": "ATVPDKIKX0DER", "name": "Acme Kitchen", "type": "seller", "validPaymentMethod": true } },
     "acme-ca": { "profileId": "4444444444444444", "countryCode": "CA", "currencyCode": "CAD", "dailyBudget": 50.0, "timezone": "America/Los_Angeles", "accountInfo": { "id": "ENTITY1ACMECA", "marketplaceStringId": "A2EUQ1WTGCTBG2", "name": "Acme Kitchen", "type": "seller", "validPaymentMethod": true } },
     "acme-home-us": { "profileId": "9111111111111111", "countryCode": "US", "currencyCode": "USD", "dailyBudget": 75.0, "timezone": "America/Los_Angeles", "accountInfo": { "id": "ENTITY1HOMEUS", "marketplaceStringId": "ATVPDKIKX0DER", "name": "Acme Home", "type": "seller", "validPaymentMethod": true } },
+    "acme-home-de": { "profileId": "9111111111111112", "countryCode": "DE", "currencyCode": "EUR", "dailyBudget": 30.0, "timezone": "Europe/Paris", "accountInfo": { "id": "ENTITY1HOMEDE", "marketplaceStringId": "A1PA6795UKMFR9", "name": "Acme Home", "type": "seller", "validPaymentMethod": true } },
     "bright-us": { "profileId": "7777777777777777", "countryCode": "US", "currencyCode": "USD", "dailyBudget": 60.0, "timezone": "America/Los_Angeles", "accountInfo": { "id": "ENTITY1BRIGHTUS", "marketplaceStringId": "ATVPDKIKX0DER", "name": "Bright Home", "type": "seller", "validPaymentMethod": true } },
     "northwind-us": { "profileId": "8888888888888888", "countryCode": "US", "currencyCode": "USD", "dailyBudget": 40.0, "timezone": "America/Los_Angeles", "accountInfo": { "id": "ENTITY1NORTHUS", "marketplaceStringId": "ATVPDKIKX0DER", "name": "Northwind Tools", "type": "vendor", "validPaymentMethod": true } }
   },
@@ -203,6 +204,30 @@
       "non_global_pages": [[]],
       "profiles": ["acme-us", "acme-ca"],
       "managers": ["northstar-injected"]
+    },
+    "two-identities": {
+      "identities": [
+        {
+          "id": "101",
+          "label": "Northstar NA",
+          "region": "na",
+          "global_pages": [["acme-kitchen", "bright-home"]],
+          "non_global_pages": [["legacy-other"]],
+          "profiles": ["acme-us", "acme-ca", "bright-us", "northwind-us"],
+          "listed_profiles": ["acme-us", "bright-us"],
+          "managers": []
+        },
+        {
+          "id": "102",
+          "label": "Northstar EU",
+          "region": "eu",
+          "global_pages": [["acme-home", "zephyr-dsp-only"]],
+          "non_global_pages": [[]],
+          "profiles": ["acme-home-de"],
+          "listed_profiles": ["acme-home-de"],
+          "managers": []
+        }
+      ]
     }
   }
 }
