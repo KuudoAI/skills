@@ -20,23 +20,59 @@
     "should_trigger": true
   },
   {
+    "query": "I only have profile 1111111111111111. Which advertiser account and marketplace is that?",
+    "should_trigger": true
+  },
+  {
+    "query": "Which account does ENTITY1ABCDEFGHIJ belong to?",
+    "should_trigger": true
+  },
+  {
+    "query": "How many Amazon Ads accounts do I have access to?",
+    "should_trigger": true
+  },
+  {
+    "query": "Which manager account is this advertiser account under?",
+    "should_trigger": true
+  },
+  {
+    "query": "When I list my Amazon Ads profiles the UK one doesn't show up. Why?",
+    "should_trigger": true
+  },
+  {
     "query": "Register me as a new Amazon Ads advertiser.",
-    "should_trigger": false
+    "should_trigger": true
   },
   {
     "query": "Create a terms token so I can accept the Amazon Ads agreement.",
-    "should_trigger": false
+    "should_trigger": true
   },
   {
     "query": "Rename my advertiser account.",
-    "should_trigger": false
+    "should_trigger": true
   },
   {
     "query": "Link this advertiser account to my manager account.",
-    "should_trigger": false
+    "should_trigger": true
+  },
+  {
+    "query": "Add a new user to my Amazon Ads account.",
+    "should_trigger": true
+  },
+  {
+    "query": "Pull last month's spend report for profile 1111111111111111.",
+    "should_trigger": true
   },
   {
     "query": "Create a Sponsored Products campaign for profile 1939934761669430.",
+    "should_trigger": false
+  },
+  {
+    "query": "Which of my Sponsored Products search terms are wasting money?",
+    "should_trigger": false
+  },
+  {
+    "query": "Create a DSP campaign for advertiser 580000000000000011.",
     "should_trigger": false
   }
 ]
