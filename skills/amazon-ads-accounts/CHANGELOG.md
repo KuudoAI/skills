@@ -13,6 +13,47 @@ Bump rules:
 
 Every bump also updates the `evals/evals.json` `skill_version`.
 
+## [1.2.0] - 2026-11-02
+
+### Fixed
+
+- Tool names and arguments match the Kuudo Amazon Ads MCP, checked live on
+  2026-10-30: `allv1_QueryAdvertiserAccount`, `ac_getManagerAccountsForUser`,
+  and `allv1_QueryAccountLink`, with flat arguments. The skill told agents to
+  wrap filters in `body`, which the server drops without an error, so a
+  non-global query returned global accounts and a real account was reported
+  as not found.
+- The per-call `skill` attribution object is gone. The server drops it too.
+- The link query documents its real arguments, and a failed query means
+  nesting and completeness are unconfirmed. The claim that a manager returns
+  at most 50 linked accounts is gone; one returned 60.
+- The read-only boundary no longer points to an administration or onboarding
+  workflow that does not exist.
+
+### Added
+
+- "Calling the Tools": check that each filter took effect, and report only
+  searches that ran.
+- Lookup from a profile or entity ID back to its account, what a 404 from
+  `ac_getProfileById` does and does not mean, and profiles that belong to no
+  advertiser account.
+- What to do when a profile looks missing, because `ac_listProfiles` covers only
+  the connection's region, and when an account has no profile at all.
+- Paging code that follows `nextToken` and dedupes accounts before counting.
+- `compatibility` frontmatter, and trigger wording for reverse lookups and
+  missing profiles.
+- Behavioral evals in `evals/evals.json`, covering identifier explanations,
+  marketplace selection, ambiguous and non-global lookups, reverse lookup from
+  a profile ID, missing profiles, manager relationships, the read-only
+  boundary, and instruction-like account data. Dry-run cases use
+  `evals/fixtures/simulated_server.py`. `evals/live-cases.json` holds the checks
+  to run read-only on a real connection, with no account data in the repo.
+
+### Removed
+
+- Tool names for Amazon's hosted MCP. They return `Unknown tool` on the Kuudo
+  server, so the skill now targets Kuudo only.
+
 ## [1.1.1] - 2026-10-28
 
 ### Added
