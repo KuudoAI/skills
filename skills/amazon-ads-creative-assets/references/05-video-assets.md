@@ -1,8 +1,9 @@
 # Video creative assets
 
 This skill is image-first; video is here so a mixed brief doesn't have to
-leave. For generating the footage itself, the `veo-video` skill covers prompt
-craft and model constraints — this file covers what Amazon Ads will accept.
+leave. For generating the footage itself, the `amazon-video` skill on Kuudo
+Iris (`skill://amazon-video/SKILL.md`) covers prompt craft and model
+constraints — this file covers what Amazon Ads will accept.
 
 ## Sponsored Brands video
 
@@ -56,12 +57,17 @@ craft and model constraints — this file covers what Amazon Ads will accept.
 
 ## Generating video for these slots
 
-Veo produces 4–8 second clips, and Sponsored Brands video needs at least 6
-seconds, ideally 15–30. So a compliant ad is either a single 6–8 second
-generation, or several clips assembled in an editor. The 16:9-only rule means
-no portrait generations, and the "product in the first two seconds" rule means
-the opening shot has to be the product — plan the shot order around that
-rather than opening on atmosphere.
+Kuudo Iris generates Gemini Omni clips of 3–10 seconds and can extend an Iris
+clip 3–10 seconds at a time, up to 40 seconds in total. Sponsored Brands video
+needs at least 6 seconds, ideally 15–30. So a compliant ad is a single 6–10
+second generation, an Iris clip extended past 15 seconds, or several clips
+assembled in an editor. Each extension is another paid generation that may
+rework the last frames to blend the join, so inspect it before delivery.
+
+Omni also generates 9:16, but these slots take 16:9 only, so request 16:9. The
+"product in the first two seconds" rule means the opening shot has to be the
+product — plan the shot order around that rather than opening on atmosphere.
+Extension only appends, so a product-first opening survives it.
 
 Product fidelity applies exactly as it does to images: generate product shots
 from the seller's real photos as references, and check the render before it
@@ -71,4 +77,5 @@ ships.
 
 **Provenance:** Amazon Ads `resources/ad-specs/sponsored-brands-video` and the
 video sections of `library/guides/sponsored-brands-display-ads-moderation`,
-captured 2026-09-03.
+captured 2026-09-03. Generation limits: the live Kuudo Iris `generate_video`
+schema and Google's Gemini Omni Flash documentation, checked 2026-11-02.

@@ -9,6 +9,20 @@ edits) · **minor** = behavioral additions (new sections, rules, triggers) ·
 **major** = contract changes (response shape, output format, scope).
 Every bump also updates `evals/evals.json` `skill_version`.
 
+## [0.4.3] - 2026-11-02
+
+### Fixed
+
+- `references/05-video-assets.md` pointed to a `veo-video` skill that doesn't
+  exist. It now points to the Kuudo Iris `amazon-video` skill. Its generation
+  limits were for Veo's 4–8 second clips; they now match Gemini Omni on Kuudo
+  Iris, checked against the live `generate_video` schema: 3–10 second clips,
+  extendable to 40 seconds, so a Sponsored Brands video in the 15–30 second
+  range no longer has to be assembled in an editor.
+- `references/07-assets-api-mcp.md` cited `amazon-ads-create` operational notes
+  that aren't in this repository. The provenance now names the sources and the
+  2026-10-18 live tool-name check.
+
 ## [0.4.2] - 2026-10-28
 
 ### Added
