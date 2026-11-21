@@ -56,9 +56,7 @@ The plugin is saved to your Claude account, so it is available in chat on web, d
 
 What loads differs by surface. Skills load everywhere. Chat ignores plugin hooks, so the `using-kuudo` startup instructions are not injected there; `using-kuudo` is still available as a skill, and you can name it or any other skill in your request. Cowork and Claude Code run the hook.
 
-<!-- x-release-please-start-version -->
-Without adding the marketplace, you can instead upload the suite as a plugin file: download a release archive such as `https://github.com/KuudoAI/skills/archive/refs/tags/v0.10.0.zip`, then choose **Customize > Plugins > Add > Upload plugin** and select it (up to 200 MB and 5,000 files). An uploaded plugin does not update itself; upload the next release to update.
-<!-- x-release-please-end -->
+Without adding the marketplace, you can instead upload the suite as a plugin file. Download [`kuudo-skills.zip`](https://github.com/KuudoAI/skills/releases/latest/download/kuudo-skills.zip) from the latest release, then choose **Customize > Plugins > Add > Upload plugin** and select it. To update, upload the next release's `kuudo-skills.zip` under the same file name: Claude replaces an upload whose file name matches, and a renamed file becomes a second copy. The archive holds only the plugin (manifest, hook, skills, and notices) and contains no symbolic links, which Claude rejects.
 
 An account-installed plugin appears in Claude Code as `kuudo-skills@synced`. If you also installed the suite through the Claude Code CLI on the same machine, remove one installation so each skill is discovered once.
 
@@ -106,7 +104,7 @@ npx skills add https://github.com/KuudoAI/skills/tree/main/skills/<skill-name>
 
 Claude also accepts a single skill as a ZIP upload:
 
-1. Zip the skill's folder so the folder itself is the ZIP root (`amazon-profitability-calculator.zip` containing `amazon-profitability-calculator/SKILL.md`), not loose files. Keep the folder name unchanged; it must match the skill's `name`.
+1. Download the skill's archive from the latest release, for example [`amazon-profitability-calculator.zip`](https://github.com/KuudoAI/skills/releases/latest/download/amazon-profitability-calculator.zip); every skill is published as `<skill-name>.zip`. To build one yourself, zip the skill's folder so the folder itself is the ZIP root (`amazon-profitability-calculator/SKILL.md`), not loose files, and keep the folder name unchanged; it must match the skill's `name`.
 2. Open **Customize > Skills**, choose **+ > Create skill > Upload a skill**, and select the ZIP.
 3. Enable the skill. Skills require **Code execution and file creation** under **Settings > Capabilities**; on Team and Enterprise plans an owner controls this.
 

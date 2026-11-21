@@ -19,6 +19,7 @@
     "skills:version-check": "tooling/node_modules/.bin/tsx tooling/src/cli.ts version-check",
     "commits:check": "tooling/node_modules/.bin/tsx tooling/src/cli.ts commit-check",
     "evals:export": "tooling/node_modules/.bin/tsx tooling/src/cli.ts evals export",
+    "package": "bash scripts/package.sh",
     "smoke": "tooling/node_modules/.bin/tsx --test tooling/test/smoke.test.ts",
     "typecheck": "tooling/node_modules/.bin/tsc --noEmit",
     "test:unit": "tooling/node_modules/.bin/tsx --test tooling/test/*.test.ts",

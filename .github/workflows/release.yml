@@ -47,8 +47,27 @@ jobs:
       # A RELEASE_PLEASE_TOKEN secret (fine-grained PAT or GitHub App token with
       # contents and pull-requests write) lets the Validate workflow run there.
       - name: Open or update the release pull request, or publish the release
+        id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      # Claude Desktop and claude.ai identify an uploaded plugin or skill by its
+      # file name, so the archives keep fixed names (kuudo-skills.zip and
+      # <skill-name>.zip) and releases/latest/download/<name> serves the newest.
+      - name: Check out the released tag
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.release.outputs.tag_name }}
+          persist-credentials: false
+      - name: Build the Claude upload archives
+        if: ${{ steps.release.outputs.release_created }}
+        run: bash scripts/package.sh dist
+      - name: Attach the archives to the release
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: gh release upload "$TAG" dist/kuudo-skills.zip dist/skills/*.zip --clobber --repo "$GITHUB_REPOSITORY"
