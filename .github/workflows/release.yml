@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: 22
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefix tooling
       - name: Validate the commit on main
         run: npm test
       - name: Check synchronized release versions

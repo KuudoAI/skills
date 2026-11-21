@@ -7,7 +7,14 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "./tooling/node_modules/@types"
+    ]
   },
-  "include": ["tooling/**/*.ts"]
+  "include": [
+    "tooling/**/*.ts"
+  ]
 }

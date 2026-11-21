@@ -34,7 +34,7 @@ test("package exposes the deterministic smoke command", async () => {
   const packageJson = await readJson("package.json");
   const scripts = packageJson.scripts as JsonObject;
 
-  assert.equal(scripts.smoke, "node --import tsx --test tooling/test/smoke.test.ts");
+  assert.equal(scripts.smoke, "tooling/node_modules/.bin/tsx --test tooling/test/smoke.test.ts");
 });
 
 test("release metadata keeps declared package versions synchronized", async () => {

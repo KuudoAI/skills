@@ -74,7 +74,8 @@ test("validation workflow checks the repository on pull requests and pushes to m
   assert(setupNode);
   assert.equal(setupNode.with?.["node-version"], 22);
   assert.equal(setupNode.with?.cache, "npm");
-  for (const command of ["npm ci", "npm test", "npm run version:check", "npm audit --audit-level=high"]) {
+  assert.equal(setupNode.with?.["cache-dependency-path"], "tooling/package-lock.json");
+  for (const command of ["npm ci --prefix tooling", "npm test", "npm run version:check", "npm audit --prefix tooling --audit-level=high"]) {
     assert(steps.some((step) => step.run === command), command);
   }
 });
@@ -110,7 +111,7 @@ test("release workflow validates main before release-please opens or publishes a
   const verifyNode = verify.find((step) => usesAction(step, SETUP_NODE));
   assert(verifyNode);
   assert.equal(verifyNode.with?.cache, undefined);
-  for (const command of ["npm ci", "npm test", "npm run version:check"]) {
+  for (const command of ["npm ci --prefix tooling", "npm test", "npm run version:check"]) {
     assert(verify.some((step) => step.run === command), command);
   }
 
@@ -147,8 +148,8 @@ test("release-please updates exactly the synchronized version fields", async () 
   assert.equal(root["include-component-in-tag"], false);
   assert.deepEqual(manifest, { ".": packageJson.version });
 
-  // The node release type updates package.json and package-lock.json itself; every
-  // other synchronized file must be an extra-file with the matching JSON path.
+  // The node release type updates package.json itself; every other synchronized
+  // file must be an extra-file with the matching JSON path.
   const expected = versionFiles.files
     .filter(({ path }) => path !== "package.json" && path !== "package-lock.json")
     .map(({ path, field }) => ({
@@ -173,6 +174,7 @@ test("dependabot keeps GitHub Actions and npm dependencies current", async () =>
   assert.equal(config.version, 2);
   const ecosystems = config.updates.map((update) => update["package-ecosystem"]).sort();
   assert.deepEqual(ecosystems, ["github-actions", "npm"]);
+  assert.equal(config.updates.find((update) => update["package-ecosystem"] === "npm")?.directory, "/tooling");
 });
 
 test("dependabot groups only minor and patch updates and holds Node types to the runtime major", async () => {
@@ -196,7 +198,7 @@ test("dependabot groups only minor and patch updates and holds Node types to the
 
   const validate = parse(await readFile(".github/workflows/validate.yml", "utf8")) as Workflow;
   const nodeVersion = stepsOf(validate, "validate").find((step) => usesAction(step, SETUP_NODE))?.with?.["node-version"];
-  const packageJson = JSON.parse(await readFile("package.json", "utf8")) as { devDependencies: Record<string, string> };
+  const packageJson = JSON.parse(await readFile("tooling/package.json", "utf8")) as { devDependencies: Record<string, string> };
   assert.equal(packageJson.devDependencies["@types/node"]?.match(/\d+/)?.[0], String(nodeVersion));
 });
 

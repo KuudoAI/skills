@@ -23,7 +23,7 @@ isolateGitEnvironment();
 const execute = promisify(execFile);
 const usage = "Usage: skill:new <name> | validate | catalog <build|check> | version-check --base <ref> | commit-check --base <ref> | evals export tessl --out <dir> [--skill <name>]... [--scenario <skill>-<id>]... [--limit <n>] [--include-live]";
 const cli = new URL("../src/cli.ts", import.meta.url).pathname;
-const tsx = new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url).pathname;
+const tsx = new URL("../node_modules/tsx/dist/cli.mjs", import.meta.url).pathname;
 
 async function runCli(root: string, ...arguments_: string[]): Promise<{ stdout: string; stderr: string; code: number }> {
   try {
