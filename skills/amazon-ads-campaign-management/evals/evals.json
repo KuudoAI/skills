@@ -7,7 +7,7 @@
       "id": 0,
       "eval_name": "translate-sp-v3-campaign-create",
       "prompt": "We're moving our bid tool off SP v3. Here's a create call it sends today \u2014 what does this become on adsApi/v1?\n\nPOST /sp/campaigns\n{\"campaigns\":[{\"name\":\"Garlic Press - Auto\",\"targetingType\":\"AUTO\",\"state\":\"ENABLED\",\"budget\":{\"budget\":45,\"budgetType\":\"DAILY\"},\"dynamicBidding\":{\"strategy\":\"LEGACY_FOR_SALES\",\"placementBidding\":[{\"placement\":\"PLACEMENT_TOP\",\"percentage\":50}]},\"tags\":{\"owner\":\"bidtool\"}}]}",
-      "expected_output": "An allv1_CreateCampaign (POST /adsApi/v1/create/campaigns) request for SPONSORED_PRODUCTS with budgets[0] budgetType MONETARY, recurrenceTimePeriod DAILY, value 45 and no currency; autoCreationSettings.autoCreateTargets true; bidStrategy SALES_DOWN_ONLY; placement TOP_OF_SEARCH 50; tags as a key/value list; and the v1-required fields the legacy body never carried (adProduct, marketplaceScope SINGLE_MARKETPLACE, startDateTime) called out. No live calls are needed.",
+      "expected_output": "A create request for POST /adsApi/v1/create/campaigns (through spv1_SPCreateCampaign, since the merged allv1_CreateCampaign budget schema demands a currency)  for SPONSORED_PRODUCTS with budgets[0] budgetType MONETARY, recurrenceTimePeriod DAILY, value 45 and no currency; autoCreationSettings.autoCreateTargets true; bidStrategy SALES_DOWN_ONLY; placement TOP_OF_SEARCH 50; tags as a key/value list; and the v1-required fields the legacy body never carried (adProduct, marketplaceScope SINGLE_MARKETPLACE, startDateTime) called out. No live calls are needed.",
       "files": [],
       "assertions": [
         {

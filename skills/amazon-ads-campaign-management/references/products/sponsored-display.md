@@ -27,7 +27,7 @@
 
 **Create requires:** `adProduct`, `name`, `state` (`ENABLED` | `PAUSED`), `startDateTime`, `marketplaceScope` (`SINGLE_MARKETPLACE`), `budgets`, `costType` (`CPC` | `VCPM`).
 
-- `budgets`: exactly one: `budgetType: MONETARY`, `budgetValue.monetaryBudgetValue.monetaryBudget.value`. The SD schema has **no `recurrenceTimePeriod`**, while the merged `allv1_*` budget item requires one. Send the SD shape and, if the API rejects it, report the error rather than guessing a recurrence.
+- `budgets`: exactly one: `budgetType: MONETARY`, `budgetValue.monetaryBudgetValue.monetaryBudget.value`. The SD schema has **no `recurrenceTimePeriod`** and no currency, while the merged `allv1_*` budget item requires both, so `allv1_CreateCampaign` / `allv1_UpdateCampaign` reject a correct SD budget at MCP validation. Send SD campaign creates and budget updates through `sdv1_SDCreateCampaign` / `sdv1_SDUpdateCampaign` (same endpoint, SD contract). Never add a recurrence or currency to get past the merged schema.
 - No `optimizations` object: SD campaigns have no bid strategy or placement adjustments.
 - Optional: `endDateTime`, `portfolioId`, `countries`/`marketplaces` (1 each; 21 markets, no IE or ZA), `tags` (50).
 

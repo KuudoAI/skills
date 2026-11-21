@@ -31,3 +31,7 @@ Every bump also updates the `evals/evals.json` `skill_version`.
 - DSP notes: targets cannot be paused (delete or pause the ad group), and ad
   group queries have no name filter. SP note: skip the `(_targeting_auto_)`
   placeholder rows in keyword queries.
+- Campaign creates and updates that carry budgets (or DSP flights) use the
+  product-scoped tool (`spv1_SP*`, `sdv1_SD*`, …): the merged `allv1_*`
+  budget item requires a currency and, for SD, a recurrence the product
+  contracts reject.

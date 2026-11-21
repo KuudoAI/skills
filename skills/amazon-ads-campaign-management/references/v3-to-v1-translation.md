@@ -25,7 +25,7 @@ Use this when someone has a legacy request, response handler, or client code (SP
 
 | Legacy call (SP v3 shown; SB, SD, DSP follow the same resource) | v1 tool | Selecting fields |
 |---|---|---|
-| `POST /sp/campaigns`, `PUT /sp/campaigns`, `POST /sp/campaigns/list`, `POST /sp/campaigns/delete` | `allv1_CreateCampaign`, `allv1_UpdateCampaign`, `allv1_QueryCampaign`, `allv1_DeleteCampaign` | `adProduct` / `adProductFilter` |
+| `POST /sp/campaigns`, `PUT /sp/campaigns`, `POST /sp/campaigns/list`, `POST /sp/campaigns/delete` | `allv1_CreateCampaign`, `allv1_UpdateCampaign`, `allv1_QueryCampaign`, `allv1_DeleteCampaign`; creates and budget updates use the product-scoped `spv1_SPCreateCampaign` / `spv1_SPUpdateCampaign` (same endpoint) | `adProduct` / `adProductFilter` |
 | `…/adGroups…` | `allv1_*AdGroup` | same |
 | `…/productAds…` (SP), `/sb/v4/ads/…`, `/sd/productAds` | `allv1_*Ad` | same |
 | `…/keywords…` | `allv1_*Target` | `targetType: KEYWORD`, `negative: false` |
