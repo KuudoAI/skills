@@ -10,12 +10,14 @@ The client owns configuration, authentication, connection, and discovery of nati
 
 ## Configure the client
 
-- Claude Desktop users configure MCP servers in `claude_desktop_config.json`; on macOS the standard location is `/Users/<username>/Library/Application Support/Claude/claude_desktop_config.json`.
+- Claude Desktop and claude.ai users add remote MCP servers, such as Kuudo's hosted Amazon MCPs, as connectors: **Customize > Connectors > + Add > Add custom connector** with the server's HTTPS URL. On Team and Enterprise plans an owner adds connectors for the organization first. Connectors follow your account to web, desktop, and mobile.
+- Claude Desktop also runs local (stdio) MCP servers from `claude_desktop_config.json`; on macOS the standard location is `/Users/<username>/Library/Application Support/Claude/claude_desktop_config.json`. These are desktop-only and do not appear in claude.ai.
 - Claude Code users configure servers through `.mcp.json` or the client's native MCP commands.
 - Codex users configure servers through Codex's native MCP configuration.
 
 Use the current official documentation for schema and command details:
 
+- [Claude custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)
 - [Claude Code MCP](https://code.claude.com/docs/en/mcp)
 - [Codex MCP](https://developers.openai.com/codex/mcp/)
 - [Model Context Protocol architecture](https://modelcontextprotocol.io/docs/learn/architecture)

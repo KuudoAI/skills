@@ -43,13 +43,29 @@ Browse the full collection in [`skills/`](skills/). Every skill's instructions a
 
 ## Get started
 
-Install the whole suite in **Claude Code, Codex, or Gemini CLI**, or choose **one portable skill** for another compatible client. Use one installation mode per client to avoid duplicate skills.
+Install the whole suite in the **Claude Desktop app or claude.ai, Claude Code, Codex, or Gemini CLI**, or choose **one portable skill** for another compatible client. Use one installation mode per client to avoid duplicate skills.
 
-The commands below use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. To install straight from GitHub instead, see the [installation guide](docs/plugin-installation.md) for Claude Code, Codex, and Gemini CLI, or install by name with the Skills CLI below.
+### Claude Desktop and claude.ai
+
+No terminal needed. In the Desktop app or at [claude.ai](https://claude.ai/customize/plugins), open **Customize > Plugins**, choose **Add > Add marketplace**, enter `KuudoAI/skills`, and install **kuudo-skills**. The suite is saved to your Claude account, so it is also available on the web, on mobile, in Cowork, and in Claude Code. Then ask a question such as:
+
+```text
+Audit my Sponsored Products campaigns.
+```
+
+In chat, Kuudo's startup instructions are not loaded automatically; name `using-kuudo` or a specific skill when you want it. To add a single skill as a ZIP upload instead, see the [installation guide](docs/plugin-installation.md#one-skill-in-claude-desktop-and-claudeai).
 
 ### Claude Code
 
-Launch Claude Code with the suite loaded:
+Install from GitHub in one step (Claude Code 2.1.275 or later):
+
+```text
+/plugin install kuudo-skills --marketplace KuudoAI/skills
+```
+
+The remaining commands use a local copy of this repository. Replace `/absolute/path/to/skills` with its location on your computer. To install straight from GitHub in Codex or Gemini CLI, see the [installation guide](docs/plugin-installation.md), or install by name with the Skills CLI below.
+
+To work from a local copy, launch Claude Code with the suite loaded:
 
 ```bash
 claude --plugin-dir /absolute/path/to/skills
@@ -126,7 +142,7 @@ Kuudo provides Amazon MCP connections for the major surfaces these skills work a
 - [Amazon Vendor Central MCP](https://www.kuudo.com/features/amazon-vendor-central-mcp/) for purchase orders, advance shipment notices, invoices, and vendor analytics.
 - [Amazon Marketing Cloud (AMC)](https://www.kuudo.com/features/amc/) for audiences, attribution, incrementality, and AMC analysis.
 
-Follow the [MCP configuration guide](docs/mcp-configuration.md) for client setup. Each skill describes its requirements; several also support reports or manual inputs, so you can start with data you already have.
+In the Claude Desktop app or claude.ai, add each hosted MCP as a custom connector under **Customize > Connectors**. Follow the [MCP configuration guide](docs/mcp-configuration.md) for other clients. Each skill describes its requirements; several also support reports or manual inputs, so you can start with data you already have.
 
 ## Skill quality
 
