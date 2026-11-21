@@ -131,7 +131,7 @@ test("release-please updates exactly the synchronized version fields", async () 
       "package-name"?: string;
       "changelog-path"?: string;
       "include-component-in-tag"?: boolean;
-      "extra-files"?: Array<{ type: string; path: string; jsonpath: string }>;
+      "extra-files"?: Array<{ type: string; path: string; jsonpath?: string }>;
     }>;
   };
   const manifest = JSON.parse(await readFile(".release-please-manifest.json", "utf8")) as Record<string, string>;
@@ -157,7 +157,15 @@ test("release-please updates exactly the synchronized version fields", async () 
       path,
       jsonpath: `$.${field.replace(/\.(\d+)(?=\.|$)/g, "[$1]")}`,
     }));
-  assert.deepEqual(root["extra-files"], expected);
+  const extraFiles = root["extra-files"] ?? [];
+  assert.deepEqual(extraFiles.filter(({ type }) => type === "json"), expected);
+  // Version-pinned install links in the docs are rewritten by release-please's generic
+  // updater between x-release-please-start-version and x-release-please-end markers.
+  assert.deepEqual(extraFiles.filter(({ type }) => type !== "json"), [{ type: "generic", path: "docs/plugin-installation.md" }]);
+  const installGuide = await readFile("docs/plugin-installation.md", "utf8");
+  for (const pinned of installGuide.matchAll(/archive\/refs\/tags\/v(\d+\.\d+\.\d+)\.zip/g)) {
+    assert.equal(pinned[1], packageJson.version, "docs/plugin-installation.md pins a release other than the current version");
+  }
 });
 
 test("release notes have no manual Unreleased section for release-please to stall behind", async () => {

@@ -32,10 +32,12 @@ The repository root is also a complete plugin (`.claude-plugin/plugin.json`), so
 
 - **One session, straight from GitHub.** Point `--plugin-url` at a release archive (pinned) or the `main` branch archive (latest):
 
+  <!-- x-release-please-start-version -->
   ```bash
-  claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/tags/v0.9.0.zip
+  claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/tags/v0.10.0.zip
   claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/heads/main.zip
   ```
+  <!-- x-release-please-end -->
 
 - **One session, from a local copy.** `claude --plugin-dir` accepts a clone, an unzipped folder, or the `.zip` itself.
 - **Every session.** Unzip or copy the repository to `~/.claude/skills/kuudo-skills/`, keeping `.claude-plugin/plugin.json` at that folder's root. Claude Code loads it at startup as `kuudo-skills@skills-dir`, unless an administrator has blocked skills-directory plugins.
@@ -54,7 +56,9 @@ The plugin is saved to your Claude account, so it is available in chat on web, d
 
 What loads differs by surface. Skills load everywhere. Chat ignores plugin hooks, so the `using-kuudo` startup instructions are not injected there; `using-kuudo` is still available as a skill, and you can name it or any other skill in your request. Cowork and Claude Code run the hook.
 
-Without adding the marketplace, you can instead upload the suite as a plugin file: download a release archive such as `https://github.com/KuudoAI/skills/archive/refs/tags/v0.9.0.zip`, then choose **Customize > Plugins > Add > Upload plugin** and select it (up to 200 MB and 5,000 files). An uploaded plugin does not update itself; upload the next release to update.
+<!-- x-release-please-start-version -->
+Without adding the marketplace, you can instead upload the suite as a plugin file: download a release archive such as `https://github.com/KuudoAI/skills/archive/refs/tags/v0.10.0.zip`, then choose **Customize > Plugins > Add > Upload plugin** and select it (up to 200 MB and 5,000 files). An uploaded plugin does not update itself; upload the next release to update.
+<!-- x-release-please-end -->
 
 An account-installed plugin appears in Claude Code as `kuudo-skills@synced`. If you also installed the suite through the Claude Code CLI on the same machine, remove one installation so each skill is discovered once.
 

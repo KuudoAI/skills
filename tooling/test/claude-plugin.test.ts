@@ -40,6 +40,15 @@ test("the plugin root has no lockfile, so Claude Code installs no packages into 
   assert.ok(existsSync(join(root, "tooling/package-lock.json")));
 });
 
+test("the plugin contains no symbolic links, which Claude Desktop rejects", async () => {
+  // Claude Desktop and claude.ai refuse a plugin archive that contains a symbolic link
+  // ("Zip file contains a symbolic link"). CLAUDE.md imports AGENTS.md instead.
+  const { stdout } = await execute("git", ["ls-files", "-s"], { cwd: root });
+  const links = stdout.split("\n").filter((line) => line.startsWith("120000 ")).map((line) => line.split("\t")[1]);
+  assert.deepEqual(links, []);
+  assert.equal((await readFile(join(root, "CLAUDE.md"), "utf8")).trim(), "@AGENTS.md");
+});
+
 test("Claude package, plugin, marketplace, and hook metadata agree", async () => {
   const packageJson = await readJson("package.json");
   const plugin = await readJson(".claude-plugin/plugin.json");
