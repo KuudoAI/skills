@@ -1,0 +1,20 @@
+[
+  {"query": "Pause every Sponsored Products keyword with 'refurbished' in it across the account.", "should_trigger": true},
+  {"query": "bump the daily budget on 'Garlic Press - Exact' from $40 to $65 and set top of search to +35%", "should_trigger": true},
+  {"query": "Add these as negative exact at the campaign level on our SB brand defense campaign: cheap, used, free shipping", "should_trigger": true},
+  {"query": "Our dev team still calls POST /sp/negativeKeywords/list on SP v3. What's the adsApi/v1 version of that request?", "should_trigger": true},
+  {"query": "Which of our Sponsored Display campaigns are enabled but not delivering right now, and why?", "should_trigger": true},
+  {"query": "Switch the 'stainless whisk' keyword from broad to exact match in the kitchen tools ad group.", "should_trigger": true},
+  {"query": "Create a manual SP campaign for B0EXAMPLE77 at $30/day with three exact keywords and a $1.20 default bid.", "should_trigger": true},
+  {"query": "Pause the DSP ad group 'Q4 Retargeting - Display' and lower its base bid to $4.", "should_trigger": true},
+  {"query": "List the auto-targeting groups (close match, loose match, substitutes, complements) on our auto campaign and their bids.", "should_trigger": true},
+  {"query": "Show me SP search term performance for last month with spend and ACOS by keyword.", "should_trigger": false},
+  {"query": "Which advertiser accounts and marketplace profiles can I access with this login?", "should_trigger": false},
+  {"query": "Launch a Performance+ DSP campaign for our new blender with remarketing and customer acquisition tactics.", "should_trigger": false},
+  {"query": "Set up a Review Requests campaign so our new travel mug gets more ratings.", "should_trigger": false},
+  {"query": "Write AMC SQL for path-to-conversion across Sponsored Products and DSP.", "should_trigger": false},
+  {"query": "We're $3k over plan this month. Work out how much to cut each campaign's daily budget to land on target.", "should_trigger": false},
+  {"query": "Reprice our FBA listings to stay within 2% of the buy box.", "should_trigger": false},
+  {"query": "Rebuild the v3 SP Targeting report on the v1 reporting API.", "should_trigger": false},
+  {"query": "Pause our Full-Funnel campaign until the new creative is approved.", "should_trigger": true}
+]

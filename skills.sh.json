@@ -15,6 +15,7 @@
       "description": "First-party reference implementations maintained by KuudoAI.",
       "skills": [
         "amazon-ads-accounts",
+        "amazon-ads-campaign-management",
         "amazon-ads-create-dsp-campaign",
         "amazon-ads-creative-assets",
         "amazon-ads-marketing-cloud",
