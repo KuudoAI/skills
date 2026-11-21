@@ -7,8 +7,8 @@ description: >-
   Performance+/Brand+) DSP campaign or ad group field by field. Typical
   asks: list enabled campaigns and their settings, pause or enable, change
   bids, budgets, placement adjustments or dates, add keywords or negatives,
-  switch match types, archive, edit existing DSP or Sponsored TV entities
-  and ad associations, or port legacy v2/v3/v4 campaign-management code to
+  switch match types, archive, edit existing DSP, Sponsored TV or
+  Full-Funnel entities and ad associations, or port legacy v2/v3/v4 campaign-management code to
   the unified v1 API (allv1_* tools). Route these elsewhere. Launching any
   new DSP campaign from a tactic (Performance+, Brand+, remarketing,
   prospecting, ASIN plus budget and flight) goes to amazon-ads-create-dsp-
@@ -16,7 +16,7 @@ description: >-
   comparisons, report requests) goes to amazon-ads-reporting. Account
   discovery, Review Requests campaigns and AMC also go elsewhere.
 license: PolyForm-Shield-1.0.0 (see LICENSE.txt)
-compatibility: Requires an Amazon Ads MCP server exposing the unified v1 campaign-management tools (allv1_Query/Create/Update/Delete for campaigns, ad groups, ads, targets, and ad associations) plus their product-scoped sibling tools (spv1_/sbv1_/sdv1_/stv1_/dspv1_), which carry the authoritative schemas and are the write path for campaign budgets. Offline v3-to-v1 translation needs no integration.
+compatibility: Requires an Amazon Ads MCP server exposing the unified v1 campaign-management tools (allv1_Query/Create/Update/Delete for campaigns, ad groups, ads, targets, and ad associations) plus their product-scoped sibling tools (spv1_/sbv1_/sdv1_/stv1_/dspv1_), which carry the authoritative schemas and are the write path for campaign budgets. FULL_FUNNEL has no product-scoped tools; it is read through allv1_* and only its campaign settings are edited. Offline v3-to-v1 translation needs no integration.
 metadata:
   display-name: "Amazon Ads Campaign Management"
   version: "0.1.0"
@@ -42,6 +42,7 @@ If Amazon account scope, identifier type, marketplace mapping, or account relati
 | Translate a legacy call or client code to v1 | [v3-to-v1 translation](references/v3-to-v1-translation.md) |
 | Performance, spend, ACOS, search terms | `amazon-ads-reporting`; this skill reads settings, not metrics |
 | DSP Performance+ or Brand+ launch | `amazon-ads-create-dsp-campaign` |
+| Launch a new Full-Funnel campaign | Amazon Ads Agent in the console; no documented API create (see [Full-Funnel](references/products/full-funnel.md)) |
 | Review Requests (ENGAGEMENT) campaigns | `amazon-ads-review-requests` |
 | Portfolios | No v1 tool exists. Say so; legacy `ac_*` portfolio tools are outside this skill |
 
@@ -54,6 +55,7 @@ Load only the product reference you need:
 | `SPONSORED_DISPLAY` | [Sponsored Display](references/products/sponsored-display.md) |
 | `AMAZON_DSP` | [Amazon DSP](references/products/amazon-dsp.md) |
 | `SPONSORED_TELEVISION` | [Sponsored TV](references/products/sponsored-tv.md) |
+| `FULL_FUNNEL` | [Full-Funnel](references/products/full-funnel.md): Amazon-orchestrated, no product-scoped schema; read freely, edit campaign settings only |
 
 Sponsored TV is `SPONSORED_TELEVISION`, never `SPONSORED_TV`.
 
@@ -62,11 +64,11 @@ Sponsored TV is `SPONSORED_TELEVISION`, never `SPONSORED_TV`.
 Read [the v1 entity model](references/v1-entity-model.md) before the first call. The points that cause the most wrong answers:
 
 - **The `allv1_*` schema is a loose superset.** It accepts fields and enum members no single product supports, and its required lists are minimal. The real contract for each product is in the product-scoped sibling tool for the same path (`spv1_SP*`, `sbv1_SB*`, `sdv1_SD*`, `dspv1_DSP*`, `stv1_ST*`). Call `allv1_*`, but build and check every request against the product reference and, when a field is not covered there, `get_schema` on the product-scoped tool.
-- **Budget writes go through the product-scoped tool.** The merged budget item requires `monetaryBudget.currencyCode`, which no product contract accepts, and `recurrenceTimePeriod`, which Sponsored Display does not have. The MCP rejects the correct product-shaped budget before it reaches Amazon. For any campaign create or update that carries `budgets` (or DSP `flights`), call the product-scoped tool for the same endpoint (`spv1_SPUpdateCampaign`, `sdv1_SDCreateCampaign`, …) with the shape from its schema. Plan this from the start rather than trying `allv1_*` first. More generally, when the merged schema requires a field the product contract does not accept, the product-scoped tool is the path.
+- **Budget writes go through the product-scoped tool.** The merged budget item requires `monetaryBudget.currencyCode`, which no product contract accepts, and `recurrenceTimePeriod`, which Sponsored Display does not have. The MCP rejects the correct product-shaped budget before it reaches Amazon. For any campaign create or update that carries `budgets` (or DSP `flights`), call the product-scoped tool for the same endpoint (`spv1_SPUpdateCampaign`, `sdv1_SDCreateCampaign`, …) with the shape from its schema. Plan this from the start rather than trying `allv1_*` first. More generally, when the merged schema requires a field the product contract does not accept, the product-scoped tool is the path. `FULL_FUNNEL` has no product-scoped tool: mirror the read-back budget object (see its reference).
 - **One product per query.** Every campaign, ad group, ad, and target query requires `adProductFilter` with exactly one value. Omitting it is a 400, not an unfiltered list.
 - **Targets are the hub.** Keywords, negative keywords, campaign negatives, product and category targets, auto-targeting groups, themes, audiences, and DSP targeting all go through `allv1_*Target`. Level comes from the parent ID: `adGroupId` makes an ad-group target, `campaignId` alone makes a campaign target.
 - **Account scope is session state.** No request body carries an account or profile. It comes from the server's active identity, profile, or account selection. Confirm it before any write.
-- **Capabilities are uneven.** DSP and Sponsored TV have no campaign or ad group delete. DSP has no target update and its ads serve only through ad associations. SD and Sponsored TV target queries cannot filter by negative or target type. Check the product reference before promising an operation.
+- **Capabilities are uneven.** DSP and Sponsored TV have no campaign or ad group delete. DSP has no target update and its ads serve only through ad associations. SD and Sponsored TV target queries cannot filter by negative or target type. Full-Funnel ad groups, ads, and targets are Amazon-managed and read-only here. Check the product reference before promising an operation.
 
 ## Read workflow
 

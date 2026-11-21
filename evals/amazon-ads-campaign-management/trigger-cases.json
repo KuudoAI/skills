@@ -15,5 +15,6 @@
   {"query": "Write AMC SQL for path-to-conversion across Sponsored Products and DSP.", "should_trigger": false},
   {"query": "We're $3k over plan this month. Work out how much to cut each campaign's daily budget to land on target.", "should_trigger": false},
   {"query": "Reprice our FBA listings to stay within 2% of the buy box.", "should_trigger": false},
-  {"query": "Rebuild the v3 SP Targeting report on the v1 reporting API.", "should_trigger": false}
+  {"query": "Rebuild the v3 SP Targeting report on the v1 reporting API.", "should_trigger": false},
+  {"query": "Pause our Full-Funnel campaign until the new creative is approved.", "should_trigger": true}
 ]

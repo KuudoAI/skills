@@ -242,6 +242,35 @@
           "condition": "No update or other write call is executed"
         }
       ]
+    },
+    {
+      "id": 8,
+      "eval_name": "full-funnel-read-and-budget-change",
+      "prompt": "Show me our Full-Funnel campaign and what's under it, then raise its daily budget to $250.",
+      "expected_output": "Confirms account scope, queries campaigns with adProductFilter FULL_FUNNEL (then ad groups/ads/targets by campaignIdFilter) and reports them as Amazon-managed. For the budget, reads the campaign first and plans an allv1_UpdateCampaign that mirrors the read-back budgets object (recurrence and currency as read) changing only value to 250; the preview names the spend increase, says Full-Funnel has no published API contract on this server, and asks for approval. No write is executed in this turn. If no Full-Funnel campaign exists, says so and makes no write.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "ff-adproduct-filter",
+          "condition": "Queries use adProductFilter include [FULL_FUNNEL], not another adProduct value"
+        },
+        {
+          "name": "children-amazon-managed",
+          "condition": "Treats Full-Funnel ad groups, ads, and targets as Amazon-managed and proposes no edits to them"
+        },
+        {
+          "name": "budget-mirrors-readback",
+          "condition": "The planned budget update copies the read-back budgets object and changes only the value, without inventing recurrence or currency"
+        },
+        {
+          "name": "unverified-contract-flagged",
+          "condition": "The preview says the Full-Funnel write contract is unverified or that no product-scoped schema exists"
+        },
+        {
+          "name": "approval-gate",
+          "condition": "Calls out the spend increase and asks for explicit approval; no update call is executed"
+        }
+      ]
     }
   ]
 }

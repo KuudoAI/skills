@@ -35,3 +35,6 @@ Every bump also updates the `evals/evals.json` `skill_version`.
   product-scoped tool (`spv1_SP*`, `sdv1_SD*`, …): the merged `allv1_*`
   budget item requires a currency and, for SD, a recurrence the product
   contracts reject.
+- Full-Funnel (`FULL_FUNNEL`) reference: queries supported (filter accepted
+  live), campaign-level edits gated as an unverified contract, Amazon-managed
+  children read-only, and new Full-Funnel launches routed to Amazon Ads Agent.
