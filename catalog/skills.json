@@ -375,11 +375,11 @@
     },
     {
       "name": "using-kuudo",
-      "description": "Use at the start of Amazon commerce work involving Amazon Ads, Seller Central, or Vendor Central when Kuudo skills are installed.",
+      "description": "Use at the start of Amazon commerce work involving Amazon Ads, Seller Central, or Vendor Central when Kuudo skills are installed, including connecting Kuudo's MCP servers.",
       "license": "PolyForm-Shield-1.0.0 (see LICENSE.txt)",
       "metadata": {
         "display-name": "Using Kuudo",
-        "version": "0.3.0"
+        "version": "0.4.0"
       },
       "status": "reference",
       "origin": "first-party",

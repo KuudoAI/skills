@@ -10,9 +10,9 @@ The client owns configuration, authentication, connection, and discovery of nati
 
 ## Configure the client
 
-- Claude Desktop and claude.ai users add remote MCP servers, such as Kuudo's hosted Amazon MCPs, as connectors: **Customize > Connectors > + Add > Add custom connector** with the server's HTTPS URL. On Team and Enterprise plans an owner adds connectors for the organization first. Connectors follow your account to web, desktop, and mobile.
+- Claude Desktop and claude.ai users add remote MCP servers, such as Kuudo's hosted Amazon MCPs, as connectors: **Customize > Connectors > + Add > Add custom connector** with the server's HTTPS URL. Kuudo's managed endpoints are `https://ads.kuudo.com/mcp` (Amazon Ads, including Amazon Marketing Cloud) and `https://sp.kuudo.com/mcp` (Seller Central and Vendor Central); sign in with a Kuudo account, then authorize the Amazon account in Kuudo under **Authorizations > Connect Amazon**. See [Kuudo managed MCP](https://www.kuudo.com/docs/managed-mcp/). On Team and Enterprise plans an owner adds connectors for the organization first. Connectors follow your account to web, desktop, and mobile.
 - Claude Desktop also runs local (stdio) MCP servers from `claude_desktop_config.json`; on macOS the standard location is `/Users/<username>/Library/Application Support/Claude/claude_desktop_config.json`. These are desktop-only and do not appear in claude.ai.
-- Claude Code users configure servers through `.mcp.json` or the client's native MCP commands.
+- Claude Code users configure servers through `.mcp.json` or the client's native MCP commands, for example `claude mcp add --transport http kuudo-ads https://ads.kuudo.com/mcp`, then sign in from `/mcp`.
 - Codex users configure servers through Codex's native MCP configuration.
 
 Use the current official documentation for schema and command details:

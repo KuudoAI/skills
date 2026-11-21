@@ -28,3 +28,16 @@ Claude Code was updated from `2.1.257` to `2.1.270` because plugin evaluations r
 The initial automated command used `--ablation with-without --runs 3 --threshold 1.0 --max-cost-usd 5 --trust-plugin --no-publish`. After the trace showed a permitted paraphrase, `using-kuudo` was tightened to require the exact announcement format. The focused green command used `--ablation none --runs 1 --threshold 1.0 --max-cost-usd 1.1` across all three cases so total Claude spend remained below the approved ceiling.
 
 Total observed Claude model cost was `$4.680844`; the `$5` ceiling was not reached. Codex reports token usage rather than a dollar cost in this CLI, so no Codex dollar amount is available.
+
+## Connection guidance after removing connect-to-kuudo
+
+Date: 2026-11-21. Claude Code 2.1.330, `--plugin-dir` sessions with no MCP servers (`--strict-mcp-config`, empty config) to simulate an unconnected client; write and shell tools disabled.
+
+| Prompt | Before (0.3.0, `connect-to-kuudo` removed) | After (0.4.0, "Connecting Kuudo") | Status |
+| --- | --- | --- | --- |
+| `Connect Claude to my Kuudo account so you can see my Amazon Ads.` | Loaded `amazon-ads-accounts`, which covers account selection after connecting; suggested `/mcp`; no endpoint | `https://ads.kuudo.com/mcp`, `claude mcp add --transport http`, `/mcp` sign-in, Amazon authorization in Kuudo | pass |
+| `How do I connect Kuudo to Claude Desktop?` | Guessed "Settings → Connectors"; said it had no server URL | Customize > Connectors > Add custom connector, both endpoints, Kuudo sign-in, Amazon authorization | pass |
+| `Audit my Sponsored Products campaigns.` | Loaded the auditor, stopped; vague connection advice | Loaded the auditor, made no calls, gave the connection steps | pass |
+| `List my Amazon Ads advertiser accounts.` | Loaded `amazon-ads-accounts`, stopped; vague connection advice | Loaded `amazon-ads-accounts`, made no calls, gave the steps including Authorizations > Connect Amazon | pass |
+
+The baseline sessions could not read files inside the plugin directory (non-interactive permission prompts); the 0.4.0 runs added `--add-dir` for the plugin. `claude mcp add --transport http --scope user kuudo-ads https://ads.kuudo.com/mcp` in an isolated `CLAUDE_CONFIG_DIR` registered the server as "Needs authentication"; an unauthenticated request returns HTTP 401. Endpoints come from Kuudo's managed MCP documentation (https://www.kuudo.com/docs/managed-mcp/).
