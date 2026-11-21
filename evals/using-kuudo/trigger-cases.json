@@ -16,6 +16,10 @@
     "should_trigger": true
   },
   {
+    "query": "How do I connect Kuudo's Amazon Ads tools to Claude Desktop?",
+    "should_trigger": true
+  },
+  {
     "query": "What is the weather in Boston?",
     "should_trigger": false
   },
