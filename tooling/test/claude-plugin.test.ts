@@ -25,6 +25,21 @@ function sessionOutput(envelope: JsonObject): JsonObject {
   return (envelope.hookSpecificOutput ?? {}) as JsonObject;
 }
 
+test("the plugin root has no lockfile, so Claude Code installs no packages into the plugin", async () => {
+  // Claude Code installs a plugin's Node dependencies, devDependencies included and
+  // with no opt-out, whenever the plugin root holds package.json and a supported
+  // lockfile. The repository tooling keeps its dependencies and lockfile in tooling/.
+  const { existsSync } = await import("node:fs");
+  for (const lockfile of ["package-lock.json", "npm-shrinkwrap.json", "bun.lock"]) {
+    assert.equal(existsSync(join(root, lockfile)), false, `${lockfile} at the plugin root`);
+  }
+  const packageJson = await readJson("package.json");
+  assert.equal(packageJson.dependencies, undefined);
+  assert.equal(packageJson.devDependencies, undefined);
+  assert.match(await readFile(join(root, ".npmrc"), "utf8"), /^package-lock=false$/m);
+  assert.ok(existsSync(join(root, "tooling/package-lock.json")));
+});
+
 test("Claude package, plugin, marketplace, and hook metadata agree", async () => {
   const packageJson = await readJson("package.json");
   const plugin = await readJson(".claude-plugin/plugin.json");
