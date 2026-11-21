@@ -122,6 +122,23 @@ test("release workflow validates main before release-please opens or publishes a
   assert.equal(releasePlease.with?.token, "${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}");
   assert.equal(releasePlease.with?.["config-file"], "release-please-config.json");
   assert.equal(releasePlease.with?.["manifest-file"], ".release-please-manifest.json");
+  assert.equal(releasePlease.id, "release");
+
+  // A published release gets the Claude upload archives under fixed names, built
+  // from the released tag, so releases/latest/download/<name> always works and a
+  // re-upload in Claude replaces the earlier one instead of duplicating it.
+  const releaseSteps = stepsOf(workflow, "release");
+  const created = "${{ steps.release.outputs.release_created }}";
+  const tagCheckout = releaseSteps.find((step) => usesAction(step, CHECKOUT));
+  assert.equal(tagCheckout?.if, created);
+  assert.equal(tagCheckout?.with?.ref, "${{ steps.release.outputs.tag_name }}");
+  assert.equal(tagCheckout?.with?.["persist-credentials"], false);
+  const build = releaseSteps.find((step) => step.run === "bash scripts/package.sh dist");
+  assert.equal(build?.if, created);
+  const upload = releaseSteps.find((step) => step.run?.startsWith("gh release upload"));
+  assert.equal(upload?.if, created);
+  assert.match(upload?.run ?? "", /dist\/kuudo-skills\.zip dist\/skills\/\*\.zip --clobber/);
+  assert.equal(upload?.env?.TAG, "${{ steps.release.outputs.tag_name }}");
 });
 
 test("release-please updates exactly the synchronized version fields", async () => {

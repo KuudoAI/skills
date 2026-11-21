@@ -11,3 +11,4 @@ docs/superpowers/*
 .mux/*
 .claude/*
 .env.*
+dist/
