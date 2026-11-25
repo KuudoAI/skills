@@ -34,7 +34,7 @@ The repository root is also a complete plugin (`.claude-plugin/plugin.json`), so
 
   <!-- x-release-please-start-version -->
   ```bash
-  claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/tags/v0.11.0.zip
+  claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/tags/v0.11.1.zip
   claude --plugin-url https://github.com/KuudoAI/skills/archive/refs/heads/main.zip
   ```
   <!-- x-release-please-end -->
