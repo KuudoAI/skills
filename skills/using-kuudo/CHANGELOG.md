@@ -10,7 +10,10 @@ server connected.
 - "Already connected": when the tools are present and the user only asks to
   connect or to see what they can reach, confirm it read-only (identities,
   then the server's own listing tool) and ask which account or marketplace to
-  work in. The setup steps are now under "Not connected".
+  work in. On Selling Partner the check selects the identity and a marketplace
+  in the same `execute` block as the read, because that server keeps a
+  selection for one block and routes to North America by default. The setup
+  steps are now under "Not connected".
 - Duplicates: when a task is covered twice (a skill under several prefixes, an
   older upload under another name, a second Amazon MCP server), use the
   `kuudo-skills:` skill and Kuudo's servers unless the user names another, and

@@ -55,5 +55,5 @@ Date: 2026-11-25. Source: a client session with the plugin (0.4.0) and the Kuudo
 
 The 0.5.0 run was a subagent given the skill text as session-start context, with the installed 0.4.0 plugin's Skill tool disallowed and selection calls forbidden. It stands in for the hook; it does not prove the hook path in a fresh Claude Code session. The automated checks cover the hook itself: `session-start` emits the complete skill and the "already loaded" line.
 
-Not run for 0.5.0: the three routing prompts in the 2026-09-14 table, which graded the literal announcement format that 0.5.0 removes, and chat in the Claude Desktop app or claude.ai, where the "Hosts" note rests on the documented behavior that chat does not run plugin hooks.
+Not run for 0.5.0: the Selling Partner branch of the connected check, whose same-block identity and marketplace selection comes from that server's tool descriptions (read 2026-11-25) and `amazon-sp-fba-inbound`'s tool-access notes rather than from a run; the three routing prompts in the 2026-09-14 table, which graded the literal announcement format that 0.5.0 removes, and chat in the Claude Desktop app or claude.ai, where the "Hosts" note rests on the documented behavior that chat does not run plugin hooks.
 

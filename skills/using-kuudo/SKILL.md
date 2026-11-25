@@ -49,10 +49,10 @@ Kuudo's Amazon tools come from hosted MCP servers that the user connects in thei
 If the session exposes the tools (for example `list_identities`), the connection is done: skip the setup steps and continue with the selected skill. When the user only asks to connect, check the connection, or see what they can reach, confirm it with read-only calls:
 
 1. `list_identities` on the server. With one identity, use it and say which; with several, ask.
-2. That server's listing tool for what the identity reaches, such as `ac_listProfiles` on Amazon Ads or `sellers_getMarketplaceParticipations` on Selling Partner.
+2. That server's listing tool for what the identity reaches: `ac_listProfiles` on Amazon Ads, or `sellers_getMarketplaceParticipations` on Selling Partner. Selling Partner keeps a selection for one `execute` block and routes to North America by default, so in the same block as the read, select the identity and then a marketplace it covers (`set_active_marketplace`), which sets the region.
 3. Show the list with the identity named, and ask which account or marketplace to work in.
 
-A selection such as `set_active_profile` changes the scope of every later call, so make one only after the user chooses.
+On Amazon Ads a selection such as `set_active_profile` lasts the session and changes the scope of every later call, so make one only after the user chooses.
 
 ### Not connected
 
