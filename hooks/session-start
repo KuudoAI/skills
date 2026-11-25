@@ -24,7 +24,7 @@ quote_json_string() {
   printf '"%s"' "${value}"
 }
 
-context=$'Kuudo skills are available.\n\nBelow is the full content of the kuudo-skills:using-kuudo bootstrap skill. For all other skills, use the host\'s Skill tool:\n\n'
+context=$'Kuudo skills are available.\n\nBelow is the full content of the kuudo-skills:using-kuudo bootstrap skill. It is already loaded, so do not invoke it again. For all other skills, use the host\'s Skill tool:\n\n'
 context+="${skill_text}"
 context+=$'\n'
 
