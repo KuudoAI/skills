@@ -85,7 +85,7 @@ test("session-start injects the complete bootstrap skill", async () => {
   assert.equal(output.hookEventName, "SessionStart");
   assert.match(context, /kuudo-skills:using-kuudo/);
   assert.match(context, /host's Skill tool/);
-  assert.match(context, /Use this exact format and do not paraphrase/);
+  assert.match(context, /already loaded, so do not invoke it again/);
   assert.ok(context.includes(skill));
   assert.ok(context.includes("---\nname: using-kuudo\n"));
 });

@@ -87,18 +87,17 @@ test("Claude bootstrap hook emits the complete using-kuudo skill", async () => {
   assert.ok((output.additionalContext as string).includes(skill));
 });
 
-test("using-kuudo exposes readable adaptation guidance for each supported host", async () => {
+test("using-kuudo carries its host guidance inline", async () => {
   const sourcePath = join("skills", "using-kuudo", "SKILL.md");
   const skill = await readFile(join(root, sourcePath), "utf8");
-  const references = collectMarkdownReferences(skill, sourcePath)
-    .map(({ url }) => url)
-    .filter((url) => url.startsWith("references/"))
-    .sort();
 
-  assert.deepEqual(references, ["references/claude-code.md", "references/codex.md"]);
+  // The session hook injects this file without its directory, so a host note
+  // kept in a reference file could not be found from the injected text.
+  assert.deepEqual(collectMarkdownReferences(skill, sourcePath), []);
 
-  for (const reference of references) {
-    assert.notEqual((await readFile(join(root, "skills", "using-kuudo", reference), "utf8")).trim(), "");
+  const hosts = skill.slice(skill.indexOf("\n## Hosts\n"));
+  for (const host of ["Claude Code", "Cowork", "Claude Desktop", "claude.ai", "Codex", "Gemini CLI"]) {
+    assert.ok(hosts.includes(host), `${host} is missing from the Hosts section`);
   }
 });
 

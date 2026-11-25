@@ -20,6 +20,10 @@
     "should_trigger": true
   },
   {
+    "query": "I already added the Kuudo Amazon Ads connector. Can you check it's working and show me which accounts I can reach?",
+    "should_trigger": true
+  },
+  {
     "query": "What is the weather in Boston?",
     "should_trigger": false
   },

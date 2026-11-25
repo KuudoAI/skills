@@ -41,3 +41,19 @@ Date: 2026-11-21. Claude Code 2.1.330, `--plugin-dir` sessions with no MCP serve
 | `List my Amazon Ads advertiser accounts.` | Loaded `amazon-ads-accounts`, stopped; vague connection advice | Loaded `amazon-ads-accounts`, made no calls, gave the steps including Authorizations > Connect Amazon | pass |
 
 The baseline sessions could not read files inside the plugin directory (non-interactive permission prompts); the 0.4.0 runs added `--add-dir` for the plugin. `claude mcp add --transport http --scope user kuudo-ads https://ads.kuudo.com/mcp` in an isolated `CLAUDE_CONFIG_DIR` registered the server as "Needs authentication"; an unauthenticated request returns HTTP 401. Endpoints come from Kuudo's managed MCP documentation (https://www.kuudo.com/docs/managed-mcp/).
+
+## Client feedback and the 0.5.0 rewrite
+
+Date: 2026-11-25. Source: a client session with the plugin (0.4.0) and the Kuudo Amazon Ads server connected, then one live read-only run of 0.5.0 on the same connection.
+
+| Prompt | Observed on 0.4.0 (client session) | Observed on 0.5.0 (live run) | Status |
+| --- | --- | --- | --- |
+| A "connect" request with the server already connected | The skill covered first-time setup and then said "continue"; the agent showed the 7 profiles inside `list_identities` as the full list | Said the connection already exists and gave no setup steps; called `list_identities`, then `ac_listProfiles`; showed all 16 profiles with the identity named; asked which account and marketplace to work in; made no selection call | pass |
+| Same session | The full skill text arrived twice: from the session hook and again from a Skill call | The skill text was treated as already loaded and the Skill tool was not used | pass |
+| Same session | The exact `Using [skill] to [purpose].` line was required and was not printed | The exact line is no longer required; the reply said which copies of the skills it was using | pass |
+| Same session, skills installed under `kuudo-skills:`, `anthropic-skills:`, and unprefixed | No guidance on which copy to use | Reply: "I'm using the `kuudo-skills:` copies; you can remove the others." | pass |
+
+The 0.5.0 run was a subagent given the skill text as session-start context, with the installed 0.4.0 plugin's Skill tool disallowed and selection calls forbidden. It stands in for the hook; it does not prove the hook path in a fresh Claude Code session. The automated checks cover the hook itself: `session-start` emits the complete skill and the "already loaded" line.
+
+Not run for 0.5.0: the three routing prompts in the 2026-09-14 table, which graded the literal announcement format that 0.5.0 removes, and chat in the Claude Desktop app or claude.ai, where the "Hosts" note rests on the documented behavior that chat does not run plugin hooks.
+
